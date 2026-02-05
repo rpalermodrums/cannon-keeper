@@ -14,4 +14,5 @@ export type WorkerMethods =
   | "project.createOrOpen"
   | "project.getStatus"
   | "project.addDocument"
-  | "search.ask";
+  | "search.ask"
+  | "scenes.list";

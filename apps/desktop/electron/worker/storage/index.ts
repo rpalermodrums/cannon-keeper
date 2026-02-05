@@ -4,5 +4,6 @@ export { getDocumentByPath, createDocument, touchDocument, listDocuments } from 
 export { insertSnapshot, getLatestSnapshotVersion } from "./snapshotRepo";
 export { listChunksForDocument, deleteChunksByIds, insertChunks, updateChunk } from "./chunkRepo";
 export { logEvent } from "./eventLogRepo";
+export { replaceScenesForDocument, listScenesForProject } from "./sceneRepo";
 export { type StoragePaths, getStoragePaths, ensureStorageDirs } from "./paths";
 export { runMigrations } from "./migrations";

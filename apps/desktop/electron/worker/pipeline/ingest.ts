@@ -13,9 +13,11 @@ import {
   insertSnapshot,
   listChunksForDocument,
   logEvent,
+  replaceScenesForDocument,
   touchDocument,
   updateChunk
 } from "../storage";
+import { buildScenesFromChunks } from "./scenes";
 
 export type IngestResult = {
   documentId: string;
@@ -129,6 +131,10 @@ export async function ingestDocument(
     insertChunks(db, document.id, toInsert);
     touchDocument(db, document.id);
   })();
+
+  const storedChunks = listChunksForDocument(db, document.id);
+  const scenes = buildScenesFromChunks(args.projectId, document.id, storedChunks);
+  replaceScenesForDocument(db, document.id, scenes);
 
   if (prefix === 0 && suffix === 0 && existingChunks.length > 0) {
     logEvent(db, {

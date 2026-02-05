@@ -3,6 +3,7 @@ import {
   createProject,
   getProjectByRootPath,
   listDocuments,
+  listScenesForProject,
   openDatabase,
   touchProject
 } from "./storage";
@@ -137,6 +138,11 @@ async function dispatch(method: WorkerMethods, params?: unknown): Promise<unknow
           results: searchChunks(dbHandle.db, (params as { query: string }).query)
         };
       }
+    case "scenes.list":
+      if (!dbHandle || !currentProjectId) {
+        throw new Error("Project not initialized");
+      }
+      return listScenesForProject(dbHandle.db, currentProjectId);
     default:
       throw new Error(`Unknown method: ${method}`);
   }
