@@ -382,4 +382,5 @@ The point of this project is to **empower** the writer by reducing continuity bo
 - Tests: added integration coverage for ingest + FTS + continuity contradictions.
 - Schema: added `scene_evidence` table (migration `004_scene_evidence.sql`) for evidence-backed scene metadata.
 - Scene metadata: deterministic POV (first-person) + setting detection now populate `scene_metadata`, `scene_entity`, and `scene_evidence`.
+- Config sync: `canonkeeper.json` document list is loaded on project open and updated on add-document.
 ```
