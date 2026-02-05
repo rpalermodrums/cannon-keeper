@@ -375,4 +375,5 @@ The point of this project is to **empower** the writer by reducing continuity bo
 ## Implementation notes (living)
 - Dev workflow: Vite for renderer; Electron main runs via `tsx` in dev. Preload is only wired when compiled (no preload in dev).
 - Tooling: ESLint + Prettier + Vitest at repo root; Lefthook runs lint/typecheck on `pre-commit` and tests on `pre-push`.
+- Storage: SQLite database is created under `<projectRoot>/.canonkeeper/canonkeeper.db` (directory is created if missing).
 ```

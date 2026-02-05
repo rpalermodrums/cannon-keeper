@@ -2,11 +2,13 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import fs from "node:fs";
+import { WorkerClient } from "./worker/client";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let mainWindow: BrowserWindow | null = null;
+let workerClient: WorkerClient | null = null;
 
 function getPreloadPath(): string | undefined {
   const candidate = path.join(__dirname, "preload.js");
@@ -38,9 +40,22 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  workerClient = new WorkerClient();
   createWindow();
 
   ipcMain.handle("app:ping", () => ({ ok: true }));
+  ipcMain.handle("project:createOrOpen", async (_event, payload) => {
+    if (!workerClient) {
+      throw new Error("Worker not initialized");
+    }
+    return workerClient.request("project.createOrOpen", payload);
+  });
+  ipcMain.handle("project:getStatus", async () => {
+    if (!workerClient) {
+      throw new Error("Worker not initialized");
+    }
+    return workerClient.request("project.getStatus");
+  });
 
   app.on("activate", () => {
     if (mainWindow === null || BrowserWindow.getAllWindows().length === 0) {
