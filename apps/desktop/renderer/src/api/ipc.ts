@@ -69,6 +69,14 @@ export type SceneDetail = {
     start_char: number;
     end_char: number;
   }>;
+  evidence: Array<{
+    chunkId: string;
+    documentPath: string | null;
+    chunkOrdinal: number | null;
+    quoteStart: number;
+    quoteEnd: number;
+    excerpt: string;
+  }>;
 };
 
 export type IssueSummary = {

@@ -189,6 +189,18 @@ export interface SceneEntityRow {
 }
 
 /**
+ * Table: scene_evidence
+ */
+export interface SceneEvidenceRow {
+  id: ID;
+  scene_id: ID;
+  chunk_id: ID;
+  quote_start: number;
+  quote_end: number;
+  created_at: UnixMillis;
+}
+
+/**
  * Table: issue
  */
 export type IssueType =

@@ -44,6 +44,9 @@ export function replaceScenesForDocument(
   const deleteEntities = db.prepare(
     "DELETE FROM scene_entity WHERE scene_id IN (SELECT id FROM scene WHERE document_id = ?)"
   );
+  const deleteEvidence = db.prepare(
+    "DELETE FROM scene_evidence WHERE scene_id IN (SELECT id FROM scene WHERE document_id = ?)"
+  );
 
   const insertScene = db.prepare(
     "INSERT INTO scene (id, project_id, document_id, ordinal, start_chunk_id, end_chunk_id, start_char, end_char, title, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
@@ -57,6 +60,7 @@ export function replaceScenesForDocument(
   const tx = db.transaction(() => {
     deleteEntities.run(documentId);
     deleteMeta.run(documentId);
+    deleteEvidence.run(documentId);
     deleteScenes.run(documentId);
 
     for (const scene of scenes) {

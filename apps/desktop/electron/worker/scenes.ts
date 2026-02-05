@@ -1,5 +1,5 @@
 import type Database from "better-sqlite3";
-import { getSceneById, listChunksForDocument } from "./storage";
+import { getChunkById, getDocumentById, getSceneById, listChunksForDocument, listSceneEvidence } from "./storage";
 
 export type SceneDetail = {
   scene: NonNullable<ReturnType<typeof getSceneById>>;
@@ -9,6 +9,14 @@ export type SceneDetail = {
     text: string;
     start_char: number;
     end_char: number;
+  }>;
+  evidence: Array<{
+    chunkId: string;
+    documentPath: string | null;
+    chunkOrdinal: number | null;
+    quoteStart: number;
+    quoteEnd: number;
+    excerpt: string;
   }>;
 };
 
@@ -22,7 +30,7 @@ export function getSceneDetail(db: Database.Database, sceneId: string): SceneDet
   const endOrdinal = ordinalMap.get(scene.end_chunk_id);
 
   if (startOrdinal === undefined || endOrdinal === undefined) {
-    return { scene, chunks: [] };
+    return { scene, chunks: [], evidence: [] };
   }
 
   const sceneChunks = chunks
@@ -35,5 +43,29 @@ export function getSceneDetail(db: Database.Database, sceneId: string): SceneDet
       end_char: chunk.end_char
     }));
 
-  return { scene, chunks: sceneChunks };
+  const evidence = listSceneEvidence(db, sceneId).map((row) => {
+    const chunk = getChunkById(db, row.chunk_id);
+    const doc = chunk ? getDocumentById(db, chunk.document_id) : null;
+    const excerpt = chunk ? buildExcerpt(chunk.text, row.quote_start, row.quote_end) : "";
+    return {
+      chunkId: row.chunk_id,
+      documentPath: doc?.path ?? null,
+      chunkOrdinal: chunk?.ordinal ?? null,
+      quoteStart: row.quote_start,
+      quoteEnd: row.quote_end,
+      excerpt
+    };
+  });
+
+  return { scene, chunks: sceneChunks, evidence };
+}
+
+function buildExcerpt(text: string, start: number, end: number): string {
+  const context = 60;
+  const prefixStart = Math.max(0, start - context);
+  const suffixEnd = Math.min(text.length, end + context);
+  const before = text.slice(prefixStart, start);
+  const highlight = text.slice(start, end);
+  const after = text.slice(end, suffixEnd);
+  return `${prefixStart > 0 ? "…" : ""}${before}[${highlight}]${after}${suffixEnd < text.length ? "…" : ""}`;
 }
