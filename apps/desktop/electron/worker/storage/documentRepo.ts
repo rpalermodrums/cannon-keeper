@@ -46,3 +46,11 @@ export function createDocument(
 export function touchDocument(db: Database.Database, documentId: string): void {
   db.prepare("UPDATE document SET updated_at = ? WHERE id = ?").run(Date.now(), documentId);
 }
+
+export function listDocuments(db: Database.Database, projectId: string): DocumentSummary[] {
+  return db
+    .prepare(
+      "SELECT id, project_id, path, kind, created_at, updated_at FROM document WHERE project_id = ? ORDER BY created_at"
+    )
+    .all(projectId) as DocumentSummary[];
+}

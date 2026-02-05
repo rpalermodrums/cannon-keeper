@@ -1,6 +1,15 @@
 import type { RpcRequest, RpcResponse, WorkerMethods } from "./rpc";
-import { createProject, getProjectByRootPath, openDatabase, touchProject } from "./storage";
+import {
+  createProject,
+  getProjectByRootPath,
+  listDocuments,
+  openDatabase,
+  touchProject
+} from "./storage";
 import { ingestDocument } from "./pipeline/ingest";
+import { JobQueue } from "./jobs/queue";
+import type { IngestJob, IngestJobResult } from "./jobs/types";
+import chokidar, { type FSWatcher } from "chokidar";
 import type { DatabaseHandle } from "./storage";
 
 export type WorkerStatus = {
@@ -12,6 +21,19 @@ let status: WorkerStatus = { state: "idle" };
 let dbHandle: DatabaseHandle | null = null;
 let currentProjectId: string | null = null;
 let currentProjectRoot: string | null = null;
+let watcher: FSWatcher | null = null;
+const debounceTimers = new Map<string, NodeJS.Timeout>();
+const ingestQueue = new JobQueue<IngestJob, IngestJobResult>(async (job) => {
+  setStatus({ state: "busy", lastJob: job.type });
+  try {
+    return await ingestDocument(dbHandle!.db, {
+      projectId: job.payload.projectId,
+      filePath: job.payload.filePath
+    });
+  } finally {
+    setStatus({ state: "idle", lastJob: job.type });
+  }
+});
 
 function setStatus(next: WorkerStatus): void {
   status = next;
@@ -37,13 +59,44 @@ function handleCreateOrOpen(params: { rootPath: string; name?: string }): unknow
     touchProject(handle.db, existing.id);
     currentProjectId = existing.id;
     currentProjectRoot = rootPath;
+    ensureWatcher(handle.db, existing.id);
     return existing;
   }
 
   const created = createProject(handle.db, rootPath, name);
   currentProjectId = created.id;
   currentProjectRoot = rootPath;
+  ensureWatcher(handle.db, created.id);
   return created;
+}
+
+function ensureWatcher(db: DatabaseHandle["db"], projectId: string): void {
+  if (!watcher) {
+    watcher = chokidar.watch([], { ignoreInitial: true });
+    watcher.on("change", (filePath) => scheduleIngest(filePath, projectId));
+  }
+
+  const documents = listDocuments(db, projectId);
+  for (const doc of documents) {
+    watcher.add(doc.path);
+  }
+}
+
+function scheduleIngest(filePath: string, projectId: string): void {
+  const existingTimer = debounceTimers.get(filePath);
+  if (existingTimer) {
+    clearTimeout(existingTimer);
+  }
+  const timer = setTimeout(() => {
+    debounceTimers.delete(filePath);
+    enqueueIngest(filePath, projectId);
+  }, 2000);
+  debounceTimers.set(filePath, timer);
+}
+
+function enqueueIngest(filePath: string, projectId: string): Promise<IngestJobResult> {
+  const job: IngestJob = { type: "INGEST_DOCUMENT", payload: { projectId, filePath } };
+  return ingestQueue.enqueue(job, `${projectId}:${filePath}`);
 }
 
 async function dispatch(method: WorkerMethods, params?: unknown): Promise<unknown> {
@@ -62,10 +115,12 @@ async function dispatch(method: WorkerMethods, params?: unknown): Promise<unknow
       if (!dbHandle || !currentProjectId || !currentProjectRoot) {
         throw new Error("Project not initialized");
       }
-      return ingestDocument(dbHandle.db, {
-        projectId: currentProjectId,
-        filePath: (params as { path: string }).path
-      });
+      if (!watcher) {
+        ensureWatcher(dbHandle.db, currentProjectId);
+      }
+      const filePath = (params as { path: string }).path;
+      watcher?.add(filePath);
+      return enqueueIngest(filePath, currentProjectId);
     default:
       throw new Error(`Unknown method: ${method}`);
   }
