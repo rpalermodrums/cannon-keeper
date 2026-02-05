@@ -1,6 +1,6 @@
 # CanonKeeper
 
-Local-first, evidence-first companion app for maintaining canon, scenes, and continuity.
+Local-first, evidence-first, non-invasive companion for maintaining canon, scenes, and continuity in prose.
 
 ## Requirements
 - Node >= 20
