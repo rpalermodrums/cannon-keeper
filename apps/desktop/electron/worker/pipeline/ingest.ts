@@ -18,6 +18,9 @@ import {
   updateChunk
 } from "../storage";
 import { buildScenesFromChunks } from "./scenes";
+import { runStyleMetrics } from "./style/styleRunner";
+import { runExtraction } from "./extraction";
+import { runContinuityChecks } from "./continuity";
 
 export type IngestResult = {
   documentId: string;
@@ -64,7 +67,7 @@ function diffByHash(existing: { id: string; text_hash: string }[], next: ChunkSp
 
 export async function ingestDocument(
   db: Database.Database,
-  args: { projectId: string; filePath: string }
+  args: { projectId: string; rootPath: string; filePath: string }
 ): Promise<IngestResult> {
   const kind = detectDocumentKind(args.filePath);
   const existingDoc = getDocumentByPath(db, args.projectId, args.filePath);
@@ -135,6 +138,29 @@ export async function ingestDocument(
   const storedChunks = listChunksForDocument(db, document.id);
   const scenes = buildScenesFromChunks(args.projectId, document.id, storedChunks);
   replaceScenesForDocument(db, document.id, scenes);
+  runStyleMetrics(db, args.projectId);
+  try {
+    await runExtraction(db, {
+      projectId: args.projectId,
+      rootPath: args.rootPath,
+      chunks: storedChunks.map((chunk) => ({
+        id: chunk.id,
+        ordinal: chunk.ordinal,
+        text: chunk.text
+      }))
+    });
+  } catch (error) {
+    logEvent(db, {
+      projectId: args.projectId,
+      level: "error",
+      eventType: "extraction_failed",
+      payload: {
+        documentId: document.id,
+        message: error instanceof Error ? error.message : "Unknown error"
+      }
+    });
+  }
+  runContinuityChecks(db, args.projectId);
 
   if (prefix === 0 && suffix === 0 && existingChunks.length > 0) {
     logEvent(db, {

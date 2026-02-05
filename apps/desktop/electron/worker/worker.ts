@@ -2,17 +2,27 @@ import type { RpcRequest, RpcResponse, WorkerMethods } from "./rpc";
 import {
   createProject,
   getProjectByRootPath,
+  listEntities,
   listDocuments,
+  listIssuesWithEvidence,
   listScenesForProject,
   openDatabase,
-  touchProject
+  dismissIssue,
+  touchProject,
+  logEvent
 } from "./storage";
 import { ingestDocument } from "./pipeline/ingest";
 import { JobQueue } from "./jobs/queue";
 import type { IngestJob, IngestJobResult } from "./jobs/types";
 import chokidar, { type FSWatcher } from "chokidar";
 import { searchChunks } from "./search/fts";
+import { askQuestion } from "./search/ask";
+import { getStyleReport } from "./style/report";
+import { getEntityDetail } from "./bible";
+import { confirmClaim } from "./canon";
+import { exportProject } from "./export/exporter";
 import type { DatabaseHandle } from "./storage";
+import { getSceneDetail } from "./scenes";
 
 export type WorkerStatus = {
   state: "idle" | "busy";
@@ -27,11 +37,43 @@ let watcher: FSWatcher | null = null;
 const debounceTimers = new Map<string, NodeJS.Timeout>();
 const ingestQueue = new JobQueue<IngestJob, IngestJobResult>(async (job) => {
   setStatus({ state: "busy", lastJob: job.type });
-  try {
-    return await ingestDocument(dbHandle!.db, {
+  if (dbHandle) {
+    logEvent(dbHandle.db, {
       projectId: job.payload.projectId,
+      level: "info",
+      eventType: "job_started",
+      payload: { type: job.type, filePath: job.payload.filePath }
+    });
+  }
+  try {
+    const result = await ingestDocument(dbHandle!.db, {
+      projectId: job.payload.projectId,
+      rootPath: currentProjectRoot ?? "",
       filePath: job.payload.filePath
     });
+    if (dbHandle) {
+      logEvent(dbHandle.db, {
+        projectId: job.payload.projectId,
+        level: "info",
+        eventType: "job_finished",
+        payload: { type: job.type, filePath: job.payload.filePath }
+      });
+    }
+    return result;
+  } catch (error) {
+    if (dbHandle) {
+      logEvent(dbHandle.db, {
+        projectId: job.payload.projectId,
+        level: "error",
+        eventType: "job_failed",
+        payload: {
+          type: job.type,
+          filePath: job.payload.filePath,
+          message: error instanceof Error ? error.message : "Unknown error"
+        }
+      });
+    }
+    throw error;
   } finally {
     setStatus({ state: "idle", lastJob: job.type });
   }
@@ -85,6 +127,14 @@ function ensureWatcher(db: DatabaseHandle["db"], projectId: string): void {
 }
 
 function scheduleIngest(filePath: string, projectId: string): void {
+  if (dbHandle) {
+    logEvent(dbHandle.db, {
+      projectId,
+      level: "info",
+      eventType: "file_changed",
+      payload: { filePath }
+    });
+  }
   const existingTimer = debounceTimers.get(filePath);
   if (existingTimer) {
     clearTimeout(existingTimer);
@@ -125,10 +175,10 @@ async function dispatch(method: WorkerMethods, params?: unknown): Promise<unknow
         watcher?.add(filePath);
         return enqueueIngest(filePath, currentProjectId);
       }
-    case "search.ask":
+    case "search.query":
       {
         if (!params || typeof params !== "object") {
-          throw new Error("Missing params for search.ask");
+          throw new Error("Missing params for search.query");
         }
         if (!dbHandle || !currentProjectId) {
           throw new Error("Project not initialized");
@@ -138,11 +188,82 @@ async function dispatch(method: WorkerMethods, params?: unknown): Promise<unknow
           results: searchChunks(dbHandle.db, (params as { query: string }).query)
         };
       }
+    case "search.ask":
+      {
+        if (!params || typeof params !== "object") {
+          throw new Error("Missing params for search.ask");
+        }
+        if (!dbHandle || !currentProjectId || !currentProjectRoot) {
+          throw new Error("Project not initialized");
+        }
+        return askQuestion(dbHandle.db, {
+          projectId: currentProjectId,
+          rootPath: currentProjectRoot,
+          question: (params as { question: string }).question
+        });
+      }
     case "scenes.list":
       if (!dbHandle || !currentProjectId) {
         throw new Error("Project not initialized");
       }
       return listScenesForProject(dbHandle.db, currentProjectId);
+    case "scenes.get":
+      if (!params || typeof params !== "object") {
+        throw new Error("Missing params for scenes.get");
+      }
+      if (!dbHandle) {
+        throw new Error("Project not initialized");
+      }
+      return getSceneDetail(dbHandle.db, (params as { sceneId: string }).sceneId);
+    case "issues.list":
+      if (!dbHandle || !currentProjectId) {
+        throw new Error("Project not initialized");
+      }
+      return listIssuesWithEvidence(dbHandle.db, currentProjectId);
+    case "issues.dismiss":
+      if (!params || typeof params !== "object") {
+        throw new Error("Missing params for issues.dismiss");
+      }
+      if (!dbHandle || !currentProjectId) {
+        throw new Error("Project not initialized");
+      }
+      dismissIssue(dbHandle.db, (params as { issueId: string }).issueId);
+      return { ok: true };
+    case "style.getReport":
+      if (!dbHandle || !currentProjectId) {
+        throw new Error("Project not initialized");
+      }
+      return getStyleReport(dbHandle.db, currentProjectId);
+    case "bible.listEntities":
+      if (!dbHandle || !currentProjectId) {
+        throw new Error("Project not initialized");
+      }
+      return listEntities(dbHandle.db, currentProjectId);
+    case "bible.getEntity":
+      if (!params || typeof params !== "object") {
+        throw new Error("Missing params for bible.getEntity");
+      }
+      if (!dbHandle) {
+        throw new Error("Project not initialized");
+      }
+      return getEntityDetail(dbHandle.db, (params as { entityId: string }).entityId);
+    case "canon.confirmClaim":
+      if (!params || typeof params !== "object") {
+        throw new Error("Missing params for canon.confirmClaim");
+      }
+      if (!dbHandle) {
+        throw new Error("Project not initialized");
+      }
+      return confirmClaim(dbHandle.db, params as { entityId: string; field: string; valueJson: string });
+    case "export.run":
+      if (!params || typeof params !== "object") {
+        throw new Error("Missing params for export.run");
+      }
+      if (!dbHandle || !currentProjectId) {
+        throw new Error("Project not initialized");
+      }
+      exportProject(dbHandle.db, currentProjectId, (params as { outDir: string }).outDir);
+      return { ok: true };
     default:
       throw new Error(`Unknown method: ${method}`);
   }

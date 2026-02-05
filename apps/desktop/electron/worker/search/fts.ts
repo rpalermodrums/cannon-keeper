@@ -5,6 +5,7 @@ export type SearchResult = {
   documentId: string;
   documentPath: string;
   ordinal: number;
+  text: string;
   snippet: string;
   score: number;
 };
@@ -21,6 +22,7 @@ export function searchChunks(
       c.document_id as documentId,
       d.path as documentPath,
       c.ordinal as ordinal,
+      c.text as text,
       snippet(chunk_fts, 1, '[', ']', '...', 12) as snippet,
       bm25(chunk_fts) as score
     FROM chunk_fts
