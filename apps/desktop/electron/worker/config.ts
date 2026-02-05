@@ -51,3 +51,27 @@ export function loadProjectConfig(rootPath: string): ProjectConfig {
     return defaults;
   }
 }
+
+export function saveProjectConfig(rootPath: string, config: ProjectConfig): void {
+  const configPath = path.join(rootPath, "canonkeeper.json");
+  fs.writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`);
+}
+
+export function resolveDocumentPath(rootPath: string, entry: string): string {
+  if (path.isAbsolute(entry)) {
+    return entry;
+  }
+  return path.join(rootPath, entry);
+}
+
+export function addDocumentToConfig(rootPath: string, filePath: string): void {
+  const config = loadProjectConfig(rootPath);
+  const relative = path.relative(rootPath, filePath);
+  const stored =
+    relative && !relative.startsWith("..") && !path.isAbsolute(relative) ? relative : filePath;
+
+  if (!config.documents.includes(stored)) {
+    config.documents = [...config.documents, stored];
+    saveProjectConfig(rootPath, config);
+  }
+}

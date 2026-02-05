@@ -15,6 +15,7 @@ import { ingestDocument } from "./pipeline/ingest";
 import { JobQueue } from "./jobs/queue";
 import type { IngestJob, IngestJobResult } from "./jobs/types";
 import chokidar, { type FSWatcher } from "chokidar";
+import fs from "node:fs";
 import { searchChunks } from "./search/fts";
 import { askQuestion } from "./search/ask";
 import { getStyleReport } from "./style/report";
@@ -23,6 +24,7 @@ import { confirmClaim } from "./canon";
 import { exportProject } from "./export/exporter";
 import type { DatabaseHandle } from "./storage";
 import { getSceneDetail } from "./scenes";
+import { addDocumentToConfig, loadProjectConfig, resolveDocumentPath } from "./config";
 
 export type WorkerStatus = {
   state: "idle" | "busy";
@@ -104,6 +106,7 @@ function handleCreateOrOpen(params: { rootPath: string; name?: string }): unknow
     currentProjectId = existing.id;
     currentProjectRoot = rootPath;
     ensureWatcher(handle.db, existing.id);
+    registerConfigDocuments(existing.id, rootPath);
     return existing;
   }
 
@@ -111,6 +114,7 @@ function handleCreateOrOpen(params: { rootPath: string; name?: string }): unknow
   currentProjectId = created.id;
   currentProjectRoot = rootPath;
   ensureWatcher(handle.db, created.id);
+  registerConfigDocuments(created.id, rootPath);
   return created;
 }
 
@@ -123,6 +127,21 @@ function ensureWatcher(db: DatabaseHandle["db"], projectId: string): void {
   const documents = listDocuments(db, projectId);
   for (const doc of documents) {
     watcher.add(doc.path);
+  }
+}
+
+function registerConfigDocuments(projectId: string, rootPath: string): void {
+  if (!dbHandle || !watcher) {
+    return;
+  }
+  const config = loadProjectConfig(rootPath);
+  for (const entry of config.documents) {
+    const filePath = resolveDocumentPath(rootPath, entry);
+    if (!fs.existsSync(filePath)) {
+      continue;
+    }
+    watcher.add(filePath);
+    void enqueueIngest(filePath, projectId);
   }
 }
 
@@ -173,6 +192,19 @@ async function dispatch(method: WorkerMethods, params?: unknown): Promise<unknow
         }
         const filePath = (params as { path: string }).path;
         watcher?.add(filePath);
+        try {
+          addDocumentToConfig(currentProjectRoot, filePath);
+        } catch (error) {
+          logEvent(dbHandle.db, {
+            projectId: currentProjectId,
+            level: "warn",
+            eventType: "config_update_failed",
+            payload: {
+              filePath,
+              message: error instanceof Error ? error.message : "Unknown error"
+            }
+          });
+        }
         return enqueueIngest(filePath, currentProjectId);
       }
     case "search.query":
