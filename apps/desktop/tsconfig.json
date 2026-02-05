@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "baseUrl": "."
+  },
+  "include": [
+    "electron/**/*.ts",
+    "renderer/src/**/*.ts",
+    "renderer/src/**/*.tsx"
+  ]
+}

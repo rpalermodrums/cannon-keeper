@@ -1,0 +1,36 @@
+{
+  "name": "@canonkeeper/desktop",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "concurrently -k \"pnpm dev:renderer\" \"pnpm dev:electron\"",
+    "dev:renderer": "vite --config renderer/vite.config.ts",
+    "dev:electron": "cross-env VITE_DEV_SERVER_URL=http://localhost:5173 tsx electron/main.ts",
+    "build": "pnpm build:renderer && pnpm build:electron",
+    "build:renderer": "vite build --config renderer/vite.config.ts",
+    "build:electron": "tsc -p electron/tsconfig.json",
+    "lint": "eslint . --max-warnings=0",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "better-sqlite3": "^9.4.3",
+    "chokidar": "^3.6.0",
+    "mammoth": "^1.7.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.73",
+    "@types/react-dom": "^18.2.22",
+    "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "electron": "^30.0.0",
+    "tsx": "^4.7.1",
+    "vite": "^5.2.10"
+  }
+}
