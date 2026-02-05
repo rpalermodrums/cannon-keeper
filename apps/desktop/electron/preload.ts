@@ -33,6 +33,7 @@ contextBridge.exposeInMainWorld("canonkeeper", {
       ipcRenderer.invoke("canon:confirmClaim", payload)
   },
   export: {
-    run: async (payload: { outDir: string }) => ipcRenderer.invoke("export:run", payload)
+    run: async (payload: { outDir: string; kind?: "md" | "json" }) =>
+      ipcRenderer.invoke("export:run", payload)
   }
 });

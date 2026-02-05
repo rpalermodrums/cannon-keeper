@@ -178,7 +178,7 @@ declare global {
         confirmClaim: (payload: { entityId: string; field: string; valueJson: string }) => Promise<string>;
       };
       export: {
-        run: (payload: { outDir: string }) => Promise<{ ok: boolean }>;
+        run: (payload: { outDir: string; kind?: "md" | "json" }) => Promise<{ ok: boolean }>;
       };
     };
   }

@@ -238,9 +238,9 @@ export async function confirmClaim(payload: {
   return window.canonkeeper.canon.confirmClaim(payload);
 }
 
-export async function runExport(outDir: string): Promise<{ ok: boolean }> {
+export async function runExport(outDir: string, kind?: "md" | "json"): Promise<{ ok: boolean }> {
   if (!window.canonkeeper) {
     throw new Error("IPC not available");
   }
-  return window.canonkeeper.export.run({ outDir });
+  return window.canonkeeper.export.run({ outDir, kind });
 }

@@ -262,7 +262,10 @@ async function dispatch(method: WorkerMethods, params?: unknown): Promise<unknow
       if (!dbHandle || !currentProjectId) {
         throw new Error("Project not initialized");
       }
-      exportProject(dbHandle.db, currentProjectId, (params as { outDir: string }).outDir);
+      {
+        const { outDir, kind } = params as { outDir: string; kind?: "md" | "json" };
+        exportProject(dbHandle.db, currentProjectId, outDir, kind ?? "all");
+      }
       return { ok: true };
     default:
       throw new Error(`Unknown method: ${method}`);

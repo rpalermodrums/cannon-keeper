@@ -80,7 +80,12 @@ function listIssueEvidence(db: Database.Database, issueId: string): Citation[] {
     .all(issueId) as Citation[];
 }
 
-export function exportProject(db: Database.Database, projectId: string, outDir: string): void {
+export function exportProject(
+  db: Database.Database,
+  projectId: string,
+  outDir: string,
+  kind: "md" | "json" | "all" = "all"
+): void {
   ensureDir(outDir);
 
   const project = getProjectById(db, projectId);
@@ -119,7 +124,9 @@ export function exportProject(db: Database.Database, projectId: string, outDir: 
     bibleLines.push("");
   }
 
-  fs.writeFileSync(path.join(outDir, "bible.md"), bibleLines.join("\n"));
+  if (kind === "md" || kind === "all") {
+    fs.writeFileSync(path.join(outDir, "bible.md"), bibleLines.join("\n"));
+  }
 
   const sceneLines: string[] = ["# Scenes", ""]; 
   for (const scene of scenes) {
@@ -140,7 +147,9 @@ export function exportProject(db: Database.Database, projectId: string, outDir: 
     }
     sceneLines.push("");
   }
-  fs.writeFileSync(path.join(outDir, "scenes.md"), sceneLines.join("\n"));
+  if (kind === "md" || kind === "all") {
+    fs.writeFileSync(path.join(outDir, "scenes.md"), sceneLines.join("\n"));
+  }
 
   const styleLines: string[] = ["# Style Report", ""]; 
   const repetitionMetric = styleMetrics.find((metric) => metric.metric_name === "ngram_freq");
@@ -206,7 +215,9 @@ export function exportProject(db: Database.Database, projectId: string, outDir: 
     styleLines.push("No style metrics available.");
   }
 
-  fs.writeFileSync(path.join(outDir, "style_report.md"), styleLines.join("\n"));
+  if (kind === "md" || kind === "all") {
+    fs.writeFileSync(path.join(outDir, "style_report.md"), styleLines.join("\n"));
+  }
 
   const documents = listDocuments(db, projectId);
   const snapshots = db
@@ -277,5 +288,7 @@ export function exportProject(db: Database.Database, projectId: string, outDir: 
     styleMetrics,
     eventLog
   };
-  fs.writeFileSync(path.join(outDir, "project.json"), JSON.stringify(projectDump, null, 2));
+  if (kind === "json" || kind === "all") {
+    fs.writeFileSync(path.join(outDir, "project.json"), JSON.stringify(projectDump, null, 2));
+  }
 }
