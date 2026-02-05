@@ -17,6 +17,13 @@ declare global {
           lastJob?: string;
           projectId?: string | null;
         }>;
+        addDocument: (payload: { path: string }) => Promise<{
+          documentId: string;
+          snapshotId: string;
+          chunksCreated: number;
+          chunksUpdated: number;
+          chunksDeleted: number;
+        }>;
       };
     };
   }

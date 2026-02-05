@@ -13,6 +13,14 @@ export type WorkerStatus = {
   projectId?: string | null;
 };
 
+export type IngestResult = {
+  documentId: string;
+  snapshotId: string;
+  chunksCreated: number;
+  chunksUpdated: number;
+  chunksDeleted: number;
+};
+
 export async function ping(): Promise<PingResponse> {
   if (!window.canonkeeper) {
     return { ok: false };
@@ -35,4 +43,11 @@ export async function getWorkerStatus(): Promise<WorkerStatus> {
     throw new Error("IPC not available");
   }
   return window.canonkeeper.project.getStatus();
+}
+
+export async function addDocument(payload: { path: string }): Promise<IngestResult> {
+  if (!window.canonkeeper) {
+    throw new Error("IPC not available");
+  }
+  return window.canonkeeper.project.addDocument(payload);
 }

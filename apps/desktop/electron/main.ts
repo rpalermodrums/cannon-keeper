@@ -56,6 +56,12 @@ app.whenReady().then(() => {
     }
     return workerClient.request("project.getStatus");
   });
+  ipcMain.handle("project:addDocument", async (_event, payload) => {
+    if (!workerClient) {
+      throw new Error("Worker not initialized");
+    }
+    return workerClient.request("project.addDocument", payload);
+  });
 
   app.on("activate", () => {
     if (mainWindow === null || BrowserWindow.getAllWindows().length === 0) {

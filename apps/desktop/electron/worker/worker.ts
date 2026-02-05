@@ -1,5 +1,6 @@
 import type { RpcRequest, RpcResponse, WorkerMethods } from "./rpc";
 import { createProject, getProjectByRootPath, openDatabase, touchProject } from "./storage";
+import { ingestDocument } from "./pipeline/ingest";
 import type { DatabaseHandle } from "./storage";
 
 export type WorkerStatus = {
@@ -10,6 +11,7 @@ export type WorkerStatus = {
 let status: WorkerStatus = { state: "idle" };
 let dbHandle: DatabaseHandle | null = null;
 let currentProjectId: string | null = null;
+let currentProjectRoot: string | null = null;
 
 function setStatus(next: WorkerStatus): void {
   status = next;
@@ -34,11 +36,13 @@ function handleCreateOrOpen(params: { rootPath: string; name?: string }): unknow
   if (existing) {
     touchProject(handle.db, existing.id);
     currentProjectId = existing.id;
+    currentProjectRoot = rootPath;
     return existing;
   }
 
   const created = createProject(handle.db, rootPath, name);
   currentProjectId = created.id;
+  currentProjectRoot = rootPath;
   return created;
 }
 
@@ -51,6 +55,17 @@ async function dispatch(method: WorkerMethods, params?: unknown): Promise<unknow
       return handleCreateOrOpen(params as { rootPath: string; name?: string });
     case "project.getStatus":
       return { ...getStatus(), projectId: currentProjectId };
+    case "project.addDocument":
+      if (!params || typeof params !== "object") {
+        throw new Error("Missing params for project.addDocument");
+      }
+      if (!dbHandle || !currentProjectId || !currentProjectRoot) {
+        throw new Error("Project not initialized");
+      }
+      return ingestDocument(dbHandle.db, {
+        projectId: currentProjectId,
+        filePath: (params as { path: string }).path
+      });
     default:
       throw new Error(`Unknown method: ${method}`);
   }
