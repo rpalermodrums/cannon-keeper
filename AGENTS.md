@@ -381,4 +381,5 @@ The point of this project is to **empower** the writer by reducing continuity bo
 - Export: `bible.md`, `scenes.md`, `style_report.md` now include citations; `project.json` includes a full table dump.
 - Tests: added integration coverage for ingest + FTS + continuity contradictions.
 - Schema: added `scene_evidence` table (migration `004_scene_evidence.sql`) for evidence-backed scene metadata.
+- Scene metadata: deterministic POV (first-person) + setting detection now populate `scene_metadata`, `scene_entity`, and `scene_evidence`.
 ```
