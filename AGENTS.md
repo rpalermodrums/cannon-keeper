@@ -383,4 +383,5 @@ The point of this project is to **empower** the writer by reducing continuity bo
 - Schema: added `scene_evidence` table (migration `004_scene_evidence.sql`) for evidence-backed scene metadata.
 - Scene metadata: deterministic POV (first-person) + setting detection now populate `scene_metadata`, `scene_entity`, and `scene_evidence`.
 - Config sync: `canonkeeper.json` document list is loaded on project open and updated on add-document.
+- Confirmed claims now copy evidence from the source inferred claim to preserve evidence-first guarantees.
 ```

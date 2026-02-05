@@ -239,6 +239,7 @@ export async function confirmClaim(payload: {
   entityId: string;
   field: string;
   valueJson: string;
+  sourceClaimId?: string;
 }): Promise<string> {
   if (!window.canonkeeper) {
     throw new Error("IPC not available");

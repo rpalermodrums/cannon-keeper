@@ -216,14 +216,15 @@ export function App(): JSX.Element {
     }
   };
 
-  const handleConfirmClaim = async (field: string, valueJson: string) => {
+  const handleConfirmClaim = async (field: string, valueJson: string, sourceClaimId: string) => {
     if (!entityDetail) return;
     setError(null);
     try {
       await confirmClaim({
         entityId: entityDetail.entity.id,
         field,
-        valueJson
+        valueJson,
+        sourceClaimId
       });
       await handleSelectEntity(entityDetail.entity.id);
     } catch (err) {
@@ -608,7 +609,11 @@ export function App(): JSX.Element {
                       <div>
                         <button
                           onClick={() =>
-                            void handleConfirmClaim(claim.claim.field, claim.claim.value_json)
+                            void handleConfirmClaim(
+                              claim.claim.field,
+                              claim.claim.value_json,
+                              claim.claim.id
+                            )
                           }
                           disabled={busy}
                         >

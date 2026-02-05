@@ -183,7 +183,12 @@ declare global {
         }>;
       };
       canon: {
-        confirmClaim: (payload: { entityId: string; field: string; valueJson: string }) => Promise<string>;
+        confirmClaim: (payload: {
+          entityId: string;
+          field: string;
+          valueJson: string;
+          sourceClaimId?: string;
+        }) => Promise<string>;
       };
       export: {
         run: (payload: { outDir: string; kind?: "md" | "json" }) => Promise<{ ok: boolean }>;
