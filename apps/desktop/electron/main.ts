@@ -72,6 +72,66 @@ app.whenReady().then(() => {
     }
     return workerClient.request("search.ask", payload);
   });
+  ipcMain.handle("search:query", async (_event, payload) => {
+    if (!workerClient) {
+      throw new Error("Worker not initialized");
+    }
+    return workerClient.request("search.query", payload);
+  });
+  ipcMain.handle("scenes:list", async () => {
+    if (!workerClient) {
+      throw new Error("Worker not initialized");
+    }
+    return workerClient.request("scenes.list");
+  });
+  ipcMain.handle("scenes:get", async (_event, payload) => {
+    if (!workerClient) {
+      throw new Error("Worker not initialized");
+    }
+    return workerClient.request("scenes.get", payload);
+  });
+  ipcMain.handle("issues:list", async () => {
+    if (!workerClient) {
+      throw new Error("Worker not initialized");
+    }
+    return workerClient.request("issues.list");
+  });
+  ipcMain.handle("issues:dismiss", async (_event, payload) => {
+    if (!workerClient) {
+      throw new Error("Worker not initialized");
+    }
+    return workerClient.request("issues.dismiss", payload);
+  });
+  ipcMain.handle("style:getReport", async () => {
+    if (!workerClient) {
+      throw new Error("Worker not initialized");
+    }
+    return workerClient.request("style.getReport");
+  });
+  ipcMain.handle("bible:listEntities", async () => {
+    if (!workerClient) {
+      throw new Error("Worker not initialized");
+    }
+    return workerClient.request("bible.listEntities");
+  });
+  ipcMain.handle("bible:getEntity", async (_event, payload) => {
+    if (!workerClient) {
+      throw new Error("Worker not initialized");
+    }
+    return workerClient.request("bible.getEntity", payload);
+  });
+  ipcMain.handle("canon:confirmClaim", async (_event, payload) => {
+    if (!workerClient) {
+      throw new Error("Worker not initialized");
+    }
+    return workerClient.request("canon.confirmClaim", payload);
+  });
+  ipcMain.handle("export:run", async (_event, payload) => {
+    if (!workerClient) {
+      throw new Error("Worker not initialized");
+    }
+    return workerClient.request("export.run", payload);
+  });
 
   app.on("activate", () => {
     if (mainWindow === null || BrowserWindow.getAllWindows().length === 0) {

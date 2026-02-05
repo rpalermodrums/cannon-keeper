@@ -14,5 +14,14 @@ export type WorkerMethods =
   | "project.createOrOpen"
   | "project.getStatus"
   | "project.addDocument"
+  | "search.query"
   | "search.ask"
-  | "scenes.list";
+  | "scenes.list"
+  | "scenes.get"
+  | "issues.list"
+  | "issues.dismiss"
+  | "style.getReport"
+  | "bible.listEntities"
+  | "bible.getEntity"
+  | "canon.confirmClaim"
+  | "export.run";
