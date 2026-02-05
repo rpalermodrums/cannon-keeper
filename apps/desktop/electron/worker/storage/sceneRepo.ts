@@ -14,7 +14,22 @@ export type SceneInsert = Pick<
   | "title"
 >;
 
-export type SceneSummary = SceneInsert & { id: string };
+export type SceneSummary = SceneInsert & {
+  id: string;
+  pov_mode: string;
+  pov_entity_id: string | null;
+  setting_entity_id: string | null;
+  setting_text: string | null;
+};
+
+export function getSceneById(db: Database.Database, sceneId: string): SceneSummary | null {
+  const row = db
+    .prepare(
+      "SELECT s.id, s.project_id, s.document_id, s.ordinal, s.start_chunk_id, s.end_chunk_id, s.start_char, s.end_char, s.title, m.pov_mode, m.pov_entity_id, m.setting_entity_id, m.setting_text FROM scene s LEFT JOIN scene_metadata m ON m.scene_id = s.id WHERE s.id = ?"
+    )
+    .get(sceneId) as SceneSummary | undefined;
+  return row ?? null;
+}
 
 export function replaceScenesForDocument(
   db: Database.Database,
@@ -71,7 +86,14 @@ export function replaceScenesForDocument(
         now,
         now
       );
-      inserted.push({ ...scene, id });
+      inserted.push({
+        ...scene,
+        id,
+        pov_mode: "unknown",
+        pov_entity_id: null,
+        setting_entity_id: null,
+        setting_text: null
+      });
     }
   });
 
@@ -82,7 +104,7 @@ export function replaceScenesForDocument(
 export function listScenesForProject(db: Database.Database, projectId: string): SceneSummary[] {
   return db
     .prepare(
-      "SELECT id, project_id, document_id, ordinal, start_chunk_id, end_chunk_id, start_char, end_char, title FROM scene WHERE project_id = ? ORDER BY document_id, ordinal"
+      "SELECT s.id, s.project_id, s.document_id, s.ordinal, s.start_chunk_id, s.end_chunk_id, s.start_char, s.end_char, s.title, m.pov_mode, m.pov_entity_id, m.setting_entity_id, m.setting_text FROM scene s LEFT JOIN scene_metadata m ON m.scene_id = s.id WHERE s.project_id = ? ORDER BY s.document_id, s.ordinal"
     )
     .all(projectId) as SceneSummary[];
 }

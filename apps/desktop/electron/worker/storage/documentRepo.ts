@@ -20,6 +20,15 @@ export function getDocumentByPath(
   return row ?? null;
 }
 
+export function getDocumentById(db: Database.Database, documentId: string): DocumentSummary | null {
+  const row = db
+    .prepare(
+      "SELECT id, project_id, path, kind, created_at, updated_at FROM document WHERE id = ?"
+    )
+    .get(documentId) as DocumentSummary | undefined;
+  return row ?? null;
+}
+
 export function createDocument(
   db: Database.Database,
   projectId: string,

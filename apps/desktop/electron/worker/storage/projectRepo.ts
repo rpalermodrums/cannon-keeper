@@ -15,6 +15,13 @@ export function getProjectByRootPath(db: Database.Database, rootPath: string): P
   return row ?? null;
 }
 
+export function getProjectById(db: Database.Database, projectId: string): ProjectSummary | null {
+  const row = db
+    .prepare("SELECT id, root_path, name, created_at, updated_at FROM project WHERE id = ?")
+    .get(projectId) as ProjectSummary | undefined;
+  return row ?? null;
+}
+
 export function createProject(
   db: Database.Database,
   rootPath: string,

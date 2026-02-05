@@ -49,14 +49,11 @@ export function runMigrations(db: Database.Database, migrationsDir: string): Mig
     const sql = fs.readFileSync(fullPath, "utf8");
 
     const now = Date.now();
-    const run = db.transaction(() => {
-      db.exec(sql);
-      db.prepare(
-        "INSERT INTO schema_migrations (filename, applied_at) VALUES (?, ?)"
-      ).run(filename, now);
-    });
-
-    run();
+    db.exec(sql);
+    db.prepare("INSERT INTO schema_migrations (filename, applied_at) VALUES (?, ?)").run(
+      filename,
+      now
+    );
     appliedNow.push(filename);
   }
 

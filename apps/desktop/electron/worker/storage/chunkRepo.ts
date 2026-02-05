@@ -28,6 +28,15 @@ export function listChunksForDocument(
     .all(documentId) as ChunkRecord[];
 }
 
+export function getChunkById(db: Database.Database, chunkId: string): ChunkRecord | null {
+  const row = db
+    .prepare(
+      "SELECT id, document_id, ordinal, text, text_hash, start_char, end_char, created_at, updated_at FROM chunk WHERE id = ?"
+    )
+    .get(chunkId) as ChunkRecord | undefined;
+  return row ?? null;
+}
+
 export function deleteChunksByIds(db: Database.Database, ids: string[]): void {
   if (ids.length === 0) {
     return;
