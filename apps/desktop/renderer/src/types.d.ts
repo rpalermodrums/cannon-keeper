@@ -25,6 +25,19 @@ declare global {
           chunksDeleted: number;
         }>;
       };
+      search: {
+        ask: (payload: { query: string }) => Promise<{
+          query: string;
+          results: Array<{
+            chunkId: string;
+            documentId: string;
+            documentPath: string;
+            ordinal: number;
+            snippet: string;
+            score: number;
+          }>;
+        }>;
+      };
     };
   }
 }

@@ -10,6 +10,7 @@ import { ingestDocument } from "./pipeline/ingest";
 import { JobQueue } from "./jobs/queue";
 import type { IngestJob, IngestJobResult } from "./jobs/types";
 import chokidar, { type FSWatcher } from "chokidar";
+import { searchChunks } from "./search/fts";
 import type { DatabaseHandle } from "./storage";
 
 export type WorkerStatus = {
@@ -109,18 +110,33 @@ async function dispatch(method: WorkerMethods, params?: unknown): Promise<unknow
     case "project.getStatus":
       return { ...getStatus(), projectId: currentProjectId };
     case "project.addDocument":
-      if (!params || typeof params !== "object") {
-        throw new Error("Missing params for project.addDocument");
+      {
+        if (!params || typeof params !== "object") {
+          throw new Error("Missing params for project.addDocument");
+        }
+        if (!dbHandle || !currentProjectId || !currentProjectRoot) {
+          throw new Error("Project not initialized");
+        }
+        if (!watcher) {
+          ensureWatcher(dbHandle.db, currentProjectId);
+        }
+        const filePath = (params as { path: string }).path;
+        watcher?.add(filePath);
+        return enqueueIngest(filePath, currentProjectId);
       }
-      if (!dbHandle || !currentProjectId || !currentProjectRoot) {
-        throw new Error("Project not initialized");
+    case "search.ask":
+      {
+        if (!params || typeof params !== "object") {
+          throw new Error("Missing params for search.ask");
+        }
+        if (!dbHandle || !currentProjectId) {
+          throw new Error("Project not initialized");
+        }
+        return {
+          query: (params as { query: string }).query,
+          results: searchChunks(dbHandle.db, (params as { query: string }).query)
+        };
       }
-      if (!watcher) {
-        ensureWatcher(dbHandle.db, currentProjectId);
-      }
-      const filePath = (params as { path: string }).path;
-      watcher?.add(filePath);
-      return enqueueIngest(filePath, currentProjectId);
     default:
       throw new Error(`Unknown method: ${method}`);
   }

@@ -8,5 +8,8 @@ contextBridge.exposeInMainWorld("canonkeeper", {
     getStatus: async () => ipcRenderer.invoke("project:getStatus"),
     addDocument: async (payload: { path: string }) =>
       ipcRenderer.invoke("project:addDocument", payload)
+  },
+  search: {
+    ask: async (payload: { query: string }) => ipcRenderer.invoke("search:ask", payload)
   }
 });

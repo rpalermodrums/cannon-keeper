@@ -21,6 +21,20 @@ export type IngestResult = {
   chunksDeleted: number;
 };
 
+export type SearchResult = {
+  chunkId: string;
+  documentId: string;
+  documentPath: string;
+  ordinal: number;
+  snippet: string;
+  score: number;
+};
+
+export type SearchResponse = {
+  query: string;
+  results: SearchResult[];
+};
+
 export async function ping(): Promise<PingResponse> {
   if (!window.canonkeeper) {
     return { ok: false };
@@ -50,4 +64,11 @@ export async function addDocument(payload: { path: string }): Promise<IngestResu
     throw new Error("IPC not available");
   }
   return window.canonkeeper.project.addDocument(payload);
+}
+
+export async function askSearch(query: string): Promise<SearchResponse> {
+  if (!window.canonkeeper) {
+    throw new Error("IPC not available");
+  }
+  return window.canonkeeper.search.ask({ query });
 }
