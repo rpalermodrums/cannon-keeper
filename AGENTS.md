@@ -376,4 +376,8 @@ The point of this project is to **empower** the writer by reducing continuity bo
 - Dev workflow: Vite for renderer; Electron main runs via `tsx` in dev. Preload is compiled via `tsc --watch` to `apps/desktop/dist-electron/preload.js` so IPC works in dev.
 - Tooling: ESLint + Prettier + Vitest at repo root; Lefthook runs lint/typecheck on `pre-commit` and tests on `pre-push`.
 - Storage: SQLite database is created under `<projectRoot>/.canonkeeper/canonkeeper.db` (directory is created if missing).
+- LLM JSON validation: outputs are schema-validated with up to 2 retries; invalid outputs are rejected and logged.
+- Evidence-first UI: Bible hides claims without evidence (confirmed claims are created via evidence-backed confirm actions).
+- Export: `bible.md`, `scenes.md`, `style_report.md` now include citations; `project.json` includes a full table dump.
+- Tests: added integration coverage for ingest + FTS + continuity contradictions.
 ```
