@@ -11,6 +11,10 @@ let mainWindow: BrowserWindow | null = null;
 let workerClient: WorkerClient | null = null;
 
 function getPreloadPath(): string | undefined {
+  const devCandidate = path.join(process.cwd(), "dist-electron", "preload.js");
+  if (process.env.VITE_DEV_SERVER_URL && fs.existsSync(devCandidate)) {
+    return devCandidate;
+  }
   const candidate = path.join(__dirname, "preload.js");
   return fs.existsSync(candidate) ? candidate : undefined;
 }

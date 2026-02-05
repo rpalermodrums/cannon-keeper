@@ -5,9 +5,10 @@
   "type": "module",
   "main": "dist-electron/main.js",
   "scripts": {
-    "dev": "concurrently -k \"pnpm dev:renderer\" \"pnpm dev:electron\"",
+    "dev": "concurrently -k \"pnpm dev:renderer\" \"pnpm dev:electron\" \"pnpm dev:electron:watch\"",
     "dev:renderer": "vite --config renderer/vite.config.ts",
     "dev:electron": "cross-env VITE_DEV_SERVER_URL=http://localhost:5173 tsx electron/main.ts",
+    "dev:electron:watch": "tsc -p electron/tsconfig.json --watch --preserveWatchOutput",
     "build": "pnpm build:renderer && pnpm build:electron",
     "build:renderer": "vite build --config renderer/vite.config.ts",
     "build:electron": "tsc -p electron/tsconfig.json",
