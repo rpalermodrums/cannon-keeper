@@ -1,6 +1,6 @@
 # CanonKeeper
 
-CanonKeeper is a local-first, evidence-first desktop companion for fiction projects. It ingests manuscripts **read-only**, builds a Book Bible (entities + claims + evidence), scene index, style/voice diagnostics, continuity issues, and an ask-the-bible Q&A. Everything it surfaces is backed by exact quote spans.
+CanonKeeper is a local-first, evidence-first desktop companion for fiction writing. It ingests manuscripts **read-only**, builds a "Book Bible" (entities + claims + evidence), scene index, style/voice diagnostics, continuity issues, and an ask-the-bible Q&A. Everything it surfaces is backed by exact quote spans.
 
 ## Why CanonKeeper
 - **Evidence-first**: every surfaced fact/flag includes a verbatim quote span.
