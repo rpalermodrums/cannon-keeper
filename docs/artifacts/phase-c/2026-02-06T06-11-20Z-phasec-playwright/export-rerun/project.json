@@ -1,0 +1,455 @@
+{
+  "project": {
+    "id": "eefee178-490f-4f8b-a128-d712fd298a67",
+    "root_path": "/tmp/canonkeeper-playwright-2026-02-06T06-11-20Z-phasec-playwright-rerun",
+    "name": "canonkeeper-playwright-2026-02-06T06-11-20Z-phasec-playwright-rerun",
+    "created_at": 1770358591802,
+    "updated_at": 1770358591802
+  },
+  "documents": [
+    {
+      "id": "b4c7ebe9-a9e6-4f22-a80a-1e0a92140898",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "path": "/Users/ryanpalermo/projects/cannon-keeper/data/fixtures/simple_md.md",
+      "kind": "md",
+      "created_at": 1770358602101,
+      "updated_at": 1770358602103,
+      "is_missing": 0,
+      "last_seen_at": 1770358602102
+    },
+    {
+      "id": "370214b5-032d-4a88-bc2f-d934f730b932",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "path": "/Users/ryanpalermo/projects/cannon-keeper/data/fixtures/contradiction.md",
+      "kind": "md",
+      "created_at": 1770358611163,
+      "updated_at": 1770358611165,
+      "is_missing": 0,
+      "last_seen_at": 1770358611164
+    }
+  ],
+  "snapshots": [
+    {
+      "id": "58cd2d42-95b8-4526-acdb-774076779752",
+      "document_id": "b4c7ebe9-a9e6-4f22-a80a-1e0a92140898",
+      "version": 1,
+      "full_text": "# Chapter One\n\nMira stepped into the workshop and brushed sawdust off her coat. The air smelled of cedar.\n\nShe lifted the brass compass and whispered, \"Not lost this time.\" The needle twitched north.\n",
+      "full_text_hash": "2b120e48cf04674a360aa817376340cddb08a5d317cad62a0c7a9990a95d636f",
+      "created_at": 1770358602102
+    },
+    {
+      "id": "4b446215-95db-4051-8add-ea20dac6f4ed",
+      "document_id": "370214b5-032d-4a88-bc2f-d934f730b932",
+      "version": 1,
+      "full_text": "Lina's eyes were a bright green in the candlelight.\n\nLater, when the storm cleared, her eyes were described as gray as slate.\n",
+      "full_text_hash": "67275137374c9483d3efd15c451715743e85a64f716c009347d5a5c2058e79e5",
+      "created_at": 1770358611164
+    }
+  ],
+  "chunks": [
+    {
+      "id": "82b1d98d-9714-4b54-8d7c-cdb400cf210a",
+      "document_id": "370214b5-032d-4a88-bc2f-d934f730b932",
+      "ordinal": 0,
+      "text": "Lina's eyes were a bright green in the candlelight.\n\nLater, when the storm cleared, her eyes were described as gray as slate.",
+      "text_hash": "0f1065c40b39ea277aab2023b6a49a1189db80114375e46eae593f34e9d42c75",
+      "start_char": 0,
+      "end_char": 125,
+      "created_at": 1770358611164,
+      "updated_at": 1770358611164
+    },
+    {
+      "id": "fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9",
+      "document_id": "b4c7ebe9-a9e6-4f22-a80a-1e0a92140898",
+      "ordinal": 0,
+      "text": "# Chapter One\n\nMira stepped into the workshop and brushed sawdust off her coat. The air smelled of cedar.\n\nShe lifted the brass compass and whispered, \"Not lost this time.\" The needle twitched north.",
+      "text_hash": "11816c1b4ae21f7af875917c7c45c36774d0c1e26b4e29ea7d0206d5b4ac2ccc",
+      "start_char": 0,
+      "end_char": 199,
+      "created_at": 1770358602103,
+      "updated_at": 1770358602103
+    }
+  ],
+  "entities": [
+    {
+      "id": "1b59bcf5-7d15-4ddc-867e-cd5dbda078ea",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "type": "character",
+      "display_name": "Lina",
+      "canonical_name": null,
+      "created_at": 1770358611173,
+      "updated_at": 1770358611173
+    }
+  ],
+  "aliases": [
+    {
+      "id": "cf632128-4ed3-4db6-b211-ea8a06b620f7",
+      "entity_id": "1b59bcf5-7d15-4ddc-867e-cd5dbda078ea",
+      "alias": "Lina",
+      "alias_norm": "lina",
+      "created_at": 1770358611173
+    }
+  ],
+  "claims": [
+    {
+      "id": "5375195f-148d-4220-8829-5f79eb19046a",
+      "entity_id": "1b59bcf5-7d15-4ddc-867e-cd5dbda078ea",
+      "field": "eye_color",
+      "value_json": "\"green\"",
+      "status": "inferred",
+      "confidence": 0.6,
+      "created_at": 1770358611173,
+      "updated_at": 1770358611173,
+      "supersedes_claim_id": null
+    },
+    {
+      "id": "d5763ce8-4de8-438f-be43-a6adef61aa06",
+      "entity_id": "1b59bcf5-7d15-4ddc-867e-cd5dbda078ea",
+      "field": "eye_color",
+      "value_json": "\"gray\"",
+      "status": "inferred",
+      "confidence": 0.5,
+      "created_at": 1770358611173,
+      "updated_at": 1770358611173,
+      "supersedes_claim_id": null
+    }
+  ],
+  "claimEvidence": [
+    {
+      "id": "10d29a2d-15c9-4254-bc78-7f01f66e47a0",
+      "claim_id": "5375195f-148d-4220-8829-5f79eb19046a",
+      "chunk_id": "82b1d98d-9714-4b54-8d7c-cdb400cf210a",
+      "quote_start": 0,
+      "quote_end": 50,
+      "created_at": 1770358611173
+    },
+    {
+      "id": "af6ba8e0-ddf1-416f-8a3a-c9951eeaf2f6",
+      "claim_id": "d5763ce8-4de8-438f-be43-a6adef61aa06",
+      "chunk_id": "82b1d98d-9714-4b54-8d7c-cdb400cf210a",
+      "quote_start": 84,
+      "quote_end": 124,
+      "created_at": 1770358611173
+    }
+  ],
+  "scenes": [
+    {
+      "id": "f6a0808b-0738-4aa5-93e3-22339448c900",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "document_id": "370214b5-032d-4a88-bc2f-d934f730b932",
+      "ordinal": 0,
+      "start_chunk_id": "82b1d98d-9714-4b54-8d7c-cdb400cf210a",
+      "end_chunk_id": "82b1d98d-9714-4b54-8d7c-cdb400cf210a",
+      "start_char": 0,
+      "end_char": 125,
+      "title": null,
+      "pov_mode": "unknown",
+      "pov_entity_id": null,
+      "setting_entity_id": null,
+      "setting_text": "in the candlelight"
+    },
+    {
+      "id": "1d89c73a-8192-464b-bc96-0bd6b24b64c6",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "document_id": "b4c7ebe9-a9e6-4f22-a80a-1e0a92140898",
+      "ordinal": 0,
+      "start_chunk_id": "fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9",
+      "end_chunk_id": "fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9",
+      "start_char": 0,
+      "end_char": 199,
+      "title": "Chapter One",
+      "pov_mode": "unknown",
+      "pov_entity_id": null,
+      "setting_entity_id": null,
+      "setting_text": null
+    }
+  ],
+  "sceneMetadata": [
+    {
+      "scene_id": "1d89c73a-8192-464b-bc96-0bd6b24b64c6",
+      "pov_mode": "unknown",
+      "pov_entity_id": null,
+      "pov_confidence": 0,
+      "setting_entity_id": null,
+      "setting_text": null,
+      "setting_confidence": 0,
+      "time_context_text": null,
+      "created_at": 1770358602104,
+      "updated_at": 1770358602106
+    },
+    {
+      "scene_id": "f6a0808b-0738-4aa5-93e3-22339448c900",
+      "pov_mode": "unknown",
+      "pov_entity_id": null,
+      "pov_confidence": 0,
+      "setting_entity_id": null,
+      "setting_text": "in the candlelight",
+      "setting_confidence": 0.5,
+      "time_context_text": null,
+      "created_at": 1770358611166,
+      "updated_at": 1770358611167
+    }
+  ],
+  "sceneEntities": [],
+  "sceneEvidence": [
+    {
+      "id": "6f628214-9d17-4fca-b763-358ce92e658d",
+      "scene_id": "f6a0808b-0738-4aa5-93e3-22339448c900",
+      "chunk_id": "82b1d98d-9714-4b54-8d7c-cdb400cf210a",
+      "quote_start": 32,
+      "quote_end": 50,
+      "created_at": 1770358611167
+    }
+  ],
+  "issues": [
+    {
+      "id": "d8dc9188-4d39-4140-9495-f295d03352ad",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "type": "continuity",
+      "severity": "medium",
+      "title": "Did Lina's eye_color change from green to gray?",
+      "description": "Conflicting evidence-backed values were found for Lina (eye_color). Please resolve which one is canonical.",
+      "status": "resolved",
+      "created_at": 1770358611174,
+      "updated_at": 1770358645230
+    }
+  ],
+  "issueEvidence": [
+    {
+      "id": "51c0e6c4-b597-439e-a70f-174a04fdab7d",
+      "issue_id": "d8dc9188-4d39-4140-9495-f295d03352ad",
+      "chunk_id": "82b1d98d-9714-4b54-8d7c-cdb400cf210a",
+      "quote_start": 0,
+      "quote_end": 50,
+      "created_at": 1770358611174
+    },
+    {
+      "id": "88e047df-42f7-4543-bcd2-a3ad86ac2b87",
+      "issue_id": "d8dc9188-4d39-4140-9495-f295d03352ad",
+      "chunk_id": "82b1d98d-9714-4b54-8d7c-cdb400cf210a",
+      "quote_start": 84,
+      "quote_end": 124,
+      "created_at": 1770358611174
+    }
+  ],
+  "styleMetrics": [
+    {
+      "id": "0ba6f5b3-45d3-4d18-bf4e-6582c53afe1b",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "scope_type": "document",
+      "scope_id": "b4c7ebe9-a9e6-4f22-a80a-1e0a92140898",
+      "metric_name": "ngram_freq",
+      "metric_json": "{\"counts\":{\"chapter\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":2,\"quoteEnd\":9}},\"one\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":10,\"quoteEnd\":13}},\"mira\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":15,\"quoteEnd\":19}},\"stepped\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":20,\"quoteEnd\":27}},\"workshop\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":37,\"quoteEnd\":45}},\"brushed\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":50,\"quoteEnd\":57}},\"sawdust\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":58,\"quoteEnd\":65}},\"off\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":66,\"quoteEnd\":69}},\"coat\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":74,\"quoteEnd\":78}},\"air\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":84,\"quoteEnd\":87}},\"smelled\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":88,\"quoteEnd\":95}},\"cedar\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":99,\"quoteEnd\":104}},\"lifted\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":111,\"quoteEnd\":117}},\"brass\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":122,\"quoteEnd\":127}},\"compass\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":128,\"quoteEnd\":135}},\"whispered\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":140,\"quoteEnd\":149}},\"lost\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":156,\"quoteEnd\":160}},\"time\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":166,\"quoteEnd\":170}},\"needle\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":177,\"quoteEnd\":183}},\"twitched\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":184,\"quoteEnd\":192}},\"north\":{\"n\":1,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":193,\"quoteEnd\":198}},\"chapter one\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":2,\"quoteEnd\":13}},\"one mira\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":10,\"quoteEnd\":19}},\"mira stepped\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":15,\"quoteEnd\":27}},\"stepped workshop\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"workshop brushed\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"brushed sawdust\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":50,\"quoteEnd\":65}},\"sawdust off\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":58,\"quoteEnd\":69}},\"off coat\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"coat air\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"air smelled\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":84,\"quoteEnd\":95}},\"smelled cedar\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"cedar lifted\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"lifted brass\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"brass compass\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":122,\"quoteEnd\":135}},\"compass whispered\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"whispered lost\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"lost time\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"time needle\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"needle twitched\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":177,\"quoteEnd\":192}},\"twitched north\":{\"n\":2,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":184,\"quoteEnd\":198}},\"chapter one mira\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":2,\"quoteEnd\":19}},\"one mira stepped\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":10,\"quoteEnd\":27}},\"mira stepped workshop\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"stepped workshop brushed\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"workshop brushed sawdust\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"brushed sawdust off\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":50,\"quoteEnd\":69}},\"sawdust off coat\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"off coat air\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"coat air smelled\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"air smelled cedar\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"smelled cedar lifted\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"cedar lifted brass\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"lifted brass compass\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"brass compass whispered\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"compass whispered lost\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"whispered lost time\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"lost time needle\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"time needle twitched\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1}},\"needle twitched north\":{\"n\":3,\"count\":1,\"byScene\":{\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\":1},\"example\":{\"chunkId\":\"fa6a7c81-31f3-4a17-8c8b-f4829e0a9fe9\",\"quoteStart\":177,\"quoteEnd\":198}}}}"
+    },
+    {
+      "id": "a01cdb0c-3b98-427c-9b1a-b1713d22a055",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "scope_type": "document",
+      "scope_id": "b4c7ebe9-a9e6-4f22-a80a-1e0a92140898",
+      "metric_name": "dialogue_tics",
+      "metric_json": "{\"tics\":[]}"
+    },
+    {
+      "id": "656a53df-5827-4b6e-b4df-294b3ed4e2bd",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "scope_type": "document",
+      "scope_id": "370214b5-032d-4a88-bc2f-d934f730b932",
+      "metric_name": "ngram_freq",
+      "metric_json": "{\"counts\":{\"lina's\":{\"n\":1,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1},\"example\":{\"chunkId\":\"82b1d98d-9714-4b54-8d7c-cdb400cf210a\",\"quoteStart\":0,\"quoteEnd\":6}},\"eyes\":{\"n\":1,\"count\":2,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":2},\"example\":{\"chunkId\":\"82b1d98d-9714-4b54-8d7c-cdb400cf210a\",\"quoteStart\":7,\"quoteEnd\":11}},\"bright\":{\"n\":1,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1},\"example\":{\"chunkId\":\"82b1d98d-9714-4b54-8d7c-cdb400cf210a\",\"quoteStart\":19,\"quoteEnd\":25}},\"green\":{\"n\":1,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1},\"example\":{\"chunkId\":\"82b1d98d-9714-4b54-8d7c-cdb400cf210a\",\"quoteStart\":26,\"quoteEnd\":31}},\"candlelight\":{\"n\":1,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1},\"example\":{\"chunkId\":\"82b1d98d-9714-4b54-8d7c-cdb400cf210a\",\"quoteStart\":39,\"quoteEnd\":50}},\"later\":{\"n\":1,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1},\"example\":{\"chunkId\":\"82b1d98d-9714-4b54-8d7c-cdb400cf210a\",\"quoteStart\":53,\"quoteEnd\":58}},\"storm\":{\"n\":1,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1},\"example\":{\"chunkId\":\"82b1d98d-9714-4b54-8d7c-cdb400cf210a\",\"quoteStart\":69,\"quoteEnd\":74}},\"cleared\":{\"n\":1,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1},\"example\":{\"chunkId\":\"82b1d98d-9714-4b54-8d7c-cdb400cf210a\",\"quoteStart\":75,\"quoteEnd\":82}},\"described\":{\"n\":1,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1},\"example\":{\"chunkId\":\"82b1d98d-9714-4b54-8d7c-cdb400cf210a\",\"quoteStart\":98,\"quoteEnd\":107}},\"gray\":{\"n\":1,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1},\"example\":{\"chunkId\":\"82b1d98d-9714-4b54-8d7c-cdb400cf210a\",\"quoteStart\":111,\"quoteEnd\":115}},\"slate\":{\"n\":1,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1},\"example\":{\"chunkId\":\"82b1d98d-9714-4b54-8d7c-cdb400cf210a\",\"quoteStart\":119,\"quoteEnd\":124}},\"lina's eyes\":{\"n\":2,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1},\"example\":{\"chunkId\":\"82b1d98d-9714-4b54-8d7c-cdb400cf210a\",\"quoteStart\":0,\"quoteEnd\":11}},\"eyes bright\":{\"n\":2,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1}},\"bright green\":{\"n\":2,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1},\"example\":{\"chunkId\":\"82b1d98d-9714-4b54-8d7c-cdb400cf210a\",\"quoteStart\":19,\"quoteEnd\":31}},\"green candlelight\":{\"n\":2,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1}},\"candlelight later\":{\"n\":2,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1},\"example\":{\"chunkId\":\"82b1d98d-9714-4b54-8d7c-cdb400cf210a\",\"quoteStart\":39,\"quoteEnd\":59}},\"later storm\":{\"n\":2,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1}},\"storm cleared\":{\"n\":2,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1},\"example\":{\"chunkId\":\"82b1d98d-9714-4b54-8d7c-cdb400cf210a\",\"quoteStart\":69,\"quoteEnd\":82}},\"cleared eyes\":{\"n\":2,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1}},\"eyes described\":{\"n\":2,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1}},\"described gray\":{\"n\":2,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1}},\"gray slate\":{\"n\":2,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1}},\"lina's eyes bright\":{\"n\":3,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1}},\"eyes bright green\":{\"n\":3,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1}},\"bright green candlelight\":{\"n\":3,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1}},\"green candlelight later\":{\"n\":3,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1}},\"candlelight later storm\":{\"n\":3,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1}},\"later storm cleared\":{\"n\":3,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1}},\"storm cleared eyes\":{\"n\":3,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1}},\"cleared eyes described\":{\"n\":3,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1}},\"eyes described gray\":{\"n\":3,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1}},\"described gray slate\":{\"n\":3,\"count\":1,\"byScene\":{\"f6a0808b-0738-4aa5-93e3-22339448c900\":1}}}}"
+    },
+    {
+      "id": "fe8ceb17-e630-4f6b-8753-0baf93d7f60c",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "scope_type": "project",
+      "scope_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "metric_name": "ngram_freq",
+      "metric_json": "{\"top\":[]}"
+    },
+    {
+      "id": "2b084a00-2a1a-4f5a-a839-8be653ac12c1",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "scope_type": "scene",
+      "scope_id": "f6a0808b-0738-4aa5-93e3-22339448c900",
+      "metric_name": "tone_vector",
+      "metric_json": "{\"sceneId\":\"f6a0808b-0738-4aa5-93e3-22339448c900\",\"vector\":{\"sentenceLengthMean\":11,\"sentenceLengthVar\":4,\"dialogueRatio\":0,\"punctuationDensity\":0.09523809523809523,\"sentimentScore\":0,\"contractionRatio\":0},\"driftScore\":2.0000000000000027,\"zscores\":{\"sentenceLengthMean\":-1.0000000000000053,\"sentenceLengthVar\":-1,\"dialogueRatio\":-1,\"punctuationDensity\":1,\"sentimentScore\":0,\"contractionRatio\":0}}"
+    },
+    {
+      "id": "9eeba1ee-aef0-43f0-a528-b9427b07740a",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "scope_type": "scene",
+      "scope_id": "1d89c73a-8192-464b-bc96-0bd6b24b64c6",
+      "metric_name": "tone_vector",
+      "metric_json": "{\"sceneId\":\"1d89c73a-8192-464b-bc96-0bd6b24b64c6\",\"vector\":{\"sentenceLengthMean\":11.333333333333334,\"sentenceLengthVar\":20.222222222222225,\"dialogueRatio\":0.010050251256281407,\"punctuationDensity\":0.03125,\"sentimentScore\":0,\"contractionRatio\":0},\"driftScore\":1.9999999999999973,\"zscores\":{\"sentenceLengthMean\":0.9999999999999947,\"sentenceLengthVar\":1,\"dialogueRatio\":1,\"punctuationDensity\":-1,\"sentimentScore\":0,\"contractionRatio\":0}}"
+    },
+    {
+      "id": "258575c7-bf8a-411b-bdc2-193abd58dcd6",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "scope_type": "document",
+      "scope_id": "370214b5-032d-4a88-bc2f-d934f730b932",
+      "metric_name": "dialogue_tics",
+      "metric_json": "{\"tics\":[]}"
+    }
+  ],
+  "eventLog": [
+    {
+      "id": "ad34c02f-6abe-4c9c-8fce-f4dfecd4b623",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358602101,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"INGEST_DOCUMENT\"}"
+    },
+    {
+      "id": "f100ecf2-a390-4c1d-9c6a-97b7530a5924",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358602103,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"INGEST_DOCUMENT\"}"
+    },
+    {
+      "id": "b5a1853f-1173-4767-9ef9-8ee06cb1a582",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358602103,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"RUN_SCENES\"}"
+    },
+    {
+      "id": "66566451-075c-4024-834c-fb7018770bbe",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358602107,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"RUN_SCENES\"}"
+    },
+    {
+      "id": "9a8cf282-e294-42c2-a9a5-f580254d0a1a",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358602108,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"RUN_STYLE\"}"
+    },
+    {
+      "id": "87405bf0-3c82-4d39-b819-1f189f9a25d3",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358602117,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"RUN_STYLE\"}"
+    },
+    {
+      "id": "874e6fa4-5bda-4076-99d4-8590a32f591c",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358602117,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"RUN_EXTRACTION\"}"
+    },
+    {
+      "id": "58f9b31a-0605-41f1-917c-c06709ad097a",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358602118,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"RUN_EXTRACTION\"}"
+    },
+    {
+      "id": "934a46ad-db53-4678-a876-8f5852055b86",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358602118,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"RUN_CONTINUITY\"}"
+    },
+    {
+      "id": "33bb3a08-0689-4f16-b758-124b8933a4da",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358602118,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"RUN_CONTINUITY\"}"
+    },
+    {
+      "id": "807f8ed9-e1ba-45f1-af7a-ef5c95dff54b",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358611163,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"INGEST_DOCUMENT\"}"
+    },
+    {
+      "id": "b3a97f70-435b-4a6b-9d92-78736c625388",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358611165,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"INGEST_DOCUMENT\"}"
+    },
+    {
+      "id": "dd82b4f8-2b66-4666-bb28-1b95e5f2ae6a",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358611166,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"RUN_SCENES\"}"
+    },
+    {
+      "id": "2c011fb5-4492-45d8-9a0c-77051957d160",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358611167,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"RUN_SCENES\"}"
+    },
+    {
+      "id": "d92bbb7d-c1ac-4e13-a7c4-2c1a1e815965",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358611168,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"RUN_STYLE\"}"
+    },
+    {
+      "id": "5f4e3679-99cc-4631-a4eb-1c5c18fcd3d9",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358611172,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"RUN_STYLE\"}"
+    },
+    {
+      "id": "bd540155-6d3a-40f0-879f-fb284d39078c",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358611172,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"RUN_EXTRACTION\"}"
+    },
+    {
+      "id": "c9c9f759-c418-49ae-8d3e-eda9ab0cd4c9",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358611174,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"RUN_EXTRACTION\"}"
+    },
+    {
+      "id": "5323f1e3-4956-43ea-a7bf-6a21c63e5980",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358611174,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"RUN_CONTINUITY\"}"
+    },
+    {
+      "id": "8d77deae-5f28-4ccb-a6ea-a06ddb612825",
+      "project_id": "eefee178-490f-4f8b-a128-d712fd298a67",
+      "ts": 1770358611175,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"RUN_CONTINUITY\"}"
+    }
+  ]
+}

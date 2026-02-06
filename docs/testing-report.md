@@ -127,3 +127,93 @@ No `P0` or `P1` product correctness violations were observed in this pass.
 2. Run the Playwright journey once network access to `registry.npmjs.org` is available (or vendor a local Playwright CLI dependency).
 3. Align local Node runtime to `20.x` (or rebuild native deps appropriately) so `test:local` can match dockerized CI behavior.
 4. Execute Layer 4 manual Electron smoke and append outcomes to this report.
+
+## 8. Phase C/D Continuation (UTC 2026-02-06T07:05:47Z)
+
+## 1. Environment
+- Continuation scope: Phase C (Playwright user journey) + Phase D (fixture/provider matrix)
+- Repo root: `/Users/ryanpalermo/projects/canon-keeper`
+- UI automation: Playwright MCP against `http://localhost:5177`
+
+## 2. Commands Executed
+| Command | Result | Notes |
+|---|---|---|
+| `docker compose run --rm test bun run vitest run apps/desktop/electron/worker/rpc.integration.test.ts` | PASS | `2/2` tests passed, including cloud-without-key fallback and evidence-first RPC assertions. |
+| `bun apps/desktop/electron/worker/scripts/simulatedJourney.ts` | PASS | Generated fresh artifact bundle with `project-history.json` and exported files. |
+
+## 3. Results by Test Layer
+### Layer 3: Simulated User Journey (Playwright)
+- Status: PARTIAL-AUTOMATED (browser automation completed; trace/video not available via MCP runner).
+- Completed workflow:
+  1. Opened Setup and created project root `/tmp/canonkeeper-playwright-2026-02-06T06-11-20Z-phasec-playwright-rerun`.
+  2. Added fixtures `simple_md.md` and `contradiction.md`.
+  3. Verified pipeline states reached `ok` for ingest/scenes/style/extraction/continuity.
+  4. Confirmed evidence-backed Bible claim for Lina (`eye_color = "gray"`).
+  5. Loaded Scenes list and verified rows render with metadata columns.
+  6. Loaded Issues list, verified contradiction issue with two evidence quotes, then resolved it.
+  7. Loaded Style report and verified deterministic sections.
+  8. Ran Search (`Lina eyes gray`) and observed an evidence-backed result.
+  9. Ran Ask prompts; Ask returned `not_found` with `Citations: 0` in this UI run.
+  10. Ran Export to `/tmp/canonkeeper-playwright-2026-02-06T06-11-20Z-phasec-playwright-rerun/export`.
+
+### Layer 2 + Phase D: RPC Contract + Fixture/Provider Matrix
+- `rpc.integration.test.ts` passed with required method/assertion coverage.
+- `mixed_quotes.md` and `large_revision.md` are present and exercised in the cloud-fallback integration test.
+- Cloud provider enabled without credentials remains graceful (no crash, deterministic fallback).
+- Previous defect `P2 fts_query_failed on apostrophes` is now covered by assertion in RPC integration (`history.events` contains no `fts_query_failed`) and passes.
+
+## 4. Defects Found
+### P1 - Ask returns `not_found` despite direct searchable evidence in same corpus
+- Reproduction:
+  1. Open project with `simple_md.md` + `contradiction.md`.
+  2. Search query `Lina eyes gray` returns hit in `contradiction.md`.
+  3. Ask question `Lina's eyes were a bright green in the candlelight`.
+  4. Observe Ask response `Type: not_found` and `Citations: 0`.
+- Expected:
+  - Ask should return `snippets` with citations when direct lexical evidence exists in retrieved chunks.
+- Actual:
+  - Ask repeatedly returned `not_found` in UI path while Search returned evidence-backed hits.
+- Impacted modules (likely path):
+  - `/Users/ryanpalermo/projects/canon-keeper/apps/desktop/electron/worker/search`
+  - `/Users/ryanpalermo/projects/canon-keeper/apps/desktop/renderer/src/views/SearchView.tsx`
+
+## 5. Coverage Gaps / Blockers
+- Playwright MCP runner does not expose trace/video artifact capture in this environment.
+- Full Electron shell manual smoke (Layer 4) remains pending.
+
+## 6. Artifacts Produced
+- Phase C Playwright screenshots:
+  - `/Users/ryanpalermo/projects/canon-keeper/output/playwright/phase-c/2026-02-06T06-11-20Z-phasec-playwright/01-setup-after-ingest.png`
+  - `/Users/ryanpalermo/projects/canon-keeper/output/playwright/phase-c/2026-02-06T06-11-20Z-phasec-playwright/02-dashboard.png`
+  - `/Users/ryanpalermo/projects/canon-keeper/output/playwright/phase-c/2026-02-06T06-11-20Z-phasec-playwright/03-bible-confirmed-claim.png`
+  - `/Users/ryanpalermo/projects/canon-keeper/output/playwright/phase-c/2026-02-06T06-11-20Z-phasec-playwright/04-scenes.png`
+  - `/Users/ryanpalermo/projects/canon-keeper/output/playwright/phase-c/2026-02-06T06-11-20Z-phasec-playwright/05-issues-resolved.png`
+  - `/Users/ryanpalermo/projects/canon-keeper/output/playwright/phase-c/2026-02-06T06-11-20Z-phasec-playwright/06-style.png`
+  - `/Users/ryanpalermo/projects/canon-keeper/output/playwright/phase-c/2026-02-06T06-11-20Z-phasec-playwright/07-search-ask.png`
+  - `/Users/ryanpalermo/projects/canon-keeper/output/playwright/phase-c/2026-02-06T06-11-20Z-phasec-playwright/08-export.png`
+- Phase C browser logs:
+  - `/Users/ryanpalermo/projects/canon-keeper/docs/artifacts/phase-c/2026-02-06T06-11-20Z-phasec-playwright/playwright-console.log`
+  - `/Users/ryanpalermo/projects/canon-keeper/docs/artifacts/phase-c/2026-02-06T06-11-20Z-phasec-playwright/playwright-network.log`
+- Phase C export captures:
+  - `/Users/ryanpalermo/projects/canon-keeper/docs/artifacts/phase-c/2026-02-06T06-11-20Z-phasec-playwright/export-rerun/bible.md`
+  - `/Users/ryanpalermo/projects/canon-keeper/docs/artifacts/phase-c/2026-02-06T06-11-20Z-phasec-playwright/export-rerun/scenes.md`
+  - `/Users/ryanpalermo/projects/canon-keeper/docs/artifacts/phase-c/2026-02-06T06-11-20Z-phasec-playwright/export-rerun/style_report.md`
+  - `/Users/ryanpalermo/projects/canon-keeper/docs/artifacts/phase-c/2026-02-06T06-11-20Z-phasec-playwright/export-rerun/project.json`
+- Fresh deterministic journey bundle with `project.getHistory` snapshot:
+  - `/Users/ryanpalermo/projects/canon-keeper/docs/artifacts/phase-c/2026-02-06T07-05-47-737Z/journey-summary.json`
+  - `/Users/ryanpalermo/projects/canon-keeper/docs/artifacts/phase-c/2026-02-06T07-05-47-737Z/project-history.json`
+  - `/Users/ryanpalermo/projects/canon-keeper/docs/artifacts/phase-c/2026-02-06T07-05-47-737Z/export/bible.md`
+  - `/Users/ryanpalermo/projects/canon-keeper/docs/artifacts/phase-c/2026-02-06T07-05-47-737Z/export/scenes.md`
+  - `/Users/ryanpalermo/projects/canon-keeper/docs/artifacts/phase-c/2026-02-06T07-05-47-737Z/export/style_report.md`
+  - `/Users/ryanpalermo/projects/canon-keeper/docs/artifacts/phase-c/2026-02-06T07-05-47-737Z/export/project.json`
+
+## 7. Recommended Next Actions
+1. Debug Ask retrieval flow parity with Search retrieval in UI path (query parsing/scoring threshold/citation gating).
+2. Add an integration regression asserting Ask returns `snippets` for contradiction fixture prompts that already match FTS hits.
+3. Keep the current `fts_query_failed` negative assertion in RPC integration as a permanent guard.
+4. Run manual Layer 4 Electron smoke and append outcomes.
+
+## 9. Phase C Grouped Artifact Addendum
+- Consolidated Phase C folder now includes grouped history/summary snapshots:
+  - `/Users/ryanpalermo/projects/canon-keeper/docs/artifacts/phase-c/2026-02-06T06-11-20Z-phasec-playwright/project-history-rerun.json`
+  - `/Users/ryanpalermo/projects/canon-keeper/docs/artifacts/phase-c/2026-02-06T06-11-20Z-phasec-playwright/journey-summary-rerun.json`

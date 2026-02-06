@@ -1,0 +1,12 @@
+{
+  "artifactRoot": "/Users/ryanpalermo/projects/canon-keeper/docs/artifacts/phase-c/2026-02-06T07-05-47-737Z",
+  "tempRoot": "/var/folders/p5/492bzrj97wbdj95fp7mgzqg80000gn/T/canonkeeper-journey-p4mAqV",
+  "scenes": 2,
+  "issues": 1,
+  "exportedFiles": [
+    "bible.md",
+    "project.json",
+    "scenes.md",
+    "style_report.md"
+  ]
+}

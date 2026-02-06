@@ -1,0 +1,445 @@
+{
+  "project": {
+    "id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+    "root_path": "/var/folders/p5/492bzrj97wbdj95fp7mgzqg80000gn/T/canonkeeper-journey-p4mAqV",
+    "name": "Journey Fixture",
+    "created_at": 1770361548076,
+    "updated_at": 1770361548076
+  },
+  "documents": [
+    {
+      "id": "641232b8-db07-45aa-80e0-5eed1bf80552",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "path": "/var/folders/p5/492bzrj97wbdj95fp7mgzqg80000gn/T/canonkeeper-journey-p4mAqV/simple_md.md",
+      "kind": "md",
+      "created_at": 1770361548328,
+      "updated_at": 1770361548333,
+      "is_missing": 0,
+      "last_seen_at": 1770361548330
+    },
+    {
+      "id": "82917883-5bf0-481b-9018-b569c3256d0f",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "path": "/var/folders/p5/492bzrj97wbdj95fp7mgzqg80000gn/T/canonkeeper-journey-p4mAqV/contradiction.md",
+      "kind": "md",
+      "created_at": 1770361548597,
+      "updated_at": 1770361548599,
+      "is_missing": 0,
+      "last_seen_at": 1770361548598
+    }
+  ],
+  "snapshots": [
+    {
+      "id": "72b42cf4-3d33-400f-be74-9db6180533b8",
+      "document_id": "641232b8-db07-45aa-80e0-5eed1bf80552",
+      "version": 1,
+      "full_text": "# Chapter One\n\nMira stepped into the workshop and brushed sawdust off her coat. The air smelled of cedar.\n\nShe lifted the brass compass and whispered, \"Not lost this time.\" The needle twitched north.\n",
+      "full_text_hash": "2b120e48cf04674a360aa817376340cddb08a5d317cad62a0c7a9990a95d636f",
+      "created_at": 1770361548330
+    },
+    {
+      "id": "0065e26c-746d-4f3c-975c-40ea142a8078",
+      "document_id": "82917883-5bf0-481b-9018-b569c3256d0f",
+      "version": 1,
+      "full_text": "Lina's eyes were a bright green in the candlelight.\n\nLater, when the storm cleared, her eyes were described as gray as slate.\n",
+      "full_text_hash": "67275137374c9483d3efd15c451715743e85a64f716c009347d5a5c2058e79e5",
+      "created_at": 1770361548598
+    }
+  ],
+  "chunks": [
+    {
+      "id": "23a58d09-f91e-490e-84ab-1ccb53885065",
+      "document_id": "641232b8-db07-45aa-80e0-5eed1bf80552",
+      "ordinal": 0,
+      "text": "# Chapter One\n\nMira stepped into the workshop and brushed sawdust off her coat. The air smelled of cedar.\n\nShe lifted the brass compass and whispered, \"Not lost this time.\" The needle twitched north.",
+      "text_hash": "11816c1b4ae21f7af875917c7c45c36774d0c1e26b4e29ea7d0206d5b4ac2ccc",
+      "start_char": 0,
+      "end_char": 199,
+      "created_at": 1770361548332,
+      "updated_at": 1770361548332
+    },
+    {
+      "id": "077e665f-163b-4e5e-9573-d05988a801d7",
+      "document_id": "82917883-5bf0-481b-9018-b569c3256d0f",
+      "ordinal": 0,
+      "text": "Lina's eyes were a bright green in the candlelight.\n\nLater, when the storm cleared, her eyes were described as gray as slate.",
+      "text_hash": "0f1065c40b39ea277aab2023b6a49a1189db80114375e46eae593f34e9d42c75",
+      "start_char": 0,
+      "end_char": 125,
+      "created_at": 1770361548599,
+      "updated_at": 1770361548599
+    }
+  ],
+  "entities": [
+    {
+      "id": "29e07ffa-07a5-4a79-bf1e-1eb9f1d08137",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "type": "character",
+      "display_name": "Lina",
+      "canonical_name": null,
+      "created_at": 1770361548609,
+      "updated_at": 1770361548609
+    }
+  ],
+  "aliases": [
+    {
+      "id": "b984a8fd-c2e3-403c-8c34-7ac48f30bb46",
+      "entity_id": "29e07ffa-07a5-4a79-bf1e-1eb9f1d08137",
+      "alias": "Lina",
+      "alias_norm": "lina",
+      "created_at": 1770361548609
+    }
+  ],
+  "claims": [
+    {
+      "id": "0458ffb6-bb8b-4bb2-be9a-4ee302da6c4a",
+      "entity_id": "29e07ffa-07a5-4a79-bf1e-1eb9f1d08137",
+      "field": "eye_color",
+      "value_json": "\"green\"",
+      "status": "superseded",
+      "confidence": 0.6,
+      "created_at": 1770361548610,
+      "updated_at": 1770361548618,
+      "supersedes_claim_id": "52029d00-61c3-458b-b0a2-5671692609ca"
+    },
+    {
+      "id": "00705b7d-782b-4852-8f61-560c79e94a1f",
+      "entity_id": "29e07ffa-07a5-4a79-bf1e-1eb9f1d08137",
+      "field": "eye_color",
+      "value_json": "\"gray\"",
+      "status": "superseded",
+      "confidence": 0.5,
+      "created_at": 1770361548610,
+      "updated_at": 1770361548618,
+      "supersedes_claim_id": "52029d00-61c3-458b-b0a2-5671692609ca"
+    },
+    {
+      "id": "52029d00-61c3-458b-b0a2-5671692609ca",
+      "entity_id": "29e07ffa-07a5-4a79-bf1e-1eb9f1d08137",
+      "field": "eye_color",
+      "value_json": "\"green\"",
+      "status": "confirmed",
+      "confidence": 1,
+      "created_at": 1770361548618,
+      "updated_at": 1770361548618,
+      "supersedes_claim_id": null
+    }
+  ],
+  "claimEvidence": [
+    {
+      "id": "ad9e2235-ee20-4b2c-9167-7c65aa94a0df",
+      "claim_id": "00705b7d-782b-4852-8f61-560c79e94a1f",
+      "chunk_id": "077e665f-163b-4e5e-9573-d05988a801d7",
+      "quote_start": 84,
+      "quote_end": 124,
+      "created_at": 1770361548610
+    },
+    {
+      "id": "59a4cb30-9342-4ec6-91ee-ccf3000d4f4e",
+      "claim_id": "0458ffb6-bb8b-4bb2-be9a-4ee302da6c4a",
+      "chunk_id": "077e665f-163b-4e5e-9573-d05988a801d7",
+      "quote_start": 0,
+      "quote_end": 50,
+      "created_at": 1770361548610
+    },
+    {
+      "id": "3cef856b-b832-4d76-bd9d-86dc3f3d5273",
+      "claim_id": "52029d00-61c3-458b-b0a2-5671692609ca",
+      "chunk_id": "077e665f-163b-4e5e-9573-d05988a801d7",
+      "quote_start": 0,
+      "quote_end": 50,
+      "created_at": 1770361548618
+    }
+  ],
+  "scenes": [
+    {
+      "id": "8719dd9b-aee9-41b4-be71-b52554039735",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "document_id": "641232b8-db07-45aa-80e0-5eed1bf80552",
+      "ordinal": 0,
+      "start_chunk_id": "23a58d09-f91e-490e-84ab-1ccb53885065",
+      "end_chunk_id": "23a58d09-f91e-490e-84ab-1ccb53885065",
+      "start_char": 0,
+      "end_char": 199,
+      "title": "Chapter One",
+      "pov_mode": "unknown",
+      "pov_entity_id": null,
+      "setting_entity_id": null,
+      "setting_text": null
+    },
+    {
+      "id": "32ac78dd-6c04-4c89-a8cd-20dfea0f7f95",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "document_id": "82917883-5bf0-481b-9018-b569c3256d0f",
+      "ordinal": 0,
+      "start_chunk_id": "077e665f-163b-4e5e-9573-d05988a801d7",
+      "end_chunk_id": "077e665f-163b-4e5e-9573-d05988a801d7",
+      "start_char": 0,
+      "end_char": 125,
+      "title": null,
+      "pov_mode": "unknown",
+      "pov_entity_id": null,
+      "setting_entity_id": null,
+      "setting_text": "in the candlelight"
+    }
+  ],
+  "sceneMetadata": [
+    {
+      "scene_id": "32ac78dd-6c04-4c89-a8cd-20dfea0f7f95",
+      "pov_mode": "unknown",
+      "pov_entity_id": null,
+      "pov_confidence": 0,
+      "setting_entity_id": null,
+      "setting_text": "in the candlelight",
+      "setting_confidence": 0.5,
+      "time_context_text": null,
+      "created_at": 1770361548600,
+      "updated_at": 1770361548601
+    },
+    {
+      "scene_id": "8719dd9b-aee9-41b4-be71-b52554039735",
+      "pov_mode": "unknown",
+      "pov_entity_id": null,
+      "pov_confidence": 0,
+      "setting_entity_id": null,
+      "setting_text": null,
+      "setting_confidence": 0,
+      "time_context_text": null,
+      "created_at": 1770361548335,
+      "updated_at": 1770361548337
+    }
+  ],
+  "sceneEntities": [],
+  "sceneEvidence": [
+    {
+      "id": "1708a80d-dea6-450d-b634-ea934a5971ab",
+      "scene_id": "32ac78dd-6c04-4c89-a8cd-20dfea0f7f95",
+      "chunk_id": "077e665f-163b-4e5e-9573-d05988a801d7",
+      "quote_start": 32,
+      "quote_end": 50,
+      "created_at": 1770361548601
+    }
+  ],
+  "issues": [],
+  "issueEvidence": [],
+  "styleMetrics": [
+    {
+      "id": "7e6e4095-052a-4ed7-9728-adee2e532d8a",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "scope_type": "document",
+      "scope_id": "641232b8-db07-45aa-80e0-5eed1bf80552",
+      "metric_name": "ngram_freq",
+      "metric_json": "{\"counts\":{\"chapter\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":2,\"quoteEnd\":9}},\"one\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":10,\"quoteEnd\":13}},\"mira\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":15,\"quoteEnd\":19}},\"stepped\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":20,\"quoteEnd\":27}},\"workshop\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":37,\"quoteEnd\":45}},\"brushed\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":50,\"quoteEnd\":57}},\"sawdust\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":58,\"quoteEnd\":65}},\"off\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":66,\"quoteEnd\":69}},\"coat\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":74,\"quoteEnd\":78}},\"air\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":84,\"quoteEnd\":87}},\"smelled\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":88,\"quoteEnd\":95}},\"cedar\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":99,\"quoteEnd\":104}},\"lifted\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":111,\"quoteEnd\":117}},\"brass\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":122,\"quoteEnd\":127}},\"compass\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":128,\"quoteEnd\":135}},\"whispered\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":140,\"quoteEnd\":149}},\"lost\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":156,\"quoteEnd\":160}},\"time\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":166,\"quoteEnd\":170}},\"needle\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":177,\"quoteEnd\":183}},\"twitched\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":184,\"quoteEnd\":192}},\"north\":{\"n\":1,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":193,\"quoteEnd\":198}},\"chapter one\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":2,\"quoteEnd\":13}},\"one mira\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":10,\"quoteEnd\":19}},\"mira stepped\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":15,\"quoteEnd\":27}},\"stepped workshop\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"workshop brushed\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"brushed sawdust\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":50,\"quoteEnd\":65}},\"sawdust off\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":58,\"quoteEnd\":69}},\"off coat\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"coat air\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"air smelled\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":84,\"quoteEnd\":95}},\"smelled cedar\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"cedar lifted\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"lifted brass\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"brass compass\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":122,\"quoteEnd\":135}},\"compass whispered\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"whispered lost\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"lost time\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"time needle\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"needle twitched\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":177,\"quoteEnd\":192}},\"twitched north\":{\"n\":2,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":184,\"quoteEnd\":198}},\"chapter one mira\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":2,\"quoteEnd\":19}},\"one mira stepped\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":10,\"quoteEnd\":27}},\"mira stepped workshop\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"stepped workshop brushed\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"workshop brushed sawdust\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"brushed sawdust off\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":50,\"quoteEnd\":69}},\"sawdust off coat\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"off coat air\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"coat air smelled\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"air smelled cedar\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"smelled cedar lifted\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"cedar lifted brass\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"lifted brass compass\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"brass compass whispered\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"compass whispered lost\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"whispered lost time\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"lost time needle\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"time needle twitched\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1}},\"needle twitched north\":{\"n\":3,\"count\":1,\"byScene\":{\"8719dd9b-aee9-41b4-be71-b52554039735\":1},\"example\":{\"chunkId\":\"23a58d09-f91e-490e-84ab-1ccb53885065\",\"quoteStart\":177,\"quoteEnd\":198}}}}"
+    },
+    {
+      "id": "3416a4b9-821f-43a9-85c6-fef07c207e10",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "scope_type": "document",
+      "scope_id": "641232b8-db07-45aa-80e0-5eed1bf80552",
+      "metric_name": "dialogue_tics",
+      "metric_json": "{\"tics\":[]}"
+    },
+    {
+      "id": "ac0e95c4-bc3c-4032-a7ef-bc9832f2a004",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "scope_type": "document",
+      "scope_id": "82917883-5bf0-481b-9018-b569c3256d0f",
+      "metric_name": "ngram_freq",
+      "metric_json": "{\"counts\":{\"lina's\":{\"n\":1,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1},\"example\":{\"chunkId\":\"077e665f-163b-4e5e-9573-d05988a801d7\",\"quoteStart\":0,\"quoteEnd\":6}},\"eyes\":{\"n\":1,\"count\":2,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":2},\"example\":{\"chunkId\":\"077e665f-163b-4e5e-9573-d05988a801d7\",\"quoteStart\":7,\"quoteEnd\":11}},\"bright\":{\"n\":1,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1},\"example\":{\"chunkId\":\"077e665f-163b-4e5e-9573-d05988a801d7\",\"quoteStart\":19,\"quoteEnd\":25}},\"green\":{\"n\":1,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1},\"example\":{\"chunkId\":\"077e665f-163b-4e5e-9573-d05988a801d7\",\"quoteStart\":26,\"quoteEnd\":31}},\"candlelight\":{\"n\":1,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1},\"example\":{\"chunkId\":\"077e665f-163b-4e5e-9573-d05988a801d7\",\"quoteStart\":39,\"quoteEnd\":50}},\"later\":{\"n\":1,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1},\"example\":{\"chunkId\":\"077e665f-163b-4e5e-9573-d05988a801d7\",\"quoteStart\":53,\"quoteEnd\":58}},\"storm\":{\"n\":1,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1},\"example\":{\"chunkId\":\"077e665f-163b-4e5e-9573-d05988a801d7\",\"quoteStart\":69,\"quoteEnd\":74}},\"cleared\":{\"n\":1,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1},\"example\":{\"chunkId\":\"077e665f-163b-4e5e-9573-d05988a801d7\",\"quoteStart\":75,\"quoteEnd\":82}},\"described\":{\"n\":1,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1},\"example\":{\"chunkId\":\"077e665f-163b-4e5e-9573-d05988a801d7\",\"quoteStart\":98,\"quoteEnd\":107}},\"gray\":{\"n\":1,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1},\"example\":{\"chunkId\":\"077e665f-163b-4e5e-9573-d05988a801d7\",\"quoteStart\":111,\"quoteEnd\":115}},\"slate\":{\"n\":1,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1},\"example\":{\"chunkId\":\"077e665f-163b-4e5e-9573-d05988a801d7\",\"quoteStart\":119,\"quoteEnd\":124}},\"lina's eyes\":{\"n\":2,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1},\"example\":{\"chunkId\":\"077e665f-163b-4e5e-9573-d05988a801d7\",\"quoteStart\":0,\"quoteEnd\":11}},\"eyes bright\":{\"n\":2,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1}},\"bright green\":{\"n\":2,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1},\"example\":{\"chunkId\":\"077e665f-163b-4e5e-9573-d05988a801d7\",\"quoteStart\":19,\"quoteEnd\":31}},\"green candlelight\":{\"n\":2,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1}},\"candlelight later\":{\"n\":2,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1},\"example\":{\"chunkId\":\"077e665f-163b-4e5e-9573-d05988a801d7\",\"quoteStart\":39,\"quoteEnd\":59}},\"later storm\":{\"n\":2,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1}},\"storm cleared\":{\"n\":2,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1},\"example\":{\"chunkId\":\"077e665f-163b-4e5e-9573-d05988a801d7\",\"quoteStart\":69,\"quoteEnd\":82}},\"cleared eyes\":{\"n\":2,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1}},\"eyes described\":{\"n\":2,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1}},\"described gray\":{\"n\":2,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1}},\"gray slate\":{\"n\":2,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1}},\"lina's eyes bright\":{\"n\":3,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1}},\"eyes bright green\":{\"n\":3,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1}},\"bright green candlelight\":{\"n\":3,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1}},\"green candlelight later\":{\"n\":3,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1}},\"candlelight later storm\":{\"n\":3,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1}},\"later storm cleared\":{\"n\":3,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1}},\"storm cleared eyes\":{\"n\":3,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1}},\"cleared eyes described\":{\"n\":3,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1}},\"eyes described gray\":{\"n\":3,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1}},\"described gray slate\":{\"n\":3,\"count\":1,\"byScene\":{\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\":1}}}}"
+    },
+    {
+      "id": "6eb322dd-bab0-49c0-85f7-72515ec5703e",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "scope_type": "project",
+      "scope_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "metric_name": "ngram_freq",
+      "metric_json": "{\"top\":[]}"
+    },
+    {
+      "id": "a7258031-b8c0-41bd-b09c-30bdee791608",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "scope_type": "scene",
+      "scope_id": "8719dd9b-aee9-41b4-be71-b52554039735",
+      "metric_name": "tone_vector",
+      "metric_json": "{\"sceneId\":\"8719dd9b-aee9-41b4-be71-b52554039735\",\"vector\":{\"sentenceLengthMean\":11.333333333333334,\"sentenceLengthVar\":20.222222222222225,\"dialogueRatio\":0.010050251256281407,\"punctuationDensity\":0.03125,\"sentimentScore\":0,\"contractionRatio\":0},\"driftScore\":1.9999999999999973,\"zscores\":{\"sentenceLengthMean\":0.9999999999999947,\"sentenceLengthVar\":1,\"dialogueRatio\":1,\"punctuationDensity\":-1,\"sentimentScore\":0,\"contractionRatio\":0}}"
+    },
+    {
+      "id": "ca43728a-c8f9-47b2-b3df-c6c59d97d4ca",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "scope_type": "scene",
+      "scope_id": "32ac78dd-6c04-4c89-a8cd-20dfea0f7f95",
+      "metric_name": "tone_vector",
+      "metric_json": "{\"sceneId\":\"32ac78dd-6c04-4c89-a8cd-20dfea0f7f95\",\"vector\":{\"sentenceLengthMean\":11,\"sentenceLengthVar\":4,\"dialogueRatio\":0,\"punctuationDensity\":0.09523809523809523,\"sentimentScore\":0,\"contractionRatio\":0},\"driftScore\":2.0000000000000027,\"zscores\":{\"sentenceLengthMean\":-1.0000000000000053,\"sentenceLengthVar\":-1,\"dialogueRatio\":-1,\"punctuationDensity\":1,\"sentimentScore\":0,\"contractionRatio\":0}}"
+    },
+    {
+      "id": "219d095e-42f2-4f58-934c-febfbcf4242a",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "scope_type": "document",
+      "scope_id": "82917883-5bf0-481b-9018-b569c3256d0f",
+      "metric_name": "dialogue_tics",
+      "metric_json": "{\"tics\":[]}"
+    }
+  ],
+  "eventLog": [
+    {
+      "id": "461cef7d-852d-48eb-93e6-3ad5077dce25",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548328,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"INGEST_DOCUMENT\"}"
+    },
+    {
+      "id": "9d4388a6-0366-4737-9bbd-8b802c3e4923",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548333,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"INGEST_DOCUMENT\"}"
+    },
+    {
+      "id": "7c464c97-576b-431b-bb34-044eee76635c",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548334,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"RUN_SCENES\"}"
+    },
+    {
+      "id": "238daa48-0091-4a78-b6d9-466ebac47b68",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548337,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"RUN_SCENES\"}"
+    },
+    {
+      "id": "4f40fec8-2523-45e2-bed6-2e5b01427c57",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548338,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"RUN_STYLE\"}"
+    },
+    {
+      "id": "3f2fc326-47b6-4c7a-a10f-cc091d231e01",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548343,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"RUN_STYLE\"}"
+    },
+    {
+      "id": "9ef44c25-d083-482f-94e6-2c05b9961c28",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548343,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"RUN_EXTRACTION\"}"
+    },
+    {
+      "id": "7a2d52fd-98cc-4a9e-beda-3864c83bf5bb",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548344,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"RUN_EXTRACTION\"}"
+    },
+    {
+      "id": "436ec90a-08ce-45a6-8feb-18b05ba55aba",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548345,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"RUN_CONTINUITY\"}"
+    },
+    {
+      "id": "82478c42-9530-4d0b-b076-a4170f22b660",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548345,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"RUN_CONTINUITY\"}"
+    },
+    {
+      "id": "610781c9-bb82-477e-b926-947f6bcffc63",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548597,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"INGEST_DOCUMENT\"}"
+    },
+    {
+      "id": "998aca81-3524-4d33-854b-0e2185eec6d6",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548599,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"INGEST_DOCUMENT\"}"
+    },
+    {
+      "id": "55e967bc-c229-4777-b914-5da72d5d209a",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548600,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"RUN_SCENES\"}"
+    },
+    {
+      "id": "ec3e2cd3-983a-48c7-bb14-8a37f9d2f54f",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548602,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"RUN_SCENES\"}"
+    },
+    {
+      "id": "f8a8c953-eb7a-4ecb-908f-498b2f9d086e",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548602,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"RUN_STYLE\"}"
+    },
+    {
+      "id": "3c216bad-7e70-4b50-8ab2-e5ac2a9abfb7",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548606,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"RUN_STYLE\"}"
+    },
+    {
+      "id": "5f4cf124-8016-443f-b0c5-3a55a4333561",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548607,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"RUN_EXTRACTION\"}"
+    },
+    {
+      "id": "ddce12d3-1d2a-44fb-817f-94704775a989",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548611,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"RUN_EXTRACTION\"}"
+    },
+    {
+      "id": "414c11ad-519c-4c90-87f9-95b499d1203b",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548611,
+      "level": "info",
+      "event_type": "job_started",
+      "payload_json": "{\"type\":\"RUN_CONTINUITY\"}"
+    },
+    {
+      "id": "a67ca524-b1a7-4bed-9c91-0be2958e361d",
+      "project_id": "d5231201-cd2b-44be-b9c3-9864060d01da",
+      "ts": 1770361548612,
+      "level": "info",
+      "event_type": "job_finished",
+      "payload_json": "{\"type\":\"RUN_CONTINUITY\"}"
+    }
+  ]
+}
