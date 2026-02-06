@@ -7,25 +7,23 @@ on:
   pull_request:
 
 jobs:
-  build:
+  dockerized:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 9
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Bake CI images
+        run: |
+          docker buildx bake ci --load \
+            --set *.cache-from=type=gha \
+            --set *.cache-to=type=gha,mode=max
       - name: Lint
-        run: pnpm lint
+        run: docker compose run --rm lint
       - name: Typecheck
-        run: pnpm typecheck
+        run: docker compose run --rm typecheck
       - name: Test
-        run: pnpm test
+        run: docker compose run --rm test
+      - name: Build
+        run: docker compose run --rm build

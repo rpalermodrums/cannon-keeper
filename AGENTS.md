@@ -45,7 +45,9 @@ Create a monorepo with this structure:
 
 canonkeeper/
 package.json
-pnpm-workspace.yaml
+bun.lock
+compose.yaml
+docker-bake.hcl
 apps/
 desktop/
 electron/
@@ -99,7 +101,7 @@ AGENTS.md
 ## Tooling and dependencies (pick these explicitly)
 
 Use:
-- Package manager: **pnpm**
+- Package manager: **bun**
 - Node: **>= 20**
 - TypeScript: latest stable
 - Lint/format: ESLint + Prettier
@@ -211,7 +213,7 @@ Prioritize deterministic pipeline pieces first. The MVP must still function with
 - Populate chunk_fts
 
 **Definition of done**
-- Running `pnpm dev` opens app
+- Running `bun run dev:local` opens app
 - Adding a document ingests it into chunks and indexes search
 - No UI crashes; worker logs show ingest events
 
@@ -245,7 +247,7 @@ Prioritize deterministic pipeline pieces first. The MVP must still function with
 - Deterministic continuity checks on conflicting evidence-backed claims
 - Ask flow:
   - Retrieval: FTS + optional embedding boosting
-  - If LLM available: cited answer; else fallback to snippets
+  - Return extractive snippets with citations, otherwise `not_found`
 
 **Definition of done**
 - Contradiction fixture produces continuity issue with two evidence quotes
@@ -304,8 +306,8 @@ Add fixtures under `data/fixtures/` and write tests:
 - contradiction fixture produces continuity issue (deterministic check or LLM-assisted if configured)
 
 **Command targets**
-- `pnpm test` must pass
-- `pnpm lint` must pass
+- `bun run test` must pass
+- `bun run lint` must pass
 
 ---
 
@@ -338,7 +340,7 @@ Evidence viewer must show:
 
 ## Suggested initial scaffolding steps (for Codex)
 
-1. Create monorepo skeleton + pnpm workspaces.
+1. Create monorepo skeleton + bun workspaces.
 2. Add Electron app wiring (main/preload/renderer) and worker spawn.
 3. Add SQLite layer + migration runner.
 4. Implement document ingestion pipeline (parse → snapshot → chunk → FTS).
@@ -362,7 +364,7 @@ The project is acceptable when:
 - ✅ Continuity issues appear for contradictions (fixture)
 - ✅ Ask returns cited answer or not_found without hallucination
 - ✅ Exports produce Markdown + JSON with citations
-- ✅ `pnpm test` and `pnpm lint` pass
+- ✅ `bun run test` and `bun run lint` pass
 
 ---
 
@@ -374,6 +376,7 @@ The point of this project is to **empower** the writer by reducing continuity bo
 
 ## Implementation notes (living)
 - Dev workflow: Vite for renderer; Electron main runs via `tsx` in dev. Preload is compiled via `tsc --watch` to `apps/desktop/dist-electron/preload.js` so IPC works in dev.
+- Dockerized workflow: default root scripts run via Docker Compose + Buildx Bake; local direct scripts remain available with `*:local`.
 - Tooling: ESLint + Prettier + Vitest at repo root; Lefthook runs lint/typecheck on `pre-commit` and tests on `pre-push`.
 - Storage: SQLite database is created under `<projectRoot>/.canonkeeper/canonkeeper.db` (directory is created if missing).
 - LLM JSON validation: outputs are schema-validated with up to 2 retries; invalid outputs are rejected and logged.

@@ -13,7 +13,7 @@ CanonKeeper is a local-first, evidence-first desktop companion for fiction proje
 - **Scene Index**: deterministic boundaries; POV/setting metadata with evidence.
 - **Style/Voice**: repetition, tone drift, dialogue tics (diagnostic only).
 - **Continuity Issues**: evidence-backed contradictions (e.g. eye color conflicts).
-- **Ask-the-bible**: FTS retrieval, optional LLM answer with citations.
+- **Ask-the-bible**: extractive retrieval with grounded snippets and citations.
 - **Exports**: Markdown + JSON with citations.
 
 ## Non-negotiable constraints
@@ -46,27 +46,49 @@ canonkeeper/
 ## Getting started
 
 ### Requirements
-- Node >= 20
-- pnpm
+- Docker Engine + Docker Compose plugin + Buildx
+- Bun (for local non-container fallback)
+- Node 20 (for local non-container fallback)
 
 ### Install
 ```bash
-pnpm install
+bun install
 ```
 
-### Development
+### Development (container-first)
 ```bash
-pnpm dev
+bun run dev
 ```
 
-This runs:
+This starts the renderer dev server in Docker on `http://localhost:5173`.
+
+### Development (local Electron fallback)
+```bash
+bun run dev:local
+```
+
+This runs the full Electron stack on your machine:
 - Vite dev server for the renderer
 - Electron main process (via `tsx`)
 - Electron preload watch build
 
 ### Build
 ```bash
-pnpm build
+bun run build
+```
+
+`build` produces renderer artifacts and validates Electron code via TypeScript.
+
+### Compose + Bake commands
+```bash
+# Build all CI targets from compose services
+bun run docker:bake:ci
+
+# Run individual containerized checks against prebuilt images
+bun run docker:lint
+bun run docker:typecheck
+bun run docker:test
+bun run docker:build
 ```
 
 ## Configuration
@@ -97,13 +119,24 @@ LLM outputs are schema-validated with retries and evidence span mapping. If evid
 
 ## Testing
 ```bash
-pnpm lint
-pnpm typecheck
-pnpm test
+bun run lint
+bun run typecheck
+bun run test
 ```
 
-Pre-commit hooks (lefthook) run lint + typecheck, and pre-push runs tests.
-GitHub Actions CI runs lint, typecheck, and tests on pushes and pull requests.
+The default scripts are Dockerized and use Compose + Buildx Bake.
+
+If you need to run directly on the host:
+```bash
+bun run lint:local
+bun run typecheck:local
+bun run test:local
+```
+
+Pre-commit hooks (lefthook) run Dockerized lint + typecheck, and pre-push runs Dockerized tests.
+GitHub Actions CI bakes compose targets, then runs lint/typecheck/test/build via `docker compose run`.
+
+High-fidelity end-to-end validation guidance lives in `docs/testing-plan.md`.
 
 ## Evidence-first behavior
 - Claims are only surfaced when evidence is present.
