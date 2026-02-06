@@ -1,6 +1,10 @@
 import type { JSX } from "react";
+import { AlertOctagon, CheckCircle, Download, FileText, FolderSearch, Play } from "lucide-react";
 import type { ExportResult } from "../api/ipc";
+import { CopyButton } from "../components/CopyButton";
 import { EmptyState } from "../components/EmptyState";
+import { Spinner } from "../components/Spinner";
+import { TogglePill } from "../components/TogglePill";
 
 type ExportViewProps = {
   busy: boolean;
@@ -13,6 +17,11 @@ type ExportViewProps = {
   onRunExport: () => void;
 };
 
+const kindOptions = [
+  { value: "md" as const, label: "Markdown" },
+  { value: "json" as const, label: "JSON" }
+];
+
 export function ExportView({
   busy,
   exportDir,
@@ -24,56 +33,80 @@ export function ExportView({
   onRunExport
 }: ExportViewProps): JSX.Element {
   return (
-    <section className="stack">
-      <header className="page-header">
-        <div>
-          <h2 className="page-title">Exports</h2>
-          <p className="page-subtitle">Run deterministic markdown/json exports with explicit progress receipts.</p>
-        </div>
+    <section className="flex flex-col gap-4">
+      <header>
+        <h2 className="m-0 font-display text-2xl font-bold">Exports</h2>
+        <p className="mt-1 text-sm text-text-muted">Run deterministic markdown/json exports with explicit progress receipts.</p>
       </header>
 
-      <article className="panel stack">
-        <label>
+      <article className="flex flex-col gap-4 rounded-md border border-border bg-white/75 p-4 shadow-sm dark:bg-surface-2/60">
+        <label className="flex flex-col gap-1 text-sm text-text-secondary">
           Output directory
-          <input value={exportDir} onChange={(event) => onExportDirChange(event.target.value)} placeholder="/Users/.../exports" />
+          <div className="flex gap-2">
+            <input
+              className="flex-1"
+              value={exportDir}
+              onChange={(e) => onExportDirChange(e.target.value)}
+              placeholder="/Users/.../exports"
+            />
+            <button
+              className="inline-flex items-center gap-1.5 rounded-sm border border-border bg-surface-2 px-3 py-2 text-sm transition-colors hover:enabled:bg-white cursor-pointer disabled:opacity-50 dark:bg-surface-1"
+              type="button"
+              onClick={onPickExportDir}
+              disabled={busy}
+            >
+              <FolderSearch size={16} />
+              Browse
+            </button>
+          </div>
         </label>
 
-        <label>
-          Export kind
-          <select value={exportKind} onChange={(event) => onExportKindChange(event.target.value as "md" | "json")}>
-            <option value="md">Markdown bundle</option>
-            <option value="json">JSON dump</option>
-          </select>
-        </label>
+        <TogglePill
+          label="Export format"
+          options={kindOptions}
+          value={exportKind}
+          onChange={onExportKindChange}
+        />
 
-        <div className="row">
-          <button className="primary" type="button" onClick={onRunExport} disabled={busy || !exportDir.trim()}>
-            Run Export
-          </button>
-          <button type="button" onClick={onPickExportDir} disabled={busy}>
-            Browse
-          </button>
-        </div>
+        <button
+          className="inline-flex items-center gap-2 self-start rounded-sm border border-accent bg-accent px-5 py-2.5 text-sm font-medium text-text-inverse transition-colors hover:bg-accent-strong cursor-pointer disabled:opacity-50"
+          type="button"
+          onClick={onRunExport}
+          disabled={busy || !exportDir.trim()}
+        >
+          {busy ? <Spinner size="sm" /> : <Play size={18} />}
+          Run Export
+        </button>
       </article>
 
       {!lastResult ? (
-        <EmptyState title="No Exports Yet" message="Run an export to see generated file paths and elapsed time." />
+        <EmptyState icon={Download} title="No Exports Yet" message="Run an export to see generated file paths and elapsed time." />
       ) : lastResult.ok ? (
-        <article className="panel stack">
-          <h3>Last Export Succeeded</h3>
-          <p className="metric-label">Elapsed: {lastResult.elapsedMs} ms</p>
-          <ul className="list">
+        <article className="flex flex-col gap-3 rounded-md border border-ok/30 bg-ok-soft/50 p-4 shadow-sm">
+          <div className="flex items-center gap-2">
+            <CheckCircle size={18} className="text-ok" />
+            <h3 className="m-0 text-sm font-semibold text-ok-strong">Last Export Succeeded</h3>
+          </div>
+          <p className="text-xs text-text-muted">Elapsed: {lastResult.elapsedMs} ms</p>
+          <div className="flex flex-col gap-1.5">
             {lastResult.files.map((file) => (
-              <li className="list-item mono" key={file}>
-                {file}
-              </li>
+              <div key={file} className="flex items-center justify-between gap-2 rounded-sm border border-border bg-surface-2/50 p-2 dark:bg-surface-1/30">
+                <div className="flex items-center gap-2 min-w-0">
+                  <FileText size={14} className="shrink-0 text-text-muted" />
+                  <span className="truncate font-mono text-xs">{file}</span>
+                </div>
+                <CopyButton text={file} label="Copy" />
+              </div>
             ))}
-          </ul>
+          </div>
         </article>
       ) : (
-        <article className="panel stack">
-          <h3>Last Export Failed</h3>
-          <p>{lastResult.error}</p>
+        <article className="flex flex-col gap-2 rounded-md border border-danger/30 bg-danger-soft/50 p-4 shadow-sm">
+          <div className="flex items-center gap-2">
+            <AlertOctagon size={18} className="text-danger" />
+            <h3 className="m-0 text-sm font-semibold text-danger">Last Export Failed</h3>
+          </div>
+          <p className="text-sm text-text-secondary">{lastResult.error}</p>
         </article>
       )}
     </section>

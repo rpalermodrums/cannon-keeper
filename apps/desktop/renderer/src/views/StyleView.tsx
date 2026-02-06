@@ -1,6 +1,8 @@
 import { useMemo, useState, type JSX } from "react";
+import { Activity, MessageSquare, Palette, Quote, RefreshCw, Repeat } from "lucide-react";
 import type { EvidenceItem, IssueSummary, StyleReport } from "../api/ipc";
 import { EmptyState } from "../components/EmptyState";
+import { TogglePill } from "../components/TogglePill";
 
 type RepetitionEntry = {
   ngram: string;
@@ -27,12 +29,15 @@ type StyleViewProps = {
 };
 
 function toRepetitionEntries(report: StyleReport | null): RepetitionEntry[] {
-  if (!report?.repetition || typeof report.repetition !== "object") {
-    return [];
-  }
+  if (!report?.repetition || typeof report.repetition !== "object") return [];
   const top = (report.repetition as { top?: RepetitionEntry[] }).top;
   return Array.isArray(top) ? top : [];
 }
+
+const sortOptions = [
+  { value: "count" as const, label: "Count" },
+  { value: "ngram" as const, label: "Ngram" }
+];
 
 export function StyleView({
   busy,
@@ -45,83 +50,96 @@ export function StyleView({
   const [sortBy, setSortBy] = useState<"count" | "ngram">("count");
   const entries = useMemo(() => {
     const base = toRepetitionEntries(report);
-    return [...base].sort((a, b) => {
-      if (sortBy === "count") {
-        return b.count - a.count;
-      }
-      return a.ngram.localeCompare(b.ngram);
-    });
+    return [...base].sort((a, b) =>
+      sortBy === "count" ? b.count - a.count : a.ngram.localeCompare(b.ngram)
+    );
   }, [report, sortBy]);
 
+  const maxCount = entries.length > 0 ? Math.max(...entries.map((e) => e.count)) : 1;
   const toneIssues = styleIssues.filter((issue) => issue.type === "tone_drift");
   const dialogueIssues = styleIssues.filter((issue) => issue.type === "dialogue_tic");
 
   return (
-    <section className="stack">
-      <header className="page-header">
+    <section className="flex flex-col gap-4">
+      <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="page-title">Style Report</h2>
-          <p className="page-subtitle">
+          <h2 className="m-0 font-display text-2xl font-bold">Style Report</h2>
+          <p className="mt-1 text-sm text-text-muted">
             Diagnostic-only style signals across repetition, tone drift, and dialogue tics.
           </p>
         </div>
-        <button className="primary" type="button" onClick={onRefresh} disabled={busy}>
+        <button
+          className="inline-flex items-center gap-1.5 rounded-sm border border-accent bg-accent px-4 py-2 text-sm font-medium text-text-inverse transition-colors hover:bg-accent-strong cursor-pointer disabled:opacity-50"
+          type="button"
+          onClick={onRefresh}
+          disabled={busy}
+        >
+          <RefreshCw size={16} />
           Refresh Style
         </button>
       </header>
 
       {!report ? (
-        <EmptyState title="No Style Data" message="Run style stage by ingesting documents first." />
+        <EmptyState icon={Palette} title="No Style Data" message="Run style stage by ingesting documents first." />
       ) : (
         <>
-          <article className="panel stack">
-            <div className="row" style={{ justifyContent: "space-between" }}>
-              <h3>Repetition</h3>
-              <label>
-                Sort
-                <select value={sortBy} onChange={(event) => setSortBy(event.target.value as "count" | "ngram")}>
-                  <option value="count">Count</option>
-                  <option value="ngram">Ngram</option>
-                </select>
-              </label>
+          {/* Repetition */}
+          <article className="flex flex-col gap-3 rounded-md border border-border bg-white/75 p-4 shadow-sm dark:bg-surface-2/60">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <Repeat size={16} className="text-text-muted" />
+                <h3 className="m-0 text-sm font-semibold">Repetition</h3>
+              </div>
+              <TogglePill options={sortOptions} value={sortBy} onChange={setSortBy} />
             </div>
 
             {entries.length === 0 ? (
-              <p className="metric-label">No repetition metrics found.</p>
+              <p className="text-sm text-text-muted">No repetition metrics found.</p>
             ) : (
-              <div className="table-wrap">
+              <div className="overflow-x-auto">
                 <table>
                   <thead>
                     <tr>
                       <th>Ngram</th>
                       <th>Count</th>
+                      <th className="w-36">Frequency</th>
                       <th>Evidence</th>
                     </tr>
                   </thead>
                   <tbody>
                     {entries.slice(0, 20).map((entry) => {
                       const evidence: EvidenceItem[] = (entry.examples ?? [])
-                        .filter((example): example is NonNullable<typeof example> => Boolean(example))
-                        .map((example) => ({
-                          chunkId: example.chunkId,
-                          quoteStart: example.quoteStart,
-                          quoteEnd: example.quoteEnd,
-                          excerpt: example.excerpt ?? "",
-                          documentPath: example.documentPath ?? null,
-                          chunkOrdinal: example.chunkOrdinal ?? null,
-                          lineStart: example.lineStart ?? null,
-                          lineEnd: example.lineEnd ?? null
+                        .filter((ex): ex is NonNullable<typeof ex> => Boolean(ex))
+                        .map((ex) => ({
+                          chunkId: ex.chunkId,
+                          quoteStart: ex.quoteStart,
+                          quoteEnd: ex.quoteEnd,
+                          excerpt: ex.excerpt ?? "",
+                          documentPath: ex.documentPath ?? null,
+                          chunkOrdinal: ex.chunkOrdinal ?? null,
+                          lineStart: ex.lineStart ?? null,
+                          lineEnd: ex.lineEnd ?? null
                         }));
                       return (
                         <tr key={entry.ngram}>
-                          <td>{entry.ngram}</td>
-                          <td>{entry.count}</td>
+                          <td className="font-medium">{entry.ngram}</td>
+                          <td className="font-mono text-sm">{entry.count}</td>
+                          <td>
+                            <div className="h-2 w-full overflow-hidden rounded-full bg-surface-3">
+                              <div
+                                className="h-full rounded-full bg-accent transition-all"
+                                style={{ width: `${(entry.count / maxCount) * 100}%` }}
+                              />
+                            </div>
+                          </td>
                           <td>
                             <button
+                              className="inline-flex items-center gap-1 rounded-sm border border-border bg-transparent px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-surface-1 cursor-pointer disabled:opacity-50"
                               type="button"
                               onClick={() => onOpenMetricEvidence(`Repetition: ${entry.ngram}`, evidence)}
                               disabled={evidence.length === 0}
                             >
+                              <Quote size={12} />
                               Open ({evidence.length})
                             </button>
                           </td>
@@ -134,41 +152,63 @@ export function StyleView({
             )}
           </article>
 
-          <article className="panel stack">
-            <h3>Tone Drift</h3>
+          {/* Tone Drift */}
+          <article className="flex flex-col gap-3 rounded-md border border-border bg-white/75 p-4 shadow-sm dark:bg-surface-2/60">
+            <div className="flex items-center gap-2">
+              <Activity size={16} className="text-text-muted" />
+              <h3 className="m-0 text-sm font-semibold">Tone Drift</h3>
+            </div>
             {toneIssues.length === 0 ? (
-              <p className="metric-label">No tone drift issues detected.</p>
+              <p className="text-sm text-text-muted">No tone drift issues detected.</p>
             ) : (
-              <ul className="list">
+              <div className="flex flex-col gap-2">
                 {toneIssues.map((issue) => (
-                  <li className="list-item" key={issue.id}>
-                    <strong>{issue.title}</strong>
-                    <div>{issue.description}</div>
-                    <button type="button" onClick={() => onOpenIssueEvidence(issue.title, issue)}>
-                      Open Evidence ({issue.evidence.length})
+                  <div key={issue.id} className="flex items-start justify-between gap-3 rounded-sm border border-border bg-surface-1/30 p-3 dark:bg-surface-1/20">
+                    <div>
+                      <strong className="text-sm">{issue.title}</strong>
+                      <div className="mt-0.5 text-xs text-text-muted">{issue.description}</div>
+                    </div>
+                    <button
+                      className="inline-flex shrink-0 items-center gap-1 rounded-sm border border-border bg-transparent px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-surface-1 cursor-pointer"
+                      type="button"
+                      onClick={() => onOpenIssueEvidence(issue.title, issue)}
+                    >
+                      <Quote size={12} />
+                      Evidence ({issue.evidence.length})
                     </button>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             )}
           </article>
 
-          <article className="panel stack">
-            <h3>Dialogue Tics</h3>
+          {/* Dialogue Tics */}
+          <article className="flex flex-col gap-3 rounded-md border border-border bg-white/75 p-4 shadow-sm dark:bg-surface-2/60">
+            <div className="flex items-center gap-2">
+              <MessageSquare size={16} className="text-text-muted" />
+              <h3 className="m-0 text-sm font-semibold">Dialogue Tics</h3>
+            </div>
             {dialogueIssues.length === 0 ? (
-              <p className="metric-label">No dialogue tic issues detected.</p>
+              <p className="text-sm text-text-muted">No dialogue tic issues detected.</p>
             ) : (
-              <ul className="list">
+              <div className="flex flex-col gap-2">
                 {dialogueIssues.map((issue) => (
-                  <li className="list-item" key={issue.id}>
-                    <strong>{issue.title}</strong>
-                    <div>{issue.description}</div>
-                    <button type="button" onClick={() => onOpenIssueEvidence(issue.title, issue)}>
-                      Open Evidence ({issue.evidence.length})
+                  <div key={issue.id} className="flex items-start justify-between gap-3 rounded-sm border border-border bg-surface-1/30 p-3 dark:bg-surface-1/20">
+                    <div>
+                      <strong className="text-sm">{issue.title}</strong>
+                      <div className="mt-0.5 text-xs text-text-muted">{issue.description}</div>
+                    </div>
+                    <button
+                      className="inline-flex shrink-0 items-center gap-1 rounded-sm border border-border bg-transparent px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-surface-1 cursor-pointer"
+                      type="button"
+                      onClick={() => onOpenIssueEvidence(issue.title, issue)}
+                    >
+                      <Quote size={12} />
+                      Evidence ({issue.evidence.length})
                     </button>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             )}
           </article>
         </>

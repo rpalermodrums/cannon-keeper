@@ -1,4 +1,5 @@
 import type { JSX } from "react";
+import { AlertOctagon, AlertTriangle, BookMarked, BookOpen, ChevronRight, Clock, Info, LayoutDashboard } from "lucide-react";
 import type { IngestResult, ProjectSummary, WorkerStatus } from "../api/ipc";
 import { EmptyState } from "../components/EmptyState";
 import { StatusBadge } from "../components/StatusBadge";
@@ -42,21 +43,21 @@ type DashboardViewProps = {
 };
 
 function formatWorkerLabel(status: WorkerStatus | null): string {
-  if (!status) {
-    return "Disconnected";
-  }
+  if (!status) return "Disconnected";
   return status.lastJob ? `${status.state} (${status.lastJob})` : status.state;
 }
 
 function inferStatusTone(status: WorkerStatus | null): string {
-  if (!status) {
-    return "down";
-  }
-  if (status.workerState === "down") {
-    return "down";
-  }
+  if (!status) return "down";
+  if (status.workerState === "down") return "down";
   return status.state === "busy" ? "busy" : "ok";
 }
+
+const eventIcons = {
+  info: Info,
+  warn: AlertTriangle,
+  error: AlertOctagon
+} as const;
 
 export function DashboardView({
   project,
@@ -72,104 +73,154 @@ export function DashboardView({
   onJumpToScene
 }: DashboardViewProps): JSX.Element {
   return (
-    <section className="stack">
-      <header className="page-header">
+    <section className="flex flex-col gap-4">
+      <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="page-title">Dashboard</h2>
-          <p className="page-subtitle">
+          <h2 className="m-0 font-display text-2xl font-bold">Dashboard</h2>
+          <p className="mt-1 text-sm text-text-muted">
             Monitor ingestion, inspect recent activity, and continue from your last triage context.
           </p>
         </div>
       </header>
 
-      <div className="card-grid">
-        <article className="card">
-          <h3>Worker Status</h3>
-          <StatusBadge label={formatWorkerLabel(status)} status={inferStatusTone(status)} />
-          <p className="metric-label">Queue depth: {status?.queueDepth ?? 0}</p>
+      {/* Status cards */}
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-3">
+        <article className="rounded-md border border-border bg-white/75 p-4 shadow-sm dark:bg-surface-2/60">
+          <div className="flex items-center gap-2 text-sm font-medium text-text-muted">
+            <LayoutDashboard size={16} />
+            Worker Status
+          </div>
+          <div className="mt-3">
+            <StatusBadge label={formatWorkerLabel(status)} status={inferStatusTone(status)} />
+          </div>
+          <p className="mt-2 text-xs text-text-muted">Queue depth: {status?.queueDepth ?? 0}</p>
         </article>
-        <article className="card">
-          <h3>Project</h3>
+
+        <article className="rounded-md border border-border bg-white/75 p-4 shadow-sm dark:bg-surface-2/60">
+          <div className="flex items-center gap-2 text-sm font-medium text-text-muted">
+            <BookOpen size={16} />
+            Project
+          </div>
           {project ? (
             <>
-              <p className="metric">{project.name}</p>
-              <p className="metric-label mono">{project.root_path}</p>
+              <p className="mt-3 font-display text-xl font-bold">{project.name}</p>
+              <p className="mt-0.5 truncate font-mono text-xs text-text-muted">{project.root_path}</p>
             </>
           ) : (
-            <p className="metric-label">No project opened yet.</p>
+            <p className="mt-3 text-sm text-text-muted">No project opened yet.</p>
           )}
         </article>
-        <article className="card">
-          <h3>Last Ingest</h3>
+
+        <article className="rounded-md border border-border bg-white/75 p-4 shadow-sm dark:bg-surface-2/60">
+          <div className="flex items-center gap-2 text-sm font-medium text-text-muted">
+            <Clock size={16} />
+            Last Ingest
+          </div>
           {lastIngest ? (
             <>
-              <p className="metric mono">{lastIngest.documentId.slice(0, 8)}</p>
-              <p className="metric-label">
-                +{lastIngest.chunksCreated} created / {lastIngest.chunksUpdated} updated / {lastIngest.chunksDeleted}{" "}
-                deleted
+              <p className="mt-3 font-display text-xl font-bold font-mono">{lastIngest.documentId.slice(0, 8)}</p>
+              <p className="mt-0.5 text-xs text-text-muted">
+                +{lastIngest.chunksCreated} created / {lastIngest.chunksUpdated} updated / {lastIngest.chunksDeleted} deleted
               </p>
             </>
           ) : (
-            <p className="metric-label">No ingestion has run yet.</p>
+            <p className="mt-3 text-sm text-text-muted">No ingestion has run yet.</p>
           )}
         </article>
       </div>
 
-      <article className="panel">
-        <h3>Continue Where You Left Off</h3>
-        <div className="row">
-          <button type="button" onClick={onJumpToIssue} disabled={!continueIssueId}>
-            Resume Issue
-          </button>
-          <button type="button" onClick={onJumpToEntity} disabled={!continueEntityId}>
-            Resume Entity
-          </button>
-          <button type="button" onClick={onJumpToScene} disabled={!continueSceneId}>
-            Resume Scene
-          </button>
+      {/* Continue section */}
+      <article className="rounded-md border border-border bg-white/75 p-4 shadow-sm dark:bg-surface-2/60">
+        <h3 className="m-0 mb-3 text-sm font-semibold">Continue Where You Left Off</h3>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { label: "Resume Issue", icon: AlertTriangle, enabled: !!continueIssueId, onClick: onJumpToIssue },
+            { label: "Resume Entity", icon: BookMarked, enabled: !!continueEntityId, onClick: onJumpToEntity },
+            { label: "Resume Scene", icon: BookOpen, enabled: !!continueSceneId, onClick: onJumpToScene }
+          ].map((item) => (
+            <button
+              key={item.label}
+              type="button"
+              className="group flex items-center gap-2 rounded-sm border border-border bg-surface-2 px-3 py-2 text-sm transition-all hover:enabled:-translate-y-0.5 hover:enabled:shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer dark:bg-surface-1"
+              disabled={!item.enabled}
+              onClick={item.onClick}
+            >
+              <item.icon size={16} className="text-text-muted" />
+              <span>{item.label}</span>
+              <ChevronRight size={14} className="text-text-muted transition-transform group-hover:enabled:translate-x-0.5" />
+            </button>
+          ))}
         </div>
       </article>
 
-      <article className="panel">
-        <h3>Pipeline Timeline</h3>
+      {/* Pipeline timeline */}
+      <article className="rounded-md border border-border bg-white/75 p-4 shadow-sm dark:bg-surface-2/60">
+        <h3 className="m-0 mb-3 text-sm font-semibold">Pipeline Timeline</h3>
         {processingState.length === 0 ? (
           <EmptyState
+            icon={LayoutDashboard}
             title="No Pipeline Rows"
             message="Ingest at least one document to populate deterministic scene/style/extraction stages."
           />
         ) : (
-          <ul className="list">
-            {processingState.map((row) => (
-              <li key={`${row.document_id}-${row.stage}`} className="list-item">
-                <div className="row" style={{ justifyContent: "space-between" }}>
-                  <strong>{row.stage}</strong>
-                  <StatusBadge label={row.status} status={row.status} />
+          <div className="flex flex-col gap-2">
+            {processingState.map((row, i) => (
+              <div key={`${row.document_id}-${row.stage}`} className="flex items-start gap-3">
+                {/* Timeline dot + line */}
+                <div className="flex flex-col items-center pt-1.5">
+                  <div className={`h-2.5 w-2.5 rounded-full border-2 ${
+                    row.status === "error" ? "border-danger bg-danger-soft" :
+                    row.status === "busy" ? "border-warn bg-warn-soft" :
+                    "border-ok bg-ok-soft"
+                  }`} />
+                  {i < processingState.length - 1 ? <div className="mt-1 h-8 w-px bg-border" /> : null}
                 </div>
-                <div className="metric-label mono">{row.document_path}</div>
-                {row.error ? <div className="metric-label">Error: {row.error}</div> : null}
-                <div className="metric-label">Updated {new Date(row.updated_at).toLocaleString()}</div>
-              </li>
+                {/* Content */}
+                <div className="flex-1 rounded-sm border border-border bg-surface-2/50 p-2.5 dark:bg-surface-1/50">
+                  <div className="flex items-center justify-between gap-2">
+                    <strong className="text-sm">{row.stage}</strong>
+                    <StatusBadge label={row.status} status={row.status} />
+                  </div>
+                  <div className="mt-1 truncate font-mono text-xs text-text-muted">{row.document_path}</div>
+                  {row.error ? <div className="mt-1 text-xs text-danger">Error: {row.error}</div> : null}
+                  <div className="mt-1 text-xs text-text-muted">Updated {new Date(row.updated_at).toLocaleString()}</div>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </article>
 
-      <article className="panel">
-        <h3>Recent Event Log</h3>
+      {/* Event log */}
+      <article className="rounded-md border border-border bg-white/75 p-4 shadow-sm dark:bg-surface-2/60">
+        <h3 className="m-0 mb-3 text-sm font-semibold">Recent Event Log</h3>
         {!history || history.events.length === 0 ? (
-          <p className="metric-label">No recent events.</p>
+          <p className="text-sm text-text-muted">No recent events.</p>
         ) : (
-          <ul className="list">
-            {history.events.slice(0, 12).map((event) => (
-              <li className="list-item" key={event.id}>
-                <div className="row" style={{ justifyContent: "space-between" }}>
-                  <span className="mono">{event.event_type}</span>
-                  <StatusBadge label={event.level} status={event.level} />
+          <div className="flex flex-col gap-1">
+            {history.events.slice(0, 12).map((event) => {
+              const EventIcon = eventIcons[event.level] ?? Info;
+              return (
+                <div
+                  key={event.id}
+                  className={`flex items-center justify-between gap-3 rounded-sm p-2 text-sm ${
+                    event.level === "error" ? "bg-danger-soft/50" :
+                    event.level === "warn" ? "bg-warn-soft/50" :
+                    "bg-surface-1/50"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <EventIcon size={14} className="shrink-0" />
+                    <span className="truncate font-mono text-xs">{event.event_type}</span>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-xs text-text-muted">{new Date(event.ts).toLocaleString()}</span>
+                    <StatusBadge label={event.level} status={event.level} />
+                  </div>
                 </div>
-                <div className="metric-label">{new Date(event.ts).toLocaleString()}</div>
-              </li>
-            ))}
-          </ul>
+              );
+            })}
+          </div>
         )}
       </article>
     </section>

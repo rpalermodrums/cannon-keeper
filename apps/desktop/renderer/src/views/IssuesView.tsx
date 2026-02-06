@@ -1,8 +1,10 @@
 import type { JSX } from "react";
+import { AlertTriangle, CheckCircle, Quote, RefreshCw, Search, XCircle } from "lucide-react";
 import type { IssueSummary } from "../api/ipc";
 import { EmptyState } from "../components/EmptyState";
 import { FilterBar, FilterGroup } from "../components/FilterBar";
 import { StatusBadge } from "../components/StatusBadge";
+import { TogglePill } from "../components/TogglePill";
 
 type IssueFilters = {
   status: "open" | "dismissed" | "resolved" | "all";
@@ -24,6 +26,26 @@ type IssuesViewProps = {
   onOpenEvidence: (title: string, issue: IssueSummary) => void;
 };
 
+const severityBorderColor: Record<string, string> = {
+  high: "border-l-danger",
+  medium: "border-l-warn",
+  low: "border-l-ok"
+};
+
+const statusOptions = [
+  { value: "open" as const, label: "Open" },
+  { value: "dismissed" as const, label: "Dismissed" },
+  { value: "resolved" as const, label: "Resolved" },
+  { value: "all" as const, label: "All" }
+];
+
+const severityOptions = [
+  { value: "all" as const, label: "All" },
+  { value: "low" as const, label: "Low" },
+  { value: "medium" as const, label: "Medium" },
+  { value: "high" as const, label: "High" }
+];
+
 export function IssuesView({
   busy,
   issues,
@@ -40,141 +62,162 @@ export function IssuesView({
     const statusMatch = filters.status === "all" || issue.status === filters.status;
     const severityMatch = filters.severity === "all" || issue.severity === filters.severity;
     const typeMatch = !filters.type || issue.type === filters.type;
-    const query = filters.query.trim().toLowerCase();
-    const queryMatch =
-      query.length === 0 ||
-      `${issue.title} ${issue.description} ${issue.type}`.toLowerCase().includes(query);
+    const q = filters.query.trim().toLowerCase();
+    const queryMatch = q.length === 0 || `${issue.title} ${issue.description} ${issue.type}`.toLowerCase().includes(q);
     return statusMatch && severityMatch && typeMatch && queryMatch;
   });
 
   const knownTypes = Array.from(new Set(issues.map((issue) => issue.type))).sort();
 
   return (
-    <section className="stack">
-      <header className="page-header">
+    <section className="flex flex-col gap-4">
+      <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="page-title">Issues</h2>
-          <p className="page-subtitle">
+          <h2 className="m-0 font-display text-2xl font-bold">Issues</h2>
+          <p className="mt-1 text-sm text-text-muted">
             Evidence-backed continuity and style triage. Dismiss requires a reason and supports undo.
           </p>
         </div>
-        <button className="primary" type="button" onClick={onRefresh} disabled={busy}>
+        <button
+          className="inline-flex items-center gap-1.5 rounded-sm border border-accent bg-accent px-4 py-2 text-sm font-medium text-text-inverse transition-colors hover:bg-accent-strong cursor-pointer disabled:opacity-50"
+          type="button"
+          onClick={onRefresh}
+          disabled={busy}
+        >
+          <RefreshCw size={16} />
           Refresh Issues
         </button>
       </header>
 
       <FilterBar
+        resultCount={filtered.length}
         actions={
           <button
+            className="rounded-sm border border-transparent bg-transparent px-2 py-1 text-xs text-text-muted transition-colors hover:text-text-primary cursor-pointer"
             type="button"
-            className="ghost"
-            onClick={() =>
-              onFiltersChange({
-                status: "open",
-                severity: "all",
-                type: "",
-                query: ""
-              })
-            }
+            onClick={() => onFiltersChange({ status: "open", severity: "all", type: "", query: "" })}
           >
-            Reset Filters
+            Reset
           </button>
         }
       >
-        <FilterGroup label="Status">
-          <select
-            value={filters.status}
-            onChange={(event) => onFiltersChange({ ...filters, status: event.target.value as IssueFilters["status"] })}
-          >
-            <option value="open">Open</option>
-            <option value="dismissed">Dismissed</option>
-            <option value="resolved">Resolved</option>
-            <option value="all">All</option>
-          </select>
-        </FilterGroup>
-        <FilterGroup label="Severity">
-          <select
-            value={filters.severity}
-            onChange={(event) =>
-              onFiltersChange({ ...filters, severity: event.target.value as IssueFilters["severity"] })
-            }
-          >
-            <option value="all">All</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
-        </FilterGroup>
+        <TogglePill
+          label="Status"
+          options={statusOptions}
+          value={filters.status}
+          onChange={(v) => onFiltersChange({ ...filters, status: v })}
+        />
+        <TogglePill
+          label="Severity"
+          options={severityOptions}
+          value={filters.severity}
+          onChange={(v) => onFiltersChange({ ...filters, severity: v })}
+        />
         <FilterGroup label="Type">
-          <select value={filters.type} onChange={(event) => onFiltersChange({ ...filters, type: event.target.value })}>
+          <select value={filters.type} onChange={(e) => onFiltersChange({ ...filters, type: e.target.value })}>
             <option value="">All</option>
             {knownTypes.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
+              <option key={type} value={type}>{type}</option>
             ))}
           </select>
         </FilterGroup>
         <FilterGroup label="Query">
-          <input
-            value={filters.query}
-            onChange={(event) => onFiltersChange({ ...filters, query: event.target.value })}
-            placeholder="Search title or description"
-          />
+          <div className="relative">
+            <Search size={14} className="absolute top-1/2 left-2.5 -translate-y-1/2 text-text-muted" />
+            <input
+              className="w-full pl-8"
+              value={filters.query}
+              onChange={(e) => onFiltersChange({ ...filters, query: e.target.value })}
+              placeholder="Search title or description"
+            />
+          </div>
         </FilterGroup>
       </FilterBar>
 
       {filtered.length === 0 ? (
-        <EmptyState title="No Matching Issues" message="Adjust filters or ingest additional evidence-backed documents." />
+        <EmptyState
+          icon={AlertTriangle}
+          title="No Matching Issues"
+          message={filters.status !== "open" || filters.severity !== "all" || filters.query
+            ? "Adjust filters to see more issues."
+            : "Ingest additional evidence-backed documents to generate issues."
+          }
+        />
       ) : (
-        <ul className="list">
-          {filtered.map((issue) => (
-            <li
-              className={`list-item ${selectedIssueId === issue.id ? "active" : ""}`}
-              key={issue.id}
-              onClick={() => onSelectIssue(issue.id)}
-            >
-              <div className="row" style={{ justifyContent: "space-between" }}>
-                <div>
-                  <strong>{issue.title}</strong>
-                  <div className="metric-label">{issue.description}</div>
+        <div className="flex flex-col gap-2">
+          {filtered.map((issue, i) => {
+            const selected = selectedIssueId === issue.id;
+            const borderColor = severityBorderColor[issue.severity] ?? "border-l-border";
+            return (
+              <div
+                key={issue.id}
+                className={`rounded-sm border border-border border-l-3 ${borderColor} bg-white/75 p-3 transition-all cursor-pointer animate-slide-in-up dark:bg-surface-2/60 ${
+                  selected ? "ring-1 ring-accent/30 shadow-sm" : "hover:shadow-sm"
+                }`}
+                style={{ animationDelay: `${Math.min(i, 10) * 30}ms` }}
+                onClick={() => onSelectIssue(issue.id)}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <strong className="text-sm">{issue.title}</strong>
+                    <div className="mt-0.5 text-xs text-text-muted">{issue.description}</div>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    <StatusBadge label={issue.severity} status={issue.severity} />
+                    <StatusBadge label={issue.status} status={issue.status} />
+                  </div>
                 </div>
-                <div className="row">
-                  <StatusBadge label={issue.severity} status={issue.severity} />
-                  <StatusBadge label={issue.status} status={issue.status} />
-                </div>
-              </div>
 
-              <div className="row" style={{ justifyContent: "space-between", marginTop: 8 }}>
-                <div className="mono">{issue.type}</div>
-                <div className="row">
-                  <button type="button" onClick={() => onOpenEvidence(issue.title, issue)}>
-                    Evidence ({issue.evidence.length})
-                  </button>
-                  <button type="button" onClick={() => onRequestDismiss(issue)} disabled={issue.status !== "open"}>
-                    Dismiss
-                  </button>
-                  <button type="button" onClick={() => onResolve(issue.id)} disabled={issue.status !== "open"}>
-                    Resolve
-                  </button>
+                <div className="mt-2 flex items-center justify-between gap-3">
+                  <span className="font-mono text-xs text-text-muted">{issue.type}</span>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      className="inline-flex items-center gap-1 rounded-sm border border-border bg-transparent px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-surface-1 cursor-pointer disabled:opacity-50"
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); onOpenEvidence(issue.title, issue); }}
+                    >
+                      <Quote size={12} />
+                      Evidence ({issue.evidence.length})
+                    </button>
+                    <button
+                      className="inline-flex items-center gap-1 rounded-sm border border-border bg-transparent px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-surface-1 cursor-pointer disabled:opacity-50"
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); onRequestDismiss(issue); }}
+                      disabled={issue.status !== "open"}
+                    >
+                      <XCircle size={12} />
+                      Dismiss
+                    </button>
+                    <button
+                      className="inline-flex items-center gap-1 rounded-sm border border-border bg-transparent px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-surface-1 cursor-pointer disabled:opacity-50"
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); onResolve(issue.id); }}
+                      disabled={issue.status !== "open"}
+                    >
+                      <CheckCircle size={12} />
+                      Resolve
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              {issue.evidence.length > 0 ? (
-                <div className="card-grid" style={{ marginTop: 10 }}>
-                  {issue.evidence.slice(0, 2).map((item, idx) => (
-                    <article className="card" key={`${issue.id}-e-${idx}`}>
-                      <div className="mono">
-                        {item.documentPath ?? "unknown"} | chunk {item.chunkOrdinal ?? "?"}
+                {issue.evidence.length > 0 ? (
+                  <div className="mt-2 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-2">
+                    {issue.evidence.slice(0, 2).map((item, idx) => (
+                      <div key={`${issue.id}-e-${idx}`} className="rounded-sm border border-border bg-surface-1/30 p-2 dark:bg-surface-1/20">
+                        <div className="font-mono text-xs text-text-muted">
+                          {item.documentPath ?? "unknown"} | chunk {item.chunkOrdinal ?? "?"}
+                        </div>
+                        <div className="mt-1 border-l-2 border-accent pl-2 text-xs italic text-text-secondary">
+                          &quot;{item.excerpt}&quot;
+                        </div>
                       </div>
-                      <div className="evidence-quote">&quot;{item.excerpt}&quot;</div>
-                    </article>
-                  ))}
-                </div>
-              ) : null}
-            </li>
-          ))}
-        </ul>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
       )}
     </section>
   );

@@ -1,8 +1,10 @@
 import { useMemo, type JSX } from "react";
+import { BookMarked, CheckCircle, Quote, RefreshCw, Search } from "lucide-react";
 import type { EntityDetail, EntitySummary } from "../api/ipc";
 import { EmptyState } from "../components/EmptyState";
 import { FilterBar, FilterGroup } from "../components/FilterBar";
 import { StatusBadge } from "../components/StatusBadge";
+import { TogglePill } from "../components/TogglePill";
 
 type EntityFilters = {
   type: string;
@@ -28,13 +30,24 @@ type BibleViewProps = {
   }) => void;
 };
 
+const entityTypeColors: Record<string, string> = {
+  character: "bg-accent-soft text-accent",
+  location: "bg-warn-soft text-warn",
+  object: "bg-ok-soft text-ok",
+  faction: "bg-danger-soft text-danger"
+};
+
+const claimStatusOptions = [
+  { value: "all" as const, label: "All" },
+  { value: "confirmed" as const, label: "Confirmed" },
+  { value: "inferred" as const, label: "Inferred" }
+];
+
 function groupByField(detail: EntityDetail | null): Array<{
   field: string;
   claims: EntityDetail["claims"];
 }> {
-  if (!detail) {
-    return [];
-  }
+  if (!detail) return [];
   const map = new Map<string, EntityDetail["claims"]>();
   for (const claim of detail.claims) {
     const group = map.get(claim.claim.field) ?? [];
@@ -56,117 +69,135 @@ export function BibleView({
   onOpenEvidence,
   onRequestConfirmClaim
 }: BibleViewProps): JSX.Element {
-  const types = Array.from(new Set(entities.map((entity) => entity.type))).sort();
+  const types = Array.from(new Set(entities.map((e) => e.type))).sort();
   const filtered = entities.filter((entity) => {
     const typeMatch = !filters.type || entity.type === filters.type;
-    const query = filters.query.trim().toLowerCase();
-    const queryMatch = query.length === 0 || entity.display_name.toLowerCase().includes(query);
-    if (!typeMatch || !queryMatch) {
-      return false;
-    }
-    if (filters.status === "all" || !entityDetail || entity.id !== entityDetail.entity.id) {
-      return true;
-    }
-    const hasConfirmed = entityDetail.claims.some((claim) => claim.claim.status === "confirmed");
+    const q = filters.query.trim().toLowerCase();
+    const queryMatch = q.length === 0 || entity.display_name.toLowerCase().includes(q);
+    if (!typeMatch || !queryMatch) return false;
+    if (filters.status === "all" || !entityDetail || entity.id !== entityDetail.entity.id) return true;
+    const hasConfirmed = entityDetail.claims.some((c) => c.claim.status === "confirmed");
     return filters.status === "confirmed" ? hasConfirmed : !hasConfirmed;
   });
 
   const groupedClaims = useMemo(() => groupByField(entityDetail), [entityDetail]);
 
   return (
-    <section className="stack">
-      <header className="page-header">
+    <section className="flex flex-col gap-4">
+      <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="page-title">Book Bible</h2>
-          <p className="page-subtitle">
+          <h2 className="m-0 font-display text-2xl font-bold">Book Bible</h2>
+          <p className="mt-1 text-sm text-text-muted">
             Evidence-backed claims grouped by field. Confirmed canon supersedes inferred values.
           </p>
         </div>
-        <button className="primary" type="button" onClick={onRefresh} disabled={busy}>
+        <button
+          className="inline-flex items-center gap-1.5 rounded-sm border border-accent bg-accent px-4 py-2 text-sm font-medium text-text-inverse transition-colors hover:bg-accent-strong cursor-pointer disabled:opacity-50"
+          type="button"
+          onClick={onRefresh}
+          disabled={busy}
+        >
+          <RefreshCw size={16} />
           Refresh Entities
         </button>
       </header>
 
-      <FilterBar>
+      <FilterBar resultCount={filtered.length}>
         <FilterGroup label="Type">
-          <select value={filters.type} onChange={(event) => onFiltersChange({ ...filters, type: event.target.value })}>
+          <select value={filters.type} onChange={(e) => onFiltersChange({ ...filters, type: e.target.value })}>
             <option value="">All</option>
-            {types.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
+            {types.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
         </FilterGroup>
-        <FilterGroup label="Claim Status">
-          <select
-            value={filters.status}
-            onChange={(event) =>
-              onFiltersChange({ ...filters, status: event.target.value as EntityFilters["status"] })
-            }
-          >
-            <option value="all">All</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="inferred">Inferred only</option>
-          </select>
-        </FilterGroup>
+        <TogglePill
+          label="Claim Status"
+          options={claimStatusOptions}
+          value={filters.status}
+          onChange={(v) => onFiltersChange({ ...filters, status: v })}
+        />
         <FilterGroup label="Query">
-          <input
-            value={filters.query}
-            onChange={(event) => onFiltersChange({ ...filters, query: event.target.value })}
-            placeholder="Search entities"
-          />
+          <div className="relative">
+            <Search size={14} className="absolute top-1/2 left-2.5 -translate-y-1/2 text-text-muted" />
+            <input
+              className="w-full pl-8"
+              value={filters.query}
+              onChange={(e) => onFiltersChange({ ...filters, query: e.target.value })}
+              placeholder="Search entities"
+            />
+          </div>
         </FilterGroup>
       </FilterBar>
 
       {filtered.length === 0 ? (
-        <EmptyState title="No Entities" message="Run extraction or relax filters to see entities." />
+        <EmptyState icon={BookMarked} title="No Entities" message="Run extraction or relax filters to see entities." />
       ) : (
-        <div className="split">
-          <article className="panel stack">
-            <h3>Entities</h3>
-            <ul className="list">
-              {filtered.map((entity) => (
-                <li
-                  key={entity.id}
-                  className={`list-item ${selectedEntityId === entity.id ? "active" : ""}`}
-                  onClick={() => onSelectEntity(entity.id)}
-                >
-                  <strong>{entity.display_name}</strong>
-                  <div className="metric-label">{entity.type}</div>
-                </li>
-              ))}
-            </ul>
+        <div className="grid min-h-[420px] grid-cols-1 gap-4 lg:grid-cols-[minmax(320px,1fr)_minmax(340px,1fr)]">
+          {/* Entity list */}
+          <article className="flex flex-col gap-2 rounded-md border border-border bg-white/75 p-3 shadow-sm dark:bg-surface-2/60">
+            <h3 className="m-0 mb-1 text-sm font-semibold">Entities</h3>
+            <div className="flex flex-col gap-1 overflow-y-auto">
+              {filtered.map((entity) => {
+                const selected = selectedEntityId === entity.id;
+                const typeColor = entityTypeColors[entity.type] ?? "bg-surface-1 text-text-muted";
+                return (
+                  <button
+                    key={entity.id}
+                    type="button"
+                    className={`flex items-center justify-between gap-2 rounded-sm border px-3 py-2 text-left transition-all cursor-pointer ${
+                      selected
+                        ? "border-accent bg-accent-soft/40 border-l-3 border-l-accent"
+                        : "border-border bg-transparent hover:bg-surface-1/50"
+                    }`}
+                    onClick={() => onSelectEntity(entity.id)}
+                  >
+                    <strong className="text-sm">{entity.display_name}</strong>
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${typeColor}`}>
+                      {entity.type}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </article>
 
-          <article className="panel stack">
+          {/* Claims detail */}
+          <article className="flex flex-col gap-3 rounded-md border border-border bg-white/75 p-4 shadow-sm dark:bg-surface-2/60">
             {!entityDetail ? (
-              <EmptyState title="No Entity Selected" message="Select an entity to inspect grouped claims and evidence." />
+              <EmptyState icon={BookMarked} title="No Entity Selected" message="Select an entity to inspect grouped claims and evidence." />
             ) : groupedClaims.length === 0 ? (
-              <EmptyState title="No Claims" message="This entity has no evidence-backed claims yet." />
+              <EmptyState icon={BookMarked} title="No Claims" message="This entity has no evidence-backed claims yet." />
             ) : (
               <>
-                <h3>{entityDetail.entity.display_name}</h3>
+                <h3 className="m-0 font-display text-lg font-bold">{entityDetail.entity.display_name}</h3>
                 {groupedClaims.map((group) => (
-                  <article className="card" key={group.field}>
-                    <h3>{group.field}</h3>
-                    <ul className="list">
+                  <details key={group.field} className="rounded-sm border border-border" open>
+                    <summary className="cursor-pointer bg-surface-1/30 px-3 py-2 text-sm font-semibold dark:bg-surface-1/20">
+                      {group.field}
+                    </summary>
+                    <div className="flex flex-col gap-2 p-3">
                       {group.claims.map((claim) => (
-                        <li key={claim.claim.id} className="list-item">
-                          <div className="row" style={{ justifyContent: "space-between" }}>
-                            <span className="mono">{claim.claim.value_json}</span>
-                            <StatusBadge label={claim.claim.status} status={claim.claim.status} />
+                        <div key={claim.claim.id} className="rounded-sm border border-border bg-surface-2/50 p-3 dark:bg-surface-1/30">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-mono text-sm">{claim.claim.value_json}</span>
+                            <StatusBadge
+                              label={claim.claim.status}
+                              status={claim.claim.status}
+                              icon={claim.claim.status === "confirmed" ? CheckCircle : undefined}
+                            />
                           </div>
-                          <div className="row" style={{ marginTop: 8 }}>
+                          <div className="mt-2 flex items-center gap-2">
                             <button
+                              className="inline-flex items-center gap-1 rounded-sm border border-border bg-transparent px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-surface-1 cursor-pointer disabled:opacity-50"
                               type="button"
                               onClick={() => onOpenEvidence(`${group.field} claim`, claim)}
                               disabled={claim.evidence.length === 0}
                             >
+                              <Quote size={12} />
                               Evidence ({claim.evidence.length})
                             </button>
                             {claim.claim.status !== "confirmed" ? (
                               <button
+                                className="inline-flex items-center gap-1 rounded-sm border border-accent/40 bg-transparent px-2 py-1 text-xs text-accent transition-colors hover:bg-accent-soft cursor-pointer disabled:opacity-50"
                                 type="button"
                                 onClick={() =>
                                   onRequestConfirmClaim({
@@ -178,14 +209,15 @@ export function BibleView({
                                 }
                                 disabled={claim.evidence.length === 0}
                               >
+                                <CheckCircle size={12} />
                                 Confirm
                               </button>
                             ) : null}
                           </div>
-                        </li>
+                        </div>
                       ))}
-                    </ul>
-                  </article>
+                    </div>
+                  </details>
                 ))}
               </>
             )}

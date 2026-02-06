@@ -1,9 +1,12 @@
-import type { JSX } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type JSX, type ComponentType } from "react";
+import { Search } from "lucide-react";
 
 type CommandPaletteItem = {
   id: string;
   label: string;
   subtitle: string;
+  icon?: ComponentType<{ size?: number | string; className?: string }>;
+  category?: string;
 };
 
 type CommandPaletteProps = {
@@ -13,36 +16,129 @@ type CommandPaletteProps = {
   onClose: () => void;
 };
 
+function fuzzyMatch(text: string, query: string): boolean {
+  const lower = text.toLowerCase();
+  const q = query.toLowerCase();
+  let qi = 0;
+  for (let i = 0; i < lower.length && qi < q.length; i++) {
+    if (lower[i] === q[qi]) qi++;
+  }
+  return qi === q.length;
+}
+
 export function CommandPalette({ open, items, onSelect, onClose }: CommandPaletteProps): JSX.Element | null {
+  const [query, setQuery] = useState("");
+  const [activeIndex, setActiveIndex] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+
+  const filtered = useMemo(() => {
+    if (!query.trim()) return items;
+    return items.filter(
+      (item) => fuzzyMatch(item.label, query) || fuzzyMatch(item.subtitle, query)
+    );
+  }, [items, query]);
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [query]);
+
+  useEffect(() => {
+    if (open) {
+      setQuery("");
+      setActiveIndex(0);
+      setTimeout(() => inputRef.current?.focus(), 0);
+    }
+  }, [open]);
+
+  const handleSelect = useCallback(
+    (id: string) => {
+      onSelect(id);
+      onClose();
+    },
+    [onSelect, onClose]
+  );
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setActiveIndex((i) => Math.min(i + 1, filtered.length - 1));
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setActiveIndex((i) => Math.max(i - 1, 0));
+      } else if (e.key === "Enter" && filtered[activeIndex]) {
+        e.preventDefault();
+        handleSelect(filtered[activeIndex].id);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, filtered, activeIndex, handleSelect]);
+
+  useEffect(() => {
+    const el = listRef.current?.children[activeIndex] as HTMLElement | undefined;
+    el?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex]);
+
   if (!open) {
     return null;
   }
 
   return (
-    <div className="modal-overlay" role="dialog" aria-modal="true">
-      <section className="command-palette">
-        <header className="drawer-header">
-          <strong>Command Palette</strong>
-          <button type="button" onClick={onClose}>
-            Close
-          </button>
-        </header>
-        <ul className="command-list">
-          {items.map((item) => (
-            <li key={item.id}>
-              <button
-                className="command-item"
-                type="button"
-                onClick={() => {
-                  onSelect(item.id);
-                  onClose();
-                }}
-              >
-                <strong>{item.label}</strong>
-                <div>{item.subtitle}</div>
-              </button>
-            </li>
-          ))}
+    <div
+      className="fixed inset-0 z-50 grid place-items-start justify-center bg-black/30 pt-[15vh] animate-fade-in dark:bg-black/50"
+      role="dialog"
+      aria-modal="true"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <section className="w-full max-w-[560px] overflow-hidden rounded-lg border border-border bg-surface-2 shadow-lg animate-scale-in dark:bg-surface-1">
+        <div className="flex items-center gap-2 border-b border-border px-3 py-2">
+          <Search size={16} className="text-text-muted" />
+          <input
+            ref={inputRef}
+            className="flex-1 border-none bg-transparent px-0 py-1 text-sm text-text-primary outline-none placeholder:text-text-muted"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search commands..."
+          />
+          <kbd className="text-[10px]">Esc</kbd>
+        </div>
+        <ul ref={listRef} className="m-0 max-h-[360px] list-none overflow-y-auto p-1">
+          {filtered.length === 0 ? (
+            <li className="px-3 py-4 text-center text-sm text-text-muted">No matching commands</li>
+          ) : (
+            filtered.map((item, i) => {
+              const Icon = item.icon;
+              return (
+                <li key={item.id}>
+                  <button
+                    className={`flex w-full items-center gap-3 rounded-sm px-3 py-2.5 text-left transition-colors cursor-pointer ${
+                      i === activeIndex
+                        ? "bg-accent-soft text-accent-strong dark:text-accent"
+                        : "bg-transparent text-text-primary hover:bg-surface-1 dark:hover:bg-surface-2"
+                    }`}
+                    type="button"
+                    onClick={() => handleSelect(item.id)}
+                    onMouseEnter={() => setActiveIndex(i)}
+                  >
+                    {Icon ? (
+                      <Icon size={18} className="shrink-0 text-text-muted" />
+                    ) : (
+                      <span className="w-[18px]" />
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-medium">{item.label}</div>
+                      <div className="truncate text-xs text-text-muted">{item.subtitle}</div>
+                    </div>
+                  </button>
+                </li>
+              );
+            })
+          )}
         </ul>
       </section>
     </div>

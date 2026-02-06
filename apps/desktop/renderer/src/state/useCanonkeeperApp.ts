@@ -41,6 +41,18 @@ import {
   type WorkerStatus
 } from "../api/ipc";
 import type { ToastItem } from "../components/AsyncToast";
+import type { ComponentType } from "react";
+import {
+  AlertTriangle,
+  BookMarked,
+  BookOpen,
+  Download,
+  FolderOpen,
+  LayoutDashboard,
+  Palette,
+  Search,
+  Settings
+} from "lucide-react";
 
 export type AppSection =
   | "dashboard"
@@ -53,16 +65,21 @@ export type AppSection =
   | "export"
   | "settings";
 
-export const APP_SECTIONS: Array<{ id: AppSection; label: string; subtitle: string }> = [
-  { id: "dashboard", label: "Dashboard", subtitle: "Pipeline overview" },
-  { id: "setup", label: "Setup", subtitle: "Onboarding and diagnostics" },
-  { id: "search", label: "Search", subtitle: "Retrieval and ask" },
-  { id: "scenes", label: "Scenes", subtitle: "Scene index" },
-  { id: "issues", label: "Issues", subtitle: "Continuity and style flags" },
-  { id: "style", label: "Style", subtitle: "Diagnostic metrics" },
-  { id: "bible", label: "Bible", subtitle: "Entities and claims" },
-  { id: "export", label: "Exports", subtitle: "Markdown and JSON" },
-  { id: "settings", label: "Settings", subtitle: "Runtime health" }
+export const APP_SECTIONS: Array<{
+  id: AppSection;
+  label: string;
+  subtitle: string;
+  icon: ComponentType<{ size?: number | string; className?: string }>;
+}> = [
+  { id: "dashboard", label: "Dashboard", subtitle: "Pipeline overview", icon: LayoutDashboard },
+  { id: "setup", label: "Setup", subtitle: "Onboarding and diagnostics", icon: FolderOpen },
+  { id: "search", label: "Search", subtitle: "Retrieval and ask", icon: Search },
+  { id: "scenes", label: "Scenes", subtitle: "Scene index", icon: BookOpen },
+  { id: "issues", label: "Issues", subtitle: "Continuity and style flags", icon: AlertTriangle },
+  { id: "style", label: "Style", subtitle: "Diagnostic metrics", icon: Palette },
+  { id: "bible", label: "Bible", subtitle: "Entities and claims", icon: BookMarked },
+  { id: "export", label: "Exports", subtitle: "Markdown and JSON", icon: Download },
+  { id: "settings", label: "Settings", subtitle: "Runtime health", icon: Settings }
 ];
 
 type IssueFilters = {
@@ -227,6 +244,9 @@ export function useCanonkeeperApp() {
   const [error, setError] = useState<UserFacingError | null>(null);
   const [pendingActions, setPendingActions] = useState<string[]>([]);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsedRaw] = useState(() =>
+    readStorage<boolean>("canonkeeper.sidebarCollapsed", false)
+  );
 
   const [confirmClaimDraft, setConfirmClaimDraft] = useState<{
     field: string;
@@ -909,6 +929,11 @@ export function useCanonkeeperApp() {
     setEvidenceDrawer,
     commandPaletteOpen,
     setCommandPaletteOpen,
+    sidebarCollapsed,
+    setSidebarCollapsed: (collapsed: boolean) => {
+      setSidebarCollapsedRaw(collapsed);
+      writeStorage("canonkeeper.sidebarCollapsed", collapsed);
+    },
     confirmClaimDraft,
     setConfirmClaimDraft,
     dismissIssueDraft,
