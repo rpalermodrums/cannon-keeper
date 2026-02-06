@@ -1,5 +1,59 @@
 export {};
 
+type WorkerStatus = {
+  state: "idle" | "busy";
+  lastJob?: string;
+  projectId?: string | null;
+  queueDepth?: number;
+  workerState?: "ready" | "restarting" | "down";
+  lastError?: string | null;
+};
+
+type SearchResult = {
+  chunkId: string;
+  documentId: string;
+  documentPath: string;
+  ordinal: number;
+  text: string;
+  snippet: string;
+  score: number;
+};
+
+type AskResponse =
+  | {
+      kind: "answer";
+      answer: string;
+      confidence: number;
+      citations: Array<{ chunkId: string; quoteStart: number; quoteEnd: number }>;
+    }
+  | {
+      kind: "snippets";
+      snippets: SearchResult[];
+    }
+  | {
+      kind: "not_found";
+      reason: string;
+    };
+
+type SystemHealthCheck = {
+  ipc: "ok" | "down";
+  worker: "ok" | "down";
+  sqlite: "ok" | "missing_native" | "error";
+  writable: "ok" | "error";
+  details: string[];
+};
+
+type ExportRunResult =
+  | {
+      ok: true;
+      files: string[];
+      elapsedMs: number;
+    }
+  | {
+      ok: false;
+      error: string;
+    };
+
 declare global {
   interface Window {
     canonkeeper?: {
@@ -18,14 +72,8 @@ declare global {
           created_at: number;
           updated_at: number;
         }>;
-        getStatus: () => Promise<{
-          state: "idle" | "busy";
-          lastJob?: string;
-          projectId?: string | null;
-          queueDepth?: number;
-          workerState?: "ready" | "restarting" | "down";
-          lastError?: string | null;
-        }>;
+        getStatus: () => Promise<WorkerStatus>;
+        subscribeStatus: () => Promise<WorkerStatus>;
         getProcessingState: () => Promise<
           Array<{
             document_id: string;
@@ -65,33 +113,14 @@ declare global {
           changeEnd: number | null;
         }>;
       };
+      system: {
+        healthCheck: () => Promise<SystemHealthCheck>;
+      };
       search: {
-        ask: (payload: { question: string }) => Promise<{
-          answerType: "not_found" | "snippets";
-          answer: string;
-          confidence: number;
-          citations: Array<{ chunkId: string; quoteStart: number; quoteEnd: number }>;
-          snippets?: Array<{
-            chunkId: string;
-            documentId: string;
-            documentPath: string;
-            ordinal: number;
-            text: string;
-            snippet: string;
-            score: number;
-          }>;
-        }>;
+        ask: (payload: { question: string }) => Promise<AskResponse>;
         query: (payload: { query: string }) => Promise<{
           query: string;
-          results: Array<{
-            chunkId: string;
-            documentId: string;
-            documentPath: string;
-            ordinal: number;
-            text: string;
-            snippet: string;
-            score: number;
-          }>;
+          results: SearchResult[];
         }>;
       };
       scenes: {
@@ -175,7 +204,8 @@ declare global {
             }>;
           }>
         >;
-        dismiss: (payload: { issueId: string }) => Promise<{ ok: boolean }>;
+        dismiss: (payload: { issueId: string; reason?: string }) => Promise<{ ok: boolean }>;
+        undoDismiss: (payload: { issueId: string }) => Promise<{ ok: boolean }>;
         resolve: (payload: { issueId: string }) => Promise<{ ok: boolean }>;
       };
       style: {
@@ -242,7 +272,7 @@ declare global {
         }) => Promise<string>;
       };
       export: {
-        run: (payload: { outDir: string; kind?: "md" | "json" }) => Promise<{ ok: boolean }>;
+        run: (payload: { outDir: string; kind?: "md" | "json" }) => Promise<ExportRunResult>;
       };
     };
   }

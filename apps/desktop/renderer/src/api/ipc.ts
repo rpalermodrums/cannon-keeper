@@ -16,6 +16,26 @@ export type WorkerStatus = {
   lastError?: string | null;
 };
 
+export type WorkerStatusEvent = {
+  status: WorkerStatus;
+  observedAt: number;
+};
+
+export type UserFacingError = {
+  code: string;
+  message: string;
+  actionLabel?: string;
+  action?: string;
+};
+
+export type SystemHealthCheck = {
+  ipc: "ok" | "down";
+  worker: "ok" | "down";
+  sqlite: "ok" | "missing_native" | "error";
+  writable: "ok" | "error";
+  details: string[];
+};
+
 export type IngestResult = {
   documentId: string;
   snapshotId: string;
@@ -42,13 +62,23 @@ export type SearchQueryResponse = {
   results: SearchResult[];
 };
 
-export type AskResponse = {
-  answerType: "not_found" | "snippets";
-  answer: string;
-  confidence: number;
-  citations: Array<{ chunkId: string; quoteStart: number; quoteEnd: number }>;
-  snippets?: SearchResult[];
-};
+export type Citation = { chunkId: string; quoteStart: number; quoteEnd: number };
+
+export type AskResponse =
+  | {
+      kind: "answer";
+      answer: string;
+      confidence: number;
+      citations: Citation[];
+    }
+  | {
+      kind: "snippets";
+      snippets: SearchResult[];
+    }
+  | {
+      kind: "not_found";
+      reason: string;
+    };
 
 export type SceneSummary = {
   id: string;
@@ -66,6 +96,17 @@ export type SceneSummary = {
   setting_text: string | null;
 };
 
+export type EvidenceItem = {
+  chunkId: string;
+  documentPath: string | null;
+  chunkOrdinal: number | null;
+  quoteStart: number;
+  quoteEnd: number;
+  excerpt: string;
+  lineStart: number | null;
+  lineEnd: number | null;
+};
+
 export type SceneDetail = {
   scene: SceneSummary;
   chunks: Array<{
@@ -75,16 +116,7 @@ export type SceneDetail = {
     start_char: number;
     end_char: number;
   }>;
-  evidence: Array<{
-    chunkId: string;
-    documentPath: string | null;
-    chunkOrdinal: number | null;
-    quoteStart: number;
-    quoteEnd: number;
-    excerpt: string;
-    lineStart: number | null;
-    lineEnd: number | null;
-  }>;
+  evidence: EvidenceItem[];
 };
 
 export type IssueSummary = {
@@ -97,16 +129,7 @@ export type IssueSummary = {
   status: string;
   created_at: number;
   updated_at: number;
-  evidence: Array<{
-    chunkId: string;
-    documentPath: string | null;
-    chunkOrdinal: number | null;
-    quoteStart: number;
-    quoteEnd: number;
-    excerpt: string;
-    lineStart: number | null;
-    lineEnd: number | null;
-  }>;
+  evidence: EvidenceItem[];
 };
 
 export type StyleReport = {
@@ -140,18 +163,33 @@ export type EntityDetail = {
       supersedes_claim_id: string | null;
     };
     value: unknown;
-    evidence: Array<{
-      chunkId: string;
-      documentPath: string | null;
-      chunkOrdinal: number | null;
-      quoteStart: number;
-      quoteEnd: number;
-      excerpt: string;
-      lineStart: number | null;
-      lineEnd: number | null;
-    }>;
+    evidence: EvidenceItem[];
   }>;
 };
+
+export type ExportResult =
+  | {
+      ok: true;
+      files: string[];
+      elapsedMs: number;
+    }
+  | {
+      ok: false;
+      error: string;
+    };
+
+function requireIpc(): NonNullable<Window["canonkeeper"]> {
+  if (!window.canonkeeper) {
+    throw new Error("IPC not available");
+  }
+  return window.canonkeeper;
+}
+
+function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
 
 export async function ping(): Promise<PingResponse> {
   if (!window.canonkeeper) {
@@ -161,48 +199,73 @@ export async function ping(): Promise<PingResponse> {
 }
 
 export async function getBundledFixturePath(): Promise<string | null> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.getFixturePath();
+  return requireIpc().getFixturePath();
 }
 
 export async function pickProjectRoot(): Promise<string | null> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.dialog.pickProjectRoot();
+  return requireIpc().dialog.pickProjectRoot();
 }
 
 export async function pickDocumentPath(): Promise<string | null> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.dialog.pickDocument();
+  return requireIpc().dialog.pickDocument();
 }
 
 export async function pickExportDirPath(): Promise<string | null> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.dialog.pickExportDir();
+  return requireIpc().dialog.pickExportDir();
 }
 
 export async function createOrOpenProject(payload: {
   rootPath: string;
   name?: string;
 }): Promise<ProjectSummary> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.project.createOrOpen(payload);
+  return requireIpc().project.createOrOpen(payload);
 }
 
 export async function getWorkerStatus(): Promise<WorkerStatus> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
+  return requireIpc().project.getStatus();
+}
+
+export async function* subscribeProjectStatus(options?: {
+  intervalMs?: number;
+  signal?: AbortSignal;
+}): AsyncIterable<WorkerStatusEvent> {
+  const intervalMs = options?.intervalMs ?? 2000;
+  const ipc = requireIpc();
+  const readStatus =
+    typeof ipc.project.subscribeStatus === "function"
+      ? () => ipc.project.subscribeStatus()
+      : () => ipc.project.getStatus();
+  while (!options?.signal?.aborted) {
+    const status = await readStatus();
+    yield { status, observedAt: Date.now() };
+    await wait(intervalMs);
   }
-  return window.canonkeeper.project.getStatus();
+}
+
+export async function getHealthCheck(): Promise<SystemHealthCheck> {
+  if (!window.canonkeeper) {
+    return {
+      ipc: "down",
+      worker: "down",
+      sqlite: "error",
+      writable: "error",
+      details: [
+        "IPC bridge is unavailable. Launch CanonKeeper through Electron (or attach the RPC bridge)."
+      ]
+    };
+  }
+  if (!window.canonkeeper.system || typeof window.canonkeeper.system.healthCheck !== "function") {
+    return {
+      ipc: "ok",
+      worker: "ok",
+      sqlite: "error",
+      writable: "error",
+      details: [
+        "Health check endpoint is not available in this runtime. Update to the latest preload bridge."
+      ]
+    };
+  }
+  return window.canonkeeper.system.healthCheck();
 }
 
 export async function getProcessingState(): Promise<
@@ -216,10 +279,7 @@ export async function getProcessingState(): Promise<
     document_path: string;
   }>
 > {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.project.getProcessingState();
+  return requireIpc().project.getProcessingState();
 }
 
 export async function getProjectHistory(): Promise<{
@@ -239,45 +299,27 @@ export async function getProjectHistory(): Promise<{
     payload_json: string;
   }>;
 }> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.project.getHistory();
+  return requireIpc().project.getHistory();
 }
 
 export async function addDocument(payload: { path: string }): Promise<IngestResult> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.project.addDocument(payload);
+  return requireIpc().project.addDocument(payload);
 }
 
 export async function querySearch(query: string): Promise<SearchQueryResponse> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.search.query({ query });
+  return requireIpc().search.query({ query });
 }
 
 export async function askQuestion(question: string): Promise<AskResponse> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.search.ask({ question });
+  return requireIpc().search.ask({ question });
 }
 
 export async function listScenes(): Promise<SceneSummary[]> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.scenes.list();
+  return requireIpc().scenes.list();
 }
 
 export async function getScene(sceneId: string): Promise<SceneDetail | null> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.scenes.get({ sceneId });
+  return requireIpc().scenes.get({ sceneId });
 }
 
 export async function listIssues(payload?: {
@@ -285,45 +327,31 @@ export async function listIssues(payload?: {
   type?: string;
   severity?: "low" | "medium" | "high";
 }): Promise<IssueSummary[]> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.issues.list(payload);
+  return requireIpc().issues.list(payload);
 }
 
-export async function dismissIssue(issueId: string): Promise<{ ok: boolean }> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.issues.dismiss({ issueId });
+export async function dismissIssue(issueId: string, reason?: string): Promise<{ ok: boolean }> {
+  return requireIpc().issues.dismiss({ issueId, reason });
+}
+
+export async function undoDismissIssue(issueId: string): Promise<{ ok: boolean }> {
+  return requireIpc().issues.undoDismiss({ issueId });
 }
 
 export async function resolveIssue(issueId: string): Promise<{ ok: boolean }> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.issues.resolve({ issueId });
+  return requireIpc().issues.resolve({ issueId });
 }
 
 export async function getStyleReport(): Promise<StyleReport> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.style.getReport();
+  return requireIpc().style.getReport();
 }
 
 export async function listEntities(): Promise<EntitySummary[]> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.bible.listEntities();
+  return requireIpc().bible.listEntities();
 }
 
 export async function getEntity(entityId: string): Promise<EntityDetail> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.bible.getEntity({ entityId });
+  return requireIpc().bible.getEntity({ entityId });
 }
 
 export async function confirmClaim(payload: {
@@ -332,15 +360,9 @@ export async function confirmClaim(payload: {
   valueJson: string;
   sourceClaimId: string;
 }): Promise<string> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.canon.confirmClaim(payload);
+  return requireIpc().canon.confirmClaim(payload);
 }
 
-export async function runExport(outDir: string, kind?: "md" | "json"): Promise<{ ok: boolean }> {
-  if (!window.canonkeeper) {
-    throw new Error("IPC not available");
-  }
-  return window.canonkeeper.export.run({ outDir, kind });
+export async function runExport(outDir: string, kind?: "md" | "json"): Promise<ExportResult> {
+  return requireIpc().export.run({ outDir, kind });
 }

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="CanonKeeper">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f5d5d" />
+      <stop offset="1" stop-color="#8a5a05" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="12" fill="#f7f3eb" stroke="#d8ccba" stroke-width="2" />
+  <path d="M17 15h30a4 4 0 0 1 4 4v26a4 4 0 0 1-4 4H17a4 4 0 0 1-4-4V19a4 4 0 0 1 4-4z" fill="url(#g)" />
+  <path d="M22 22h20v3H22zm0 7h20v3H22zm0 7h14v3H22z" fill="#f2ecdf" />
+</svg>
