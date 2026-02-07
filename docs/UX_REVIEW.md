@@ -730,4 +730,73 @@ No changes recommended.
 
 ---
 
-*This review is based on a thorough reading of all renderer source files as of 2026-02-06. Component names and line numbers reference the current codebase and will need to be updated if the code changes before implementation begins.*
+---
+
+## Addendum: Live Browser Testing Findings (2026-02-06)
+
+The following observations were made by navigating the running application in Chrome (Vite dev server on localhost:5174) and comparing it with the proposed theme preview.
+
+### A.1 Status Bar Is Worse Than Expected
+
+The raw status ribbon between the TopBar and main content renders as bare, unstyled text: `down`, `queue:0`, `last-success:Never`. In code this looked like a styled status bar, but in the actual rendered UI these are floating key:value pairs with minimal visual structure. This should be the first thing removed — it reads as a debug output strip.
+
+### A.2 Command Palette Subtitles Need the Language Treatment
+
+The `APP_SECTIONS` subtitles feed directly into the command palette (Cmd+K) as the secondary text for each item. Live rendering confirms these are prominent:
+
+| Section | Current Subtitle | Recommended |
+|---|---|---|
+| Dashboard | "Pipeline overview" | "Your project at a glance" |
+| Setup | "Onboarding and diagnostics" | "Get started" |
+| Search | "Retrieval and ask" | "Search your manuscript" |
+| Scenes | "Scene index" | "Browse scenes" |
+| Issues | "Continuity and style flags" | "Review editorial issues" |
+| Style | "Diagnostic metrics" | "Writing style patterns" |
+| Bible | "Entities and claims" | "Characters and world" |
+| Exports | "Markdown and JSON" | "Export your data" |
+| Settings | "Runtime health" | "Preferences" |
+
+The "Run Diagnostics" command shows the subtitle "Check IPC, worker, sqlite, and writable state" — this should be hidden from the palette entirely, or reworded to "Check system health."
+
+### A.3 Setup Diagnostics Auto-Surface Developer State
+
+Even without explicitly running diagnostics, the Setup view already displays the health check grid with "ipc: down", "worker: down", "sqlite: error", "writable: error" and the recommendation "Launch CanonKeeper through Electron or attach the RPC bridge." This is because the diagnostics results persist and are shown whenever available. For a writer opening the app outside of Electron (unlikely in production but possible), this is a wall of incomprehensible developer text. The diagnostics should only appear on explicit request and use writer-facing language.
+
+### A.4 Setup "warn" Badge Label Leak
+
+On Setup step 2, the `StatusBadge` renders with the text "warn" — this is the CSS tone name leaking through as the displayed label. It should display "Waiting" or "Pending" instead.
+
+### A.5 Sidebar Keyboard Hints Rendering Artifacts
+
+The keyboard shortcut section at the bottom of the sidebar renders with fragment issues. The `<kbd>` elements combine oddly with surrounding text, appearing as "+ palette", "/ sections", "/ list nav" in the accessibility tree. The visual rendering may be fine (not verifiable without screenshots), but the accessible text is malformed.
+
+### A.6 Theme Preview Comparison
+
+Comparing the current app (tan/teal) and the proposed theme (ivory/plum) side by side in Chrome confirms:
+
+- The current `#f7f3eb` background has a noticeable yellow-brown cast that dominates the viewport
+- The proposed `#FAF9F6` is perceptibly warmer and cleaner — closer to actual paper
+- The current teal accent (`#0f5d5d`) reads as cold against the warm surfaces, creating visual tension
+- The proposed plum accent (`#7B506F`) harmonizes naturally with the warm ivory
+- The current dark mode `#141a1a` has a greenish tint visible in the browser; the proposed `#1A1A1F` is neutral
+- The proposed dark mode plum (`#C48DB5`) is softer and more inviting than the current mint `#3db8a0`
+
+### A.7 Empty State Copy (Confirmed in Live UI)
+
+Every jargon-heavy empty state message identified in the code review was confirmed in the live rendering:
+
+- Issues: "Ingest additional evidence-backed documents to generate issues."
+- Bible: "Run extraction or relax filters to see entities."
+- Style: "Run style stage by ingesting documents first."
+- Dashboard Pipeline: "Ingest at least one document to populate deterministic scene/style/extraction stages."
+- Export: "Run an export to see generated file paths and elapsed time."
+
+These need the plain-language rewrites specified in Section 4.
+
+### A.8 New Recommendation: First-Run Experience
+
+When no project is open, the Dashboard shows a grid of empty cards ("No project opened yet", "No ingestion has run yet") plus empty timeline and event log sections. Combined with the "down" status badge, this is a bleak first impression. The app should detect the no-project state and show the Setup wizard (or a simplified welcome screen) automatically instead of an empty Dashboard.
+
+---
+
+*This review is based on source code analysis and live browser testing of the CanonKeeper renderer (Vite dev server) as of 2026-02-06. The live testing addendum was performed via Chrome browser automation. Component names and line numbers reference the current codebase and will need to be updated if the code changes before implementation begins.*
