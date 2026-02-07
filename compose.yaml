@@ -5,6 +5,11 @@ x-workspace-build: &workspace-build
   dockerfile: Dockerfile
   target: workspace
 
+x-workspace-env: &workspace-env
+  - CANONKEEPER_LLM_API_KEY
+  - CANONKEEPER_LLM_BASE_URL
+  - CANONKEEPER_LLM_MODEL
+
 services:
   dev:
     image: canonkeeper/dev:local
@@ -12,6 +17,7 @@ services:
     command: ["bun", "run", "dev:container"]
     ports:
       - "5173:5173"
+    environment: *workspace-env
   lint:
     image: canonkeeper/lint:local
     build: *workspace-build
