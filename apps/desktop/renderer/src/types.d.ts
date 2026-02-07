@@ -2,11 +2,14 @@ export {};
 
 type WorkerStatus = {
   state: "idle" | "busy";
+  phase: "idle" | "ingest" | "extract" | "style" | "continuity" | "export" | "error";
   lastJob?: string;
+  activeJobLabel: string | null;
   projectId?: string | null;
   queueDepth?: number;
+  lastSuccessfulRunAt: string | null;
   workerState?: "ready" | "restarting" | "down";
-  lastError?: string | null;
+  lastError: { subsystem: string; message: string } | null;
 };
 
 type SearchResult = {
@@ -43,6 +46,10 @@ type SystemHealthCheck = {
   details: string[];
 };
 
+type ProjectDiagnostics = SystemHealthCheck & {
+  recommendations: string[];
+};
+
 type ExportRunResult =
   | {
       ok: true;
@@ -74,6 +81,7 @@ declare global {
         }>;
         getStatus: () => Promise<WorkerStatus>;
         subscribeStatus: () => Promise<WorkerStatus>;
+        getDiagnostics: () => Promise<ProjectDiagnostics>;
         getProcessingState: () => Promise<
           Array<{
             document_id: string;

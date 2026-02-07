@@ -48,10 +48,24 @@ import { runContinuityChecks } from "./pipeline/continuity";
 import path from "node:path";
 import { createRequire } from "node:module";
 
+export type WorkerPhase =
+  | "idle"
+  | "ingest"
+  | "extract"
+  | "style"
+  | "continuity"
+  | "export"
+  | "error";
+
 export type WorkerStatus = {
   state: "idle" | "busy";
+  phase: WorkerPhase;
   lastJob?: string;
+  activeJobLabel: string | null;
   queueDepth?: number;
+  projectId?: string | null;
+  lastSuccessfulRunAt: string | null;
+  lastError: { subsystem: string; message: string } | null;
 };
 
 export type SystemHealthCheck = {
@@ -62,9 +76,23 @@ export type SystemHealthCheck = {
   details: string[];
 };
 
-let status: WorkerStatus = { state: "idle" };
+export type ProjectDiagnostics = SystemHealthCheck & {
+  recommendations: string[];
+};
+
+let status: WorkerStatus = {
+  state: "idle",
+  phase: "idle",
+  activeJobLabel: null,
+  queueDepth: 0,
+  projectId: null,
+  lastSuccessfulRunAt: null,
+  lastError: null
+};
 let currentProjectId: string | null = null;
 let currentProjectRoot: string | null = null;
+let lastSuccessfulRunAt: string | null = null;
+let statusError: { subsystem: string; message: string } | null = null;
 type WorkerSession = {
   handle: DatabaseHandle;
   watcher: FSWatcher;
@@ -76,12 +104,96 @@ let session: WorkerSession | null = null;
 const debounceTimers = new Map<string, NodeJS.Timeout>();
 const requireFromEsm = createRequire(import.meta.url);
 
-function setStatus(next: WorkerStatus): void {
-  status = next;
+function mapPhase(lastJob: string | undefined, state: "idle" | "busy"): WorkerPhase {
+  if (statusError && state === "idle") {
+    return "error";
+  }
+  if (state === "idle") {
+    return "idle";
+  }
+
+  switch (lastJob) {
+    case "INGEST_DOCUMENT":
+    case "project.addDocument":
+      return "ingest";
+    case "RUN_SCENES":
+    case "RUN_EXTRACTION":
+      return "extract";
+    case "RUN_STYLE":
+      return "style";
+    case "RUN_CONTINUITY":
+      return "continuity";
+    case "export.run":
+      return "export";
+    default:
+      return "extract";
+  }
+}
+
+function toActiveJobLabel(lastJob?: string): string | null {
+  switch (lastJob) {
+    case "INGEST_DOCUMENT":
+    case "project.addDocument":
+      return "Ingest manuscript";
+    case "RUN_SCENES":
+      return "Rebuild scene index";
+    case "RUN_EXTRACTION":
+      return "Extract entities and claims";
+    case "RUN_STYLE":
+      return "Refresh style diagnostics";
+    case "RUN_CONTINUITY":
+      return "Run continuity checks";
+    case "export.run":
+      return "Export project";
+    case "project.createOrOpen":
+      return "Open project";
+    case "project.getProcessingState":
+      return "Load processing timeline";
+    case "project.getHistory":
+      return "Load event history";
+    default:
+      return null;
+  }
+}
+
+function toStatusError(subsystem: string, error: unknown): { subsystem: string; message: string } {
+  return {
+    subsystem,
+    message: error instanceof Error ? error.message : "Unknown error"
+  };
+}
+
+function setStatus(next: { state: "idle" | "busy"; lastJob?: string; phase?: WorkerPhase }): void {
+  status = {
+    ...status,
+    state: next.state,
+    lastJob: next.lastJob,
+    phase: next.phase ?? mapPhase(next.lastJob, next.state),
+    activeJobLabel: toActiveJobLabel(next.lastJob),
+    queueDepth: status.queueDepth ?? 0,
+    projectId: currentProjectId,
+    lastSuccessfulRunAt,
+    lastError: statusError
+  };
+}
+
+function markSuccess(): void {
+  lastSuccessfulRunAt = new Date().toISOString();
+  statusError = null;
+}
+
+function markFailure(subsystem: string, error: unknown): void {
+  statusError = toStatusError(subsystem, error);
 }
 
 function getStatus(): WorkerStatus {
-  return status;
+  return {
+    ...status,
+    queueDepth: session ? getQueueDepth(session.handle.db) : 0,
+    projectId: currentProjectId,
+    lastSuccessfulRunAt,
+    lastError: statusError
+  };
 }
 
 function runSystemHealthCheck(): SystemHealthCheck {
@@ -128,6 +240,26 @@ function runSystemHealthCheck(): SystemHealthCheck {
     sqlite,
     writable,
     details
+  };
+}
+
+function getProjectDiagnostics(): ProjectDiagnostics {
+  const health = runSystemHealthCheck();
+  const recommendations = [...health.details];
+
+  if (health.details.length === 0) {
+    recommendations.push("Environment checks passed. Add manuscript files to begin ingestion.");
+  }
+  if (health.worker !== "ok") {
+    recommendations.push("Restart CanonKeeper to recover the worker process.");
+  }
+  if (health.writable !== "ok") {
+    recommendations.push("Choose a project folder with read/write permissions.");
+  }
+
+  return {
+    ...health,
+    recommendations
   };
 }
 
@@ -348,8 +480,10 @@ async function handleJob(job: WorkerJob): Promise<WorkerJobResult> {
       payload: { type: job.type }
     });
 
+    markSuccess();
     return result;
   } catch (error) {
+    markFailure(`pipeline.${job.type.toLowerCase()}`, error);
     logEvent(db, {
       projectId,
       level: "error",
@@ -496,17 +630,11 @@ async function dispatch(method: WorkerMethods, params?: unknown): Promise<unknow
       }
       return await handleCreateOrOpen(params as { rootPath: string; name?: string });
     case "project.getStatus":
-      return {
-        ...getStatus(),
-        projectId: currentProjectId,
-        queueDepth: session ? getQueueDepth(session.handle.db) : 0
-      };
+      return getStatus();
     case "project.subscribeStatus":
-      return {
-        ...getStatus(),
-        projectId: currentProjectId,
-        queueDepth: session ? getQueueDepth(session.handle.db) : 0
-      };
+      return getStatus();
+    case "project.getDiagnostics":
+      return getProjectDiagnostics();
     case "system.healthCheck":
       return runSystemHealthCheck();
     case "project.getProcessingState":
@@ -746,7 +874,9 @@ process.on("message", async (message: RpcRequest) => {
 
   const response: RpcResponse = { id };
   const shouldTrackRpcAsBusy =
-    method !== "project.getStatus" && method !== "project.subscribeStatus";
+    method !== "project.getStatus" &&
+    method !== "project.subscribeStatus" &&
+    method !== "project.getDiagnostics";
 
   try {
     if (shouldTrackRpcAsBusy) {
@@ -754,10 +884,12 @@ process.on("message", async (message: RpcRequest) => {
     }
     response.result = await dispatch(method as WorkerMethods, params);
     if (shouldTrackRpcAsBusy) {
+      markSuccess();
       setStatus({ state: "idle", lastJob: method });
     }
   } catch (error) {
     if (shouldTrackRpcAsBusy) {
+      markFailure(`rpc.${method}`, error);
       setStatus({ state: "idle", lastJob: method });
     }
     response.error = { message: error instanceof Error ? error.message : "Unknown error" };

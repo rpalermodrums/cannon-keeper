@@ -10,6 +10,71 @@ const __dirname = path.dirname(__filename);
 let mainWindow: BrowserWindow | null = null;
 let workerClient: WorkerClient | null = null;
 
+type WorkerStatusPayload = {
+  state: "idle" | "busy";
+  phase: "idle" | "ingest" | "extract" | "style" | "continuity" | "export" | "error";
+  lastJob?: string;
+  activeJobLabel: string | null;
+  projectId: string | null;
+  queueDepth: number;
+  workerState: "ready" | "restarting" | "down";
+  lastSuccessfulRunAt: string | null;
+  lastError: { subsystem: string; message: string } | null;
+};
+
+type DiagnosticsPayload = {
+  ipc: "ok" | "down";
+  worker: "ok" | "down";
+  sqlite: "ok" | "missing_native" | "error";
+  writable: "ok" | "error";
+  details: string[];
+  recommendations: string[];
+};
+
+function coerceWorkerStatus(
+  workerState: "ready" | "restarting" | "down",
+  rawStatus: Record<string, unknown> | null,
+  runtimeError: string | null
+): WorkerStatusPayload {
+  const source = rawStatus ?? {};
+  const structuredError =
+    source.lastError && typeof source.lastError === "object"
+      ? (source.lastError as { subsystem: string; message: string })
+      : runtimeError
+        ? { subsystem: "worker", message: runtimeError }
+        : null;
+
+  const state =
+    workerState === "restarting"
+      ? "busy"
+      : source.state === "busy"
+        ? "busy"
+        : "idle";
+
+  return {
+    state,
+    phase:
+      workerState === "down"
+        ? "error"
+        : source.phase === "ingest" ||
+            source.phase === "extract" ||
+            source.phase === "style" ||
+            source.phase === "continuity" ||
+            source.phase === "export" ||
+            source.phase === "error"
+          ? source.phase
+          : "idle",
+    lastJob: typeof source.lastJob === "string" ? source.lastJob : undefined,
+    activeJobLabel: typeof source.activeJobLabel === "string" ? source.activeJobLabel : null,
+    projectId: typeof source.projectId === "string" ? source.projectId : null,
+    queueDepth: typeof source.queueDepth === "number" ? source.queueDepth : 0,
+    workerState,
+    lastSuccessfulRunAt:
+      typeof source.lastSuccessfulRunAt === "string" ? source.lastSuccessfulRunAt : null,
+    lastError: structuredError
+  };
+}
+
 function installDevtoolsConsoleNoiseFilter(): void {
   // Chromium devtools may emit unsupported protocol warnings in Electron dev mode.
   app.on("web-contents-created", (_event, contents) => {
@@ -108,47 +173,64 @@ app.whenReady().then(() => {
       throw new Error("Worker not initialized");
     }
     const workerState = workerClient.getState();
-    if (workerState !== "ready") {
-      return {
-        state: "idle",
-        lastJob: undefined,
-        projectId: null,
-        queueDepth: 0,
-        workerState,
-        lastError: workerClient.getLastError()
-      };
-    }
-    const status = (await workerClient.request("project.getStatus")) as Record<string, unknown>;
-    return {
-      ...status,
-      workerState,
-      lastError: workerClient.getLastError()
-    };
+    const runtimeError = workerClient.getLastError();
+    const status =
+      workerState === "ready"
+        ? ((await workerClient.request("project.getStatus")) as Record<string, unknown>)
+        : null;
+    return coerceWorkerStatus(workerState, status, runtimeError);
   });
   ipcMain.handle("project:subscribeStatus", async () => {
     if (!workerClient) {
       throw new Error("Worker not initialized");
     }
     const workerState = workerClient.getState();
-    if (workerState !== "ready") {
-      return {
-        state: "idle",
-        lastJob: undefined,
-        projectId: null,
-        queueDepth: 0,
-        workerState,
-        lastError: workerClient.getLastError()
-      };
+    const runtimeError = workerClient.getLastError();
+    const status =
+      workerState === "ready"
+        ? ((await workerClient.request("project.subscribeStatus")) as Record<string, unknown>)
+        : null;
+    return coerceWorkerStatus(workerState, status, runtimeError);
+  });
+  ipcMain.handle("project:getDiagnostics", async () => {
+    if (!workerClient) {
+      throw new Error("Worker not initialized");
     }
-    const status = (await workerClient.request("project.subscribeStatus")) as Record<
+    const workerState = workerClient.getState();
+    if (workerState !== "ready") {
+      const runtimeError = workerClient.getLastError();
+      const details = runtimeError ? [runtimeError] : ["Worker process is unavailable."];
+      return {
+        ipc: "ok",
+        worker: "down",
+        sqlite: "error",
+        writable: "error",
+        details,
+        recommendations: [
+          "Restart CanonKeeper to recover the worker process.",
+          "Run diagnostics again after the worker reconnects."
+        ]
+      } as DiagnosticsPayload;
+    }
+    const diagnostics = (await workerClient.request("project.getDiagnostics")) as Record<
       string,
       unknown
     >;
     return {
-      ...status,
-      workerState,
-      lastError: workerClient.getLastError()
-    };
+      ipc: diagnostics.ipc === "down" ? "down" : "ok",
+      worker: diagnostics.worker === "down" ? "down" : "ok",
+      sqlite:
+        diagnostics.sqlite === "missing_native" || diagnostics.sqlite === "error"
+          ? diagnostics.sqlite
+          : "ok",
+      writable: diagnostics.writable === "error" ? "error" : "ok",
+      details: Array.isArray(diagnostics.details)
+        ? diagnostics.details.filter((detail): detail is string => typeof detail === "string")
+        : [],
+      recommendations: Array.isArray(diagnostics.recommendations)
+        ? diagnostics.recommendations.filter((detail): detail is string => typeof detail === "string")
+        : []
+    } as DiagnosticsPayload;
   });
   ipcMain.handle("system:healthCheck", async () => {
     if (!workerClient) {

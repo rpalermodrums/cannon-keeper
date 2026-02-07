@@ -7,13 +7,18 @@ export type ProjectSummary = {
   updated_at: number;
 };
 
+export type WorkerPhase = "idle" | "ingest" | "extract" | "style" | "continuity" | "export" | "error";
+
 export type WorkerStatus = {
   state: "idle" | "busy";
+  phase: WorkerPhase;
   lastJob?: string;
+  activeJobLabel: string | null;
   projectId?: string | null;
   queueDepth?: number;
+  lastSuccessfulRunAt: string | null;
   workerState?: "ready" | "restarting" | "down";
-  lastError?: string | null;
+  lastError: { subsystem: string; message: string } | null;
 };
 
 export type WorkerStatusEvent = {
@@ -34,6 +39,10 @@ export type SystemHealthCheck = {
   sqlite: "ok" | "missing_native" | "error";
   writable: "ok" | "error";
   details: string[];
+};
+
+export type ProjectDiagnostics = SystemHealthCheck & {
+  recommendations: string[];
 };
 
 export type IngestResult = {
@@ -266,6 +275,32 @@ export async function getHealthCheck(): Promise<SystemHealthCheck> {
     };
   }
   return window.canonkeeper.system.healthCheck();
+}
+
+export async function getProjectDiagnostics(): Promise<ProjectDiagnostics> {
+  if (!window.canonkeeper) {
+    return {
+      ipc: "down",
+      worker: "down",
+      sqlite: "error",
+      writable: "error",
+      details: ["IPC bridge is unavailable."],
+      recommendations: ["Launch CanonKeeper through Electron or attach the RPC bridge."]
+    };
+  }
+
+  if (window.canonkeeper.project && typeof window.canonkeeper.project.getDiagnostics === "function") {
+    return window.canonkeeper.project.getDiagnostics();
+  }
+
+  const health = await getHealthCheck();
+  return {
+    ...health,
+    recommendations:
+      health.details.length > 0
+        ? [...health.details]
+        : ["Environment checks passed. Add manuscript files to begin ingestion."]
+  };
 }
 
 export async function getProcessingState(): Promise<

@@ -14,6 +14,7 @@ export type WorkerMethods =
   | "project.createOrOpen"
   | "project.getStatus"
   | "project.subscribeStatus"
+  | "project.getDiagnostics"
   | "project.getProcessingState"
   | "project.getHistory"
   | "project.addDocument"
