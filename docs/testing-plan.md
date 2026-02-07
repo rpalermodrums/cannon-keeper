@@ -88,12 +88,18 @@ Goal:
 
 Required method coverage:
 - `project.createOrOpen`
+- `project.getCurrent`
 - `project.addDocument`
 - `project.getStatus`
 - `project.getProcessingState`
+- `project.stats`
+- `project.evidenceCoverage`
 - `bible.getEntity`
 - `issues.list`
 - `issues.resolve`
+- `issues.undoResolve`
+- `jobs.list`
+- `jobs.cancel`
 - `search.ask`
 - `export.run`
 
@@ -105,6 +111,12 @@ Assertions:
 - Ask:
   - returns only `snippets` or `not_found`
   - no generated prose answers
+- Issue lifecycle:
+  - `undoResolve` returns issue to open status
+  - `clearIssuesByType` preserves resolved/dismissed issues
+- Project:
+  - `project.stats` returns non-negative counts
+  - `project.evidenceCoverage` returns valid ratios (0.0-1.0)
 
 Implementation guidance for next agent:
 - Add dedicated RPC integration tests under `apps/desktop/electron/worker/` (e.g. `rpc.integration.test.ts`).
@@ -120,20 +132,25 @@ Primary approach:
 - Trigger same user actions the UI exposes (project open, add doc, navigate tabs, ask, export).
 
 Scenario:
-1. Open/select project directory.
-2. Add manuscript fixture (`simple_md.md` and `contradiction.md`).
-3. Wait for processing completion in status/history.
-4. Navigate Home → Characters & World → Scenes → Issues → Style → Search.
-5. Confirm one evidence-backed detail.
-6. Resolve one issue.
-7. Ask a question and verify snippets/citations.
-8. Export markdown/json and verify file outputs + citation presence rules.
+0. First launch: welcome modal appears; dismiss it via button or Escape key.
+1. Verify sidebar sections are disabled/dimmed before a project is open.
+2. Open/select project directory.
+3. Add manuscript fixture (`simple_md.md` and `contradiction.md`).
+4. Verify progress banner is visible during processing; skeleton placeholders appear before data loads.
+5. Wait for processing completion in status/history.
+6. Navigate Home → Characters & World → Scenes → Issues → Style → Search.
+7. Confirm one evidence-backed detail.
+8. Resolve one issue.
+9. Ask a question and verify snippets/citations.
+10. Export markdown/json and verify file outputs + citation presence rules.
+11. Reload app and verify session restores (correct project, active view, sidebar state).
 
 Artifacts to capture:
 - Playwright trace
 - screenshots/video
 - exported files
 - `project.getHistory` payload snapshot
+- session persistence state (localStorage snapshot)
 
 Implementation notes:
 - Prefer using the `playwright` skill in Codex sessions for setup/execution.
@@ -152,11 +169,18 @@ bun run dev:local
 ```
 
 Checklist:
+- Welcome modal appears on first run and can be dismissed.
 - First-run flow is understandable (project/doc selection, sample fixture path).
+- Sidebar sections are disabled/dimmed when no project is open.
 - Ingest starts and completes, and views refresh correctly.
+- Progress banner visible during processing with stage/filename/queue depth.
+- Per-action busy spinners are isolated (e.g. search spinner does not block scene view).
 - Evidence excerpts + line metadata are visible and accurate.
 - Ask never returns model-authored prose.
+- Error queue accumulates (max 5, per-error dismiss).
+- Inline resolve confirmation appears before resolving issues.
 - Export files generated and readable.
+- Session restores after reload (correct project, active view, sidebar state).
 
 ## Data Matrix
 - Current fixtures:
@@ -164,6 +188,7 @@ Checklist:
   - `data/fixtures/contradiction.md`
   - `data/fixtures/pov_switch.md`
   - `data/fixtures/tone_shift.md`
+  - `data/fixtures/novel_length_fixture.md`
 - Add in next session:
   - `data/fixtures/mixed_quotes.md` (straight + curly dialogue)
   - `data/fixtures/large_revision.md` (incremental reprocessing coverage)
@@ -184,7 +209,11 @@ Provider matrix:
 
 ## Handoff Checklist For Next Agent
 - Confirm Dockerized gate is green using the CI-equivalent runbook.
-- Implement missing Layer 2 RPC integration tests.
+- `novel_length_fixture.md` is now available in `data/fixtures/`.
+- Persistence + boot decision unit tests exist (`persistence.test.ts`, `bootDecision.test.ts`).
+- Implement missing Layer 2 RPC integration tests (new methods: `project.getCurrent`, `project.stats`, `project.evidenceCoverage`, `jobs.list`, `jobs.cancel`, `issues.undoResolve`).
 - Implement Layer 3 Playwright journey and artifact collection.
-- Add missing fixtures from Data Matrix.
+- Implement Layer 3 assertions for session persistence round-trip (save state, reload, verify restore).
+- Add UI automation coverage for welcome modal, progress banner, sidebar gating.
+- Add missing fixtures from Data Matrix (`mixed_quotes.md`, `large_revision.md`).
 - Wire e2e job into CI schedule (nightly) without blocking PR deterministic gate.

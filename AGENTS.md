@@ -170,7 +170,10 @@ Implement the SQLite schema from the technical spec:
 
 ### IPC contract (minimum)
 Expose these methods to the renderer:
-- `project.createOrOpen(rootPath: string): ProjectSummary`
+- `project.createOrOpen(rootPath: string, opts?: { createIfMissing?: boolean }): ProjectSummary | null`
+- `project.getCurrent(): ProjectSummary | null`
+- `project.stats(): ProjectStats`
+- `project.evidenceCoverage(): EvidenceCoverage`
 - `project.addDocument(path: string): void`
 - `project.getStatus(): WorkerStatus`
 - `bible.listEntities(filters?): EntitySummary[]`
@@ -180,9 +183,12 @@ Expose these methods to the renderer:
 - `scenes.get(sceneId): SceneDetail` (includes evidence)
 - `issues.list(filters?): IssueSummary[]`
 - `issues.dismiss(issueId): void`
+- `issues.undoResolve(issueId): void`
 - `style.getReport(scope?): StyleReport`
 - `search.ask(question: string): AskResult`
 - `export.run(kind: 'md'|'json', outDir: string): ExportResult`
+- `jobs.list(): JobSummary[]`
+- `jobs.cancel(jobId: string): void`
 
 ---
 
@@ -365,6 +371,11 @@ The project is acceptable when:
 - ✅ Ask returns cited answer or not_found without hallucination
 - ✅ Exports produce Markdown + JSON with citations
 - ✅ `bun run test` and `bun run lint` pass
+- ✅ Session persists across reload (project, active view, sidebar state)
+- ✅ Welcome modal appears on first run only
+- ✅ Sidebar sections are gated until project is open
+- ✅ Progress banner shows during processing
+- ✅ Issue lifecycle includes undo resolve
 
 ---
 
@@ -393,4 +404,10 @@ The point of this project is to **empower** the writer by reducing continuity bo
 - Incremental style/continuity: per-document style metrics are merged to project results; continuity checks can target touched entities.
 - Dialogue heuristics: speaker attribution now informs scene presence and dialogue tics.
 - CI: GitHub Actions workflow runs lint, typecheck, and tests.
+- Session persistence: versioned envelope (`canonkeeper.session.v1`) in localStorage with per-project UI state and global state. Boot rehydration restores last project on reload.
+- Writer-friendly language: UI avoids jargon (chunk→passage, pipeline→activity, ngram→phrase, bible→Characters & World).
+- Per-action busy tracking: `Map<ActionNamespace, Set<ActionLabel>>` replaces flat busy state for isolated per-view spinners.
+- New components: ProgressBanner (pipeline progress), WelcomeModal (first-run), Skeleton (loading), ConfirmModal (destructive actions), InlineError (friendly errors).
+- Job queue management: `jobs.list` and `jobs.cancel` RPC methods for queue visibility in Settings.
+- Issue lifecycle: `issues.undoResolve` returns resolved issues to open; `clearIssuesByType` preserves resolved/dismissed.
 ```

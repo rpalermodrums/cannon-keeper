@@ -80,7 +80,7 @@ data/fixtures/       # Test manuscripts
 
 ### Key RPC namespace methods
 
-`project.*`, `system.*`, `search.*`, `scenes.*`, `issues.*`, `style.*`, `bible.*`, `canon.*`, `export.*` — defined in `worker/rpc.ts`, dispatched in `worker/worker.ts`.
+`project.*`, `system.*`, `search.*`, `scenes.*`, `issues.*`, `style.*`, `bible.*`, `canon.*`, `export.*`, `jobs.*` — defined in `worker/rpc.ts`, dispatched in `worker/worker.ts`.
 
 ### Detailed architecture
 

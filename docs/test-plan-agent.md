@@ -15,7 +15,7 @@ Required fixtures:
 - `data/fixtures/contradiction.md`
 - `data/fixtures/pov_switch.md`
 - `data/fixtures/tone_shift.md`
-- `data/fixtures/novel_length_fixture.md`
+- `data/fixtures/novel_length_fixture.md` (exists in repo)
 
 Per-run isolated project root:
 - create temp dir under `/tmp` (or workspace temp directory)
@@ -50,15 +50,31 @@ Hard fail on any non-zero exit.
 Run integration tests focusing on RPC + persistence:
 - `bun run --cwd apps/desktop test -- electron/worker/rpc.integration.test.ts`
 
+Additional RPC methods that must be exercised (directly or via integration harness):
+- `project.getCurrent` — returns active ProjectSummary or null
+- `project.stats` — returns aggregate counts (totalPassages, totalDocuments, totalScenes, totalIssues)
+- `project.evidenceCoverage` — returns evidence ratios for issues and scenes
+- `project.createOrOpen` with `createIfMissing: false` — returns null for non-existent paths
+- `jobs.list` — returns queued/failed jobs with type labels and timestamps
+- `jobs.cancel` — removes a queued job
+- `issues.undoResolve` — returns resolved issue to open status
+
 Record test output in run logs.
 
 ### 5.3 App Flow Simulation
 Use an automation harness (playwright bridge or equivalent) to execute:
 1. Launch app
-2. Create/open isolated project
-3. Add `contradiction.md`
-4. Poll status until idle
-5. Query scenes/issues/entities/style/search/ask/export
+2. Verify welcome modal appears on first launch; dismiss it
+3. Verify sidebar sections are disabled/dimmed before project open
+4. Create/open isolated project
+5. Verify sidebar sections become enabled after project open
+6. Add `contradiction.md`
+7. Verify progress banner is visible during processing (shows stage/filename/queue depth)
+8. Poll status until idle
+9. Verify progress banner auto-hides on completion
+10. Query scenes/issues/entities/style/search/ask/export
+11. Reload app; verify boot/session restore rehydrates previous project and section
+12. Simulate stale project path; verify restore-failed banner with recovery actions
 
 If UI automation is unavailable, call IPC/worker RPC directly in-process and preserve parity checks.
 
@@ -75,15 +91,19 @@ If UI automation is unavailable, call IPC/worker RPC directly in-process and pre
 - At least one snapshot row created
 - Chunk count > 0
 - FTS search for known token returns >= 1 result
+- FTS search for stopword-only query (e.g., "the a an") returns empty results without error
+- FTS search for query with punctuation (e.g., "hello, world!") returns results matching stripped tokens
 
 ### C. Scenes
 - Scene count > 0
 - Scene ordinals are strictly increasing per document
 - At least one scene has evidence when metadata is non-unknown
+- Every scene row includes `pov_confidence` (number, 0-1 range)
 
 ### D. Style
 - `style_report` response returns repetition/tone/dialogue payloads
 - At least one style issue exists for `tone_shift.md` or `novel_length_fixture.md`
+- Every repetition issue has a defined `ngram` (non-empty string) and positive `count` (> 0); no `undefined` values
 
 ### E. Characters & World + Details
 
@@ -96,14 +116,19 @@ If UI automation is unavailable, call IPC/worker RPC directly in-process and pre
 
 - Contradiction fixture yields continuity issue(s)
 - Dismiss transitions issue status to dismissed
-- Undo returns status to open
+- Undo dismiss returns status to open
 - Resolve transitions status to resolved
+- `issues.undoResolve` returns resolved issue to open status
+- `clearIssuesByType` only deletes issues with `status = 'open'`; resolved and dismissed issues are preserved
+- Issue rows include timestamps; `relativeTime()` formatting produces human-readable labels
 
 ### G. Ask
 
 - Known question returns `answer` or `snippets`
 - Unknown question returns `not_found`
 - No response variant includes uncited fabricated narrative
+- Stopword-heavy queries are handled gracefully (stopword filtering + OR-fallback strategy)
+- Punctuation in queries does not cause FTS errors
 
 ### H. Export
 
@@ -118,6 +143,28 @@ After ingesting `novel_length_fixture.md`:
 - Worker reaches idle state within timeout budget (configurable)
 - UI/API endpoints remain responsive
 - No fatal runtime errors in logs
+
+### J. Session Persistence
+
+- `loadSession` / `saveSession` round-trip: save envelope, reload, verify all fields restored
+- `bootDecision` returns correct action for each scenario: adopt-current, restore-last, fresh-start, stale-root
+- Persisted per-project UI state (filters, selections) survives app reload and is scoped by project ID
+- Boot timeout fires after 15 seconds of unresolved restore; app falls back to fresh start
+- Legacy migration: old flat localStorage keys are read into `_legacy` project entry and cleaned up
+
+### K. Evidence Coverage
+
+- `project.evidenceCoverage` returns `{ issues: { total, withEvidence }, scenes: { total, withEvidence } }`
+- Ratios are consistent: `withEvidence <= total` for both domains
+- `project.stats` returns non-negative integers for totalPassages, totalDocuments, totalScenes, totalIssues
+- After ingestion, stats counts are > 0 for relevant domains
+
+### L. Job Queue
+
+- `jobs.list` returns array of queued/failed jobs with type labels and timestamps
+- After enqueuing work, `jobs.list` includes pending entries
+- `jobs.cancel` on a queued job removes it from the list
+- `jobs.cancel` on a non-existent job ID does not error
 
 ## 7. Timeout + Retry Policy
 
@@ -136,6 +183,7 @@ Classify failures as:
 - `api` (IPC/RPC contract)
 - `ui` (render interaction/state wiring)
 - `data` (missing/invalid evidence or export mismatch)
+- `state` (persistence/boot/session restore failures)
 
 Include likely owner and first suspected subsystem.
 
@@ -151,7 +199,7 @@ Include likely owner and first suspected subsystem.
 Run is `PASS` only when:
 
 - static gates succeed
-- all critical assertions (A, B, C, E, F, G, H) pass
+- all critical assertions (A, B, C, E, F, G, H, J, K, L) pass
 - long-form stress (I) passes or is explicitly waived with reason
 - no blocker-level errors in logs
 
