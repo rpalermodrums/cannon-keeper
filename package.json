@@ -23,7 +23,6 @@
     "format:check": "prettier . --check",
     "test": "docker buildx bake test --load && docker compose run --rm test",
     "test:local": "node ./node_modules/vitest/vitest.mjs run",
-    "test:coverage": "docker buildx bake test --load && docker compose run --rm test -- --coverage",
     "test:coverage:local": "node ./node_modules/vitest/vitest.mjs run --coverage",
     "test:agent:local": "bun run apps/desktop/electron/worker/scripts/simulatedJourney.ts",
     "typecheck": "docker buildx bake typecheck --load && docker compose run --rm typecheck",

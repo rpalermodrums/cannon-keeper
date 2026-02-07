@@ -9,4 +9,4 @@ pre-push:
     test:
       run: bun run test
     coverage:
-      run: bun run test:coverage
+      run: bun run test:coverage:local
