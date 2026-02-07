@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CanonKeeper — Theme Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ================================================================
+       CanonKeeper Theme Preview
+       "Morning Pages" (light) & "Late Night Draft" (dark)
+       ================================================================ */
+
+    :root {
+      /* ── Fonts ── */
+      --font-sans: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
+      --font-display: "Fraunces", Georgia, serif;
+      --font-mono: "IBM Plex Mono", "SF Mono", monospace;
+
+      /* ── Surfaces ── */
+      --surface-0: #FAF9F6;
+      --surface-1: #F4F2ED;
+      --surface-2: #FFFFFF;
+      --surface-3: #EDEAE4;
+
+      /* ── Text ── */
+      --text-primary: #2B2B30;
+      --text-secondary: #55545E;
+      --text-muted: #8E8D96;
+      --text-inverse: #FAFAF8;
+
+      /* ── Accent (Muted Plum) ── */
+      --accent: #7B506F;
+      --accent-strong: #5E3B55;
+      --accent-soft: #F0E6ED;
+      --accent-hover: #6B4560;
+
+      /* ── Semantic ── */
+      --ok: #4A7C5E;
+      --ok-strong: #38614A;
+      --ok-soft: #E5F0E9;
+      --warn: #B08830;
+      --warn-strong: #8C6C20;
+      --warn-soft: #F7F0DE;
+      --danger: #A0453A;
+      --danger-strong: #7E3530;
+      --danger-soft: #F5E5E3;
+
+      /* ── Borders ── */
+      --border: #DDD9D2;
+      --border-strong: #C8C4BC;
+
+      /* ── Shadows ── */
+      --shadow-sm: 0 1px 2px rgba(43,43,48,0.07), 0 4px 12px rgba(43,43,48,0.04);
+      --shadow-md: 0 4px 10px rgba(43,43,48,0.08), 0 10px 30px rgba(43,43,48,0.06);
+
+      /* ── Radii ── */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-full: 999px;
+    }
+
+    .dark {
+      --surface-0: #1A1A1F;
+      --surface-1: #222228;
+      --surface-2: #2C2C33;
+      --surface-3: #151518;
+
+      --text-primary: #EAEAE5;
+      --text-secondary: #B0AFA8;
+      --text-muted: #706F68;
+      --text-inverse: #1A1A1F;
+
+      --accent: #C48DB5;
+      --accent-strong: #D8A8CB;
+      --accent-soft: #2E222B;
+      --accent-hover: #CFA0C0;
+
+      --ok: #6FB88A;
+      --ok-strong: #88D0A2;
+      --ok-soft: #1E2E24;
+      --warn: #D4A840;
+      --warn-strong: #E0BC58;
+      --warn-soft: #2E2818;
+      --danger: #D0605A;
+      --danger-strong: #E07872;
+      --danger-soft: #301C1A;
+
+      --border: #36363E;
+      --border-strong: #464650;
+
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.25), 0 4px 12px rgba(0,0,0,0.12);
+      --shadow-md: 0 4px 10px rgba(0,0,0,0.28), 0 10px 30px rgba(0,0,0,0.18);
+    }
+
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; }
+
+    html {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.6;
+      letter-spacing: 0.005em;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 10% 0%, rgba(123,80,111,0.06), transparent 42%),
+        radial-gradient(circle at 90% 100%, rgba(176,136,48,0.04), transparent 42%),
+        var(--surface-0);
+      color: var(--text-primary);
+      min-height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .dark body {
+      background:
+        radial-gradient(circle at 10% 0%, rgba(196,141,181,0.04), transparent 42%),
+        radial-gradient(circle at 90% 100%, rgba(212,168,64,0.03), transparent 42%),
+        var(--surface-0);
+    }
+
+    /* ── Layout Shell ── */
+    .app-shell {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      background: linear-gradient(to bottom, var(--surface-2), var(--surface-1));
+      border-right: 1px solid var(--border);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .sidebar-brand {
+      margin-bottom: 16px;
+    }
+
+    .sidebar-brand h1 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--text-primary);
+    }
+
+    .sidebar-brand p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+    }
+
+    .nav-item:hover {
+      background: var(--surface-2);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      font-weight: 600;
+      border-color: rgba(123,80,111,0.2);
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 6px;
+      bottom: 6px;
+      width: 3px;
+      border-radius: var(--radius-full);
+      background: var(--accent);
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      opacity: 0.5;
+    }
+
+    .nav-item.active .nav-icon {
+      opacity: 1;
+      color: var(--accent);
+    }
+
+    /* ── Main Content ── */
+    .main-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Top Bar ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(250,249,246,0.92);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .dark .topbar {
+      background: rgba(26,26,31,0.92);
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .breadcrumb strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .breadcrumb-sep {
+      opacity: 0.4;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .theme-toggle {
+      display: flex;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .theme-toggle button {
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .theme-toggle button.active {
+      background: var(--accent);
+      color: var(--text-inverse);
+    }
+
+    .cmd-k-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: color 0.15s;
+    }
+
+    .cmd-k-btn:hover { color: var(--text-primary); }
+
+    kbd {
+      display: inline-block;
+      padding: 1px 6px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface-2);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+    }
+
+    /* ── Content Area ── */
+    .content-area {
+      padding: 24px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .page-header {
+      margin-bottom: 20px;
+    }
+
+    .page-header h2 {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .page-header p {
+      margin-top: 4px;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Cards ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+
+    .card-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .card-value {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .card-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ── Status Badges ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-ok {
+      background: var(--ok-soft);
+      color: var(--ok);
+    }
+
+    .badge-warn {
+      background: var(--warn-soft);
+      color: var(--warn-strong);
+    }
+
+    .badge-danger {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .badge-accent {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .badge-neutral {
+      background: var(--surface-3);
+      color: var(--text-muted);
+    }
+
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    .pulse-dot-ok { background: var(--ok); }
+    .pulse-dot-accent { background: var(--accent); }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--text-inverse);
+      border-color: var(--accent);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .btn-secondary {
+      background: var(--surface-2);
+      color: var(--text-secondary);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-1);
+      color: var(--text-primary);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border-color: var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: var(--surface-1);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: var(--text-inverse);
+      border-color: var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: var(--danger-strong);
+    }
+
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 0.75rem;
+    }
+
+    /* ── Section Card (full-width) ── */
+    .section-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 16px;
+    }
+
+    .section-card h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    /* ── Issue List ── */
+    .issue-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--warn);
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: box-shadow 0.15s;
+    }
+
+    .issue-item:hover {
+      box-shadow: var(--shadow-sm);
+    }
+
+    .issue-item.severity-high { border-left-color: var(--danger); }
+    .issue-item.severity-low { border-left-color: var(--ok); }
+
+    .issue-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .issue-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .issue-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    /* ── Evidence Quote ── */
+    .evidence-quote {
+      border-left: 3px solid var(--accent);
+      padding-left: 12px;
+      font-style: italic;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin: 8px 0;
+    }
+
+    /* ── Entity List ── */
+    .entity-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .entity-item:hover {
+      background: var(--surface-1);
+    }
+
+    .entity-item.selected {
+      border-color: var(--accent);
+      border-left: 3px solid var(--accent);
+      background: rgba(123,80,111,0.06);
+    }
+
+    .dark .entity-item.selected {
+      background: rgba(196,141,181,0.08);
+    }
+
+    .entity-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .entity-type {
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    .type-character { background: var(--accent-soft); color: var(--accent); }
+    .type-location { background: var(--warn-soft); color: var(--warn-strong); }
+    .type-object { background: var(--ok-soft); color: var(--ok); }
+
+    /* ── Input Styles ── */
+    .input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.875rem;
+      transition: border-color 0.15s;
+    }
+
+    .input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .input-with-icon {
+      position: relative;
+    }
+
+    .input-with-icon .input {
+      padding-left: 36px;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ── Toggle Pill ── */
+    .toggle-pill {
+      display: inline-flex;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .toggle-pill button {
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .toggle-pill button:hover {
+      color: var(--text-primary);
+    }
+
+    .toggle-pill button.active {
+      background: var(--accent);
+      color: var(--text-inverse);
+    }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 8px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    /* ── Frequency Bar ── */
+    .freq-bar {
+      height: 6px;
+      border-radius: var(--radius-full);
+      background: var(--surface-3);
+      overflow: hidden;
+    }
+
+    .freq-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+
+    /* ── Color Swatches Section ── */
+    .swatch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .swatch {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .swatch-color {
+      height: 48px;
+    }
+
+    .swatch-info {
+      padding: 6px 8px;
+      background: var(--surface-2);
+    }
+
+    .swatch-name {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .swatch-hex {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Animations ── */
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .animate-fade-in {
+      animation: fade-in 0.3s ease-out;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .dark ::-webkit-scrollbar-thumb { background: var(--border-strong); }
+
+    /* ── Comparison Heading ── */
+    .comparison-bar {
+      text-align: center;
+      padding: 20px;
+      background: var(--surface-3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .comparison-bar h2 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--text-primary);
+    }
+
+    .comparison-bar p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ── Split Panel Layout ── */
+    .split-panel {
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) minmax(300px, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .split-panel { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="comparison-bar">
+    <h2>CanonKeeper Theme Preview</h2>
+    <p>Proposed "Morning Pages" (Light) and "Late Night Draft" (Dark) palettes</p>
+  </div>
+
+  <div class="app-shell" id="app">
+
+    <!-- ═══════ Sidebar ═══════ -->
+    <nav class="sidebar">
+      <div class="sidebar-brand">
+        <h1>CanonKeeper</h1>
+        <p>Editorial Companion</p>
+      </div>
+
+      <button class="nav-item active" onclick="setActive(this)">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Home
+      </button>
+      <button class="nav-item" onclick="setActive(this)">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+        Manuscript
+      </button>
+      <button class="nav-item" onclick="setActive(this)">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Characters &amp; World
+      </button>
+      <button class="nav-item" onclick="setActive(this)">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
+        Review
+      </button>
+      <button class="nav-item" onclick="setActive(this)">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        Settings
+      </button>
+
+      <div style="margin-top: auto; padding-top: 16px;">
+        <div style="border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--surface-2); padding: 10px; font-size: 0.75rem; color: var(--text-muted);">
+          <p style="font-weight: 500;">Keyboard</p>
+          <p style="margin-top: 4px;"><kbd>&#8984;</kbd>+<kbd>K</kbd> quick find</p>
+          <p><kbd>[</kbd>/<kbd>]</kbd> sections</p>
+          <p><kbd>J</kbd>/<kbd>K</kbd> navigate</p>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ═══════ Main ═══════ -->
+    <div class="main-content">
+
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="breadcrumb">
+          <span>The Cartographer's Daughter</span>
+          <span class="breadcrumb-sep">&#8250;</span>
+          <strong>Home</strong>
+          <span class="badge badge-ok" style="margin-left: 8px;">
+            <span class="pulse-dot pulse-dot-ok"></span>
+            Ready
+          </span>
+        </div>
+        <div class="topbar-actions">
+          <div class="theme-toggle" id="themeToggle">
+            <button class="active" onclick="setTheme('light', this)">Light</button>
+            <button onclick="setTheme('dark', this)">Dark</button>
+          </div>
+          <button class="cmd-k-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg>
+            <span>&#8984;K</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="content-area animate-fade-in">
+
+        <!-- Page Header -->
+        <div class="page-header">
+          <h2>Home</h2>
+          <p>Your project at a glance. Pick up where you left off.</p>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+              Scenes
+            </div>
+            <div class="card-value">24</div>
+            <div class="card-sub">Across 3 chapters</div>
+          </div>
+          <div class="card">
+            <div class="card-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Characters
+            </div>
+            <div class="card-value">12</div>
+            <div class="card-sub">8 confirmed, 4 discovered</div>
+          </div>
+          <div class="card">
+            <div class="card-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
+              Open Issues
+            </div>
+            <div class="card-value" style="color: var(--warn);">5</div>
+            <div class="card-sub">2 high, 3 medium severity</div>
+          </div>
+        </div>
+
+        <!-- Continue Where You Left Off -->
+        <div class="section-card">
+          <h3>Continue Where You Left Off</h3>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <button class="btn btn-secondary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
+              Resume Issue Triage
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn btn-secondary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Resume Character: Mira
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn btn-secondary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+              Resume Scene #18
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Issues Preview -->
+        <div class="section-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="margin: 0;">Recent Issues</h3>
+            <button class="btn btn-primary btn-sm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Refresh
+            </button>
+          </div>
+
+          <div class="issue-item severity-high">
+            <div style="flex: 1;">
+              <div class="issue-title">Mira's eye color contradicts chapter 1</div>
+              <div class="issue-desc">Described as "green" in scene 3, but "grey" in scene 18. Confirm which is canon.</div>
+              <div class="evidence-quote">"Her green eyes caught the lamplight..."</div>
+              <div class="issue-actions">
+                <button class="btn btn-ghost btn-sm">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/></svg>
+                  Evidence (3)
+                </button>
+                <button class="btn btn-ghost btn-sm">Dismiss</button>
+                <button class="btn btn-ghost btn-sm">Resolve</button>
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <span class="badge badge-danger">High</span>
+              <span class="badge badge-accent">Open</span>
+            </div>
+          </div>
+
+          <div class="issue-item">
+            <div style="flex: 1;">
+              <div class="issue-title">Tone shift in scene 12</div>
+              <div class="issue-desc">Narrative tone shifts abruptly from reflective to urgent mid-paragraph without a scene break.</div>
+              <div class="issue-actions">
+                <button class="btn btn-ghost btn-sm">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/></svg>
+                  Evidence (2)
+                </button>
+                <button class="btn btn-ghost btn-sm">Dismiss</button>
+                <button class="btn btn-ghost btn-sm">Resolve</button>
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <span class="badge badge-warn">Medium</span>
+              <span class="badge badge-accent">Open</span>
+            </div>
+          </div>
+
+          <div class="issue-item severity-low">
+            <div style="flex: 1;">
+              <div class="issue-title">Repeated phrase: "she nodded slowly"</div>
+              <div class="issue-desc">Used 7 times across chapters 1-3. Consider varying the gesture.</div>
+              <div class="issue-actions">
+                <button class="btn btn-ghost btn-sm">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/></svg>
+                  Evidence (7)
+                </button>
+                <button class="btn btn-ghost btn-sm">Dismiss</button>
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <span class="badge badge-ok">Low</span>
+              <span class="badge badge-accent">Open</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Characters & World Preview -->
+        <div class="section-card">
+          <h3>Characters &amp; World</h3>
+          <div class="split-panel">
+            <div>
+              <div class="entity-item selected">
+                <span class="entity-name">Mira Solenne</span>
+                <span class="entity-type type-character">character</span>
+              </div>
+              <div class="entity-item">
+                <span class="entity-name">Captain Aldric</span>
+                <span class="entity-type type-character">character</span>
+              </div>
+              <div class="entity-item">
+                <span class="entity-name">The Brass Workshop</span>
+                <span class="entity-type type-location">location</span>
+              </div>
+              <div class="entity-item">
+                <span class="entity-name">The Chronometer</span>
+                <span class="entity-type type-object">object</span>
+              </div>
+              <div class="entity-item">
+                <span class="entity-name">Port Vellen</span>
+                <span class="entity-type type-location">location</span>
+              </div>
+            </div>
+            <div style="padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-2);">
+              <h3 style="font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; margin-bottom: 12px;">Mira Solenne</h3>
+              <details open style="margin-bottom: 8px; border: 1px solid var(--border); border-radius: var(--radius-sm);">
+                <summary style="padding: 8px 12px; font-size: 0.875rem; font-weight: 600; cursor: pointer; background: var(--surface-1);">appearance</summary>
+                <div style="padding: 10px 12px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 0.875rem;">"Green eyes, dark curly hair"</span>
+                    <span class="badge badge-ok">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                      Confirmed
+                    </span>
+                  </div>
+                  <div class="evidence-quote">"Mira pushed her dark curls behind one ear, green eyes narrowing at the diagram."</div>
+                  <div style="display: flex; gap: 6px; margin-top: 6px;">
+                    <button class="btn btn-ghost btn-sm">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/></svg>
+                      Evidence (4)
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details style="border: 1px solid var(--border); border-radius: var(--radius-sm);">
+                <summary style="padding: 8px 12px; font-size: 0.875rem; font-weight: 600; cursor: pointer; background: var(--surface-1);">occupation</summary>
+                <div style="padding: 10px 12px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.875rem;">"Apprentice cartographer"</span>
+                    <span class="badge badge-warn">Inferred</span>
+                  </div>
+                  <div style="display: flex; gap: 6px; margin-top: 8px;">
+                    <button class="btn btn-ghost btn-sm">Evidence (2)</button>
+                    <button class="btn btn-ghost btn-sm" style="color: var(--accent);">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                      Confirm
+                    </button>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+
+        <!-- Style Report Preview -->
+        <div class="section-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="margin: 0;">Repeated Phrases</h3>
+            <div class="toggle-pill">
+              <button class="active">Count</button>
+              <button>Phrase</button>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Repeated Phrase</th>
+                <th>Count</th>
+                <th style="width: 120px;">Frequency</th>
+                <th>Evidence</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight: 500;">she nodded slowly</td>
+                <td style="font-family: var(--font-mono); font-size: 0.8rem;">7</td>
+                <td><div class="freq-bar"><div class="freq-fill" style="width: 100%;"></div></div></td>
+                <td><button class="btn btn-ghost btn-sm">Open (7)</button></td>
+              </tr>
+              <tr>
+                <td style="font-weight: 500;">the brass gleamed</td>
+                <td style="font-family: var(--font-mono); font-size: 0.8rem;">5</td>
+                <td><div class="freq-bar"><div class="freq-fill" style="width: 71%;"></div></div></td>
+                <td><button class="btn btn-ghost btn-sm">Open (5)</button></td>
+              </tr>
+              <tr>
+                <td style="font-weight: 500;">without looking up</td>
+                <td style="font-family: var(--font-mono); font-size: 0.8rem;">4</td>
+                <td><div class="freq-bar"><div class="freq-fill" style="width: 57%;"></div></div></td>
+                <td><button class="btn btn-ghost btn-sm">Open (4)</button></td>
+              </tr>
+              <tr>
+                <td style="font-weight: 500;">took a deep breath</td>
+                <td style="font-family: var(--font-mono); font-size: 0.8rem;">3</td>
+                <td><div class="freq-bar"><div class="freq-fill" style="width: 43%;"></div></div></td>
+                <td><button class="btn btn-ghost btn-sm">Open (3)</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Search Preview -->
+        <div class="section-card">
+          <h3>Ask About Your Story</h3>
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <div class="input-with-icon" style="flex: 1;">
+              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg>
+              <input class="input" placeholder="Where does Mira first appear?" value="Where does Mira first appear?">
+            </div>
+            <button class="btn btn-primary">Ask</button>
+          </div>
+          <div style="border: 1px solid var(--ok); border-radius: var(--radius-md); background: var(--ok-soft); padding: 16px;">
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ok-strong)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <strong style="font-size: 0.875rem; color: var(--ok-strong);">Answer</strong>
+            </div>
+            <p style="font-size: 0.875rem; margin-bottom: 12px;">Mira first appears in Scene 1 of Chapter 1, in the Brass Workshop. She is introduced examining a partially-assembled chronometer at her workbench.</p>
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 0.75rem; color: var(--text-muted);">Confidence</span>
+                <div class="freq-bar" style="width: 80px;"><div class="freq-fill" style="width: 92%; background: var(--ok);"></div></div>
+                <span style="font-size: 0.75rem; font-weight: 500;">92%</span>
+              </div>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">3 citations</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Color Palette Reference -->
+        <div class="section-card">
+          <h3>Color Palette Reference</h3>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Complete token set for the proposed theme. Toggle dark mode above to compare.</p>
+
+          <h4 style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 8px;">Surfaces</h4>
+          <div class="swatch-grid">
+            <div class="swatch"><div class="swatch-color" style="background: var(--surface-0);"></div><div class="swatch-info"><div class="swatch-name">surface-0</div><div class="swatch-hex light-hex">#FAF9F6</div><div class="swatch-hex dark-hex" style="display:none;">#1A1A1F</div></div></div>
+            <div class="swatch"><div class="swatch-color" style="background: var(--surface-1);"></div><div class="swatch-info"><div class="swatch-name">surface-1</div><div class="swatch-hex light-hex">#F4F2ED</div><div class="swatch-hex dark-hex" style="display:none;">#222228</div></div></div>
+            <div class="swatch"><div class="swatch-color" style="background: var(--surface-2);"></div><div class="swatch-info"><div class="swatch-name">surface-2</div><div class="swatch-hex light-hex">#FFFFFF</div><div class="swatch-hex dark-hex" style="display:none;">#2C2C33</div></div></div>
+            <div class="swatch"><div class="swatch-color" style="background: var(--surface-3);"></div><div class="swatch-info"><div class="swatch-name">surface-3</div><div class="swatch-hex light-hex">#EDEAE4</div><div class="swatch-hex dark-hex" style="display:none;">#151518</div></div></div>
+          </div>
+
+          <h4 style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 8px;">Text</h4>
+          <div class="swatch-grid">
+            <div class="swatch"><div class="swatch-color" style="background: var(--text-primary);"></div><div class="swatch-info"><div class="swatch-name">text-primary</div><div class="swatch-hex light-hex">#2B2B30</div><div class="swatch-hex dark-hex" style="display:none;">#EAEAE5</div></div></div>
+            <div class="swatch"><div class="swatch-color" style="background: var(--text-secondary);"></div><div class="swatch-info"><div class="swatch-name">text-secondary</div><div class="swatch-hex light-hex">#55545E</div><div class="swatch-hex dark-hex" style="display:none;">#B0AFA8</div></div></div>
+            <div class="swatch"><div class="swatch-color" style="background: var(--text-muted);"></div><div class="swatch-info"><div class="swatch-name">text-muted</div><div class="swatch-hex light-hex">#8E8D96</div><div class="swatch-hex dark-hex" style="display:none;">#706F68</div></div></div>
+          </div>
+
+          <h4 style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 8px;">Accent (Muted Plum)</h4>
+          <div class="swatch-grid">
+            <div class="swatch"><div class="swatch-color" style="background: var(--accent);"></div><div class="swatch-info"><div class="swatch-name">accent</div><div class="swatch-hex light-hex">#7B506F</div><div class="swatch-hex dark-hex" style="display:none;">#C48DB5</div></div></div>
+            <div class="swatch"><div class="swatch-color" style="background: var(--accent-strong);"></div><div class="swatch-info"><div class="swatch-name">accent-strong</div><div class="swatch-hex light-hex">#5E3B55</div><div class="swatch-hex dark-hex" style="display:none;">#D8A8CB</div></div></div>
+            <div class="swatch"><div class="swatch-color" style="background: var(--accent-soft);"></div><div class="swatch-info"><div class="swatch-name">accent-soft</div><div class="swatch-hex light-hex">#F0E6ED</div><div class="swatch-hex dark-hex" style="display:none;">#2E222B</div></div></div>
+          </div>
+
+          <h4 style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 8px;">Semantic</h4>
+          <div class="swatch-grid">
+            <div class="swatch"><div class="swatch-color" style="background: var(--ok);"></div><div class="swatch-info"><div class="swatch-name">ok (sage)</div><div class="swatch-hex light-hex">#4A7C5E</div><div class="swatch-hex dark-hex" style="display:none;">#6FB88A</div></div></div>
+            <div class="swatch"><div class="swatch-color" style="background: var(--warn);"></div><div class="swatch-info"><div class="swatch-name">warn (amber)</div><div class="swatch-hex light-hex">#B08830</div><div class="swatch-hex dark-hex" style="display:none;">#D4A840</div></div></div>
+            <div class="swatch"><div class="swatch-color" style="background: var(--danger);"></div><div class="swatch-info"><div class="swatch-name">danger (brick)</div><div class="swatch-hex light-hex">#A0453A</div><div class="swatch-hex dark-hex" style="display:none;">#D0605A</div></div></div>
+            <div class="swatch"><div class="swatch-color" style="background: var(--ok-soft);"></div><div class="swatch-info"><div class="swatch-name">ok-soft</div><div class="swatch-hex light-hex">#E5F0E9</div><div class="swatch-hex dark-hex" style="display:none;">#1E2E24</div></div></div>
+            <div class="swatch"><div class="swatch-color" style="background: var(--warn-soft);"></div><div class="swatch-info"><div class="swatch-name">warn-soft</div><div class="swatch-hex light-hex">#F7F0DE</div><div class="swatch-hex dark-hex" style="display:none;">#2E2818</div></div></div>
+            <div class="swatch"><div class="swatch-color" style="background: var(--danger-soft);"></div><div class="swatch-info"><div class="swatch-name">danger-soft</div><div class="swatch-hex light-hex">#F5E5E3</div><div class="swatch-hex dark-hex" style="display:none;">#301C1A</div></div></div>
+          </div>
+
+          <h4 style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 8px;">Borders &amp; Chrome</h4>
+          <div class="swatch-grid">
+            <div class="swatch"><div class="swatch-color" style="background: var(--border);"></div><div class="swatch-info"><div class="swatch-name">border</div><div class="swatch-hex light-hex">#DDD9D2</div><div class="swatch-hex dark-hex" style="display:none;">#36363E</div></div></div>
+            <div class="swatch"><div class="swatch-color" style="background: var(--border-strong);"></div><div class="swatch-info"><div class="swatch-name">border-strong</div><div class="swatch-hex light-hex">#C8C4BC</div><div class="swatch-hex dark-hex" style="display:none;">#464650</div></div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function setTheme(theme, btn) {
+      const html = document.documentElement;
+      if (theme === 'dark') {
+        html.classList.add('dark');
+      } else {
+        html.classList.remove('dark');
+      }
+
+      document.querySelectorAll('.theme-toggle button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Toggle hex values in swatches
+      document.querySelectorAll('.light-hex').forEach(el => {
+        el.style.display = theme === 'dark' ? 'none' : '';
+      });
+      document.querySelectorAll('.dark-hex').forEach(el => {
+        el.style.display = theme === 'dark' ? '' : 'none';
+      });
+    }
+
+    function setActive(el) {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      el.classList.add('active');
+    }
+  </script>
+</body>
+</html>
