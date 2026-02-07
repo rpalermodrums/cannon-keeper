@@ -5,12 +5,14 @@ import {
   listEntities,
   listDocuments,
   type ListIssueFilters,
+  listIssues,
   listIssuesWithEvidence,
   listScenesForProject,
   openDatabase,
   dismissIssue,
   undoDismissIssue,
   resolveIssue,
+  undoResolveIssue,
   touchProject,
   logEvent,
   getQueueDepth,
@@ -19,7 +21,9 @@ import {
   listSnapshotSummaries,
   markDocumentMissing,
   markDocumentSeen,
-  getDocumentByPath
+  getDocumentByPath,
+  countChunksForProject,
+  countDocumentsForProject
 } from "./storage";
 import { ingestDocument } from "./pipeline/ingest";
 import { PersistentJobQueue } from "./jobs/persistentQueue";
@@ -650,6 +654,16 @@ async function dispatch(method: WorkerMethods, params?: unknown): Promise<unknow
         snapshots: listSnapshotSummaries(session.handle.db, currentProjectId, 50),
         events: listEvents(session.handle.db, currentProjectId, 100)
       };
+    case "project.stats":
+      if (!session || !currentProjectId) {
+        throw new Error("Project not initialized");
+      }
+      return {
+        totalPassages: countChunksForProject(session.handle.db, currentProjectId),
+        totalDocuments: countDocumentsForProject(session.handle.db, currentProjectId),
+        totalScenes: listScenesForProject(session.handle.db, currentProjectId).length,
+        totalIssues: listIssues(session.handle.db, currentProjectId, { status: "open" }).length
+      };
     case "project.addDocument":
       {
         if (!params || typeof params !== "object") {
@@ -779,6 +793,15 @@ async function dispatch(method: WorkerMethods, params?: unknown): Promise<unknow
       }
       resolveIssue(session.handle.db, (params as { issueId: string }).issueId);
       return { ok: true };
+    case "issues.undoResolve":
+      if (!params || typeof params !== "object") {
+        throw new Error("Missing params for issues.undoResolve");
+      }
+      if (!session || !currentProjectId) {
+        throw new Error("Project not initialized");
+      }
+      undoResolveIssue(session.handle.db, (params as { issueId: string }).issueId);
+      return { ok: true };
     case "style.getReport":
       if (!session || !currentProjectId) {
         throw new Error("Project not initialized");
@@ -876,7 +899,8 @@ process.on("message", async (message: RpcRequest) => {
   const shouldTrackRpcAsBusy =
     method !== "project.getStatus" &&
     method !== "project.subscribeStatus" &&
-    method !== "project.getDiagnostics";
+    method !== "project.getDiagnostics" &&
+    method !== "project.stats";
 
   try {
     if (shouldTrackRpcAsBusy) {

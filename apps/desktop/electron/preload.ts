@@ -17,7 +17,8 @@ contextBridge.exposeInMainWorld("canonkeeper", {
     getProcessingState: async () => ipcRenderer.invoke("project:getProcessingState"),
     getHistory: async () => ipcRenderer.invoke("project:getHistory"),
     addDocument: async (payload: { path: string }) =>
-      ipcRenderer.invoke("project:addDocument", payload)
+      ipcRenderer.invoke("project:addDocument", payload),
+    stats: async () => ipcRenderer.invoke("project:stats")
   },
   system: {
     healthCheck: async () => ipcRenderer.invoke("system:healthCheck")
@@ -41,7 +42,9 @@ contextBridge.exposeInMainWorld("canonkeeper", {
       ipcRenderer.invoke("issues:dismiss", payload),
     undoDismiss: async (payload: { issueId: string }) =>
       ipcRenderer.invoke("issues:undoDismiss", payload),
-    resolve: async (payload: { issueId: string }) => ipcRenderer.invoke("issues:resolve", payload)
+    resolve: async (payload: { issueId: string }) => ipcRenderer.invoke("issues:resolve", payload),
+    undoResolve: async (payload: { issueId: string }) =>
+      ipcRenderer.invoke("issues:undoResolve", payload)
   },
   style: {
     getReport: async () => ipcRenderer.invoke("style:getReport")

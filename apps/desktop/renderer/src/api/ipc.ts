@@ -176,6 +176,13 @@ export type EntityDetail = {
   }>;
 };
 
+export type ProjectStats = {
+  totalPassages: number;
+  totalDocuments: number;
+  totalScenes: number;
+  totalIssues: number;
+};
+
 export type ExportResult =
   | {
       ok: true;
@@ -337,6 +344,10 @@ export async function getProjectHistory(): Promise<{
   return requireIpc().project.getHistory();
 }
 
+export async function getProjectStats(): Promise<ProjectStats> {
+  return requireIpc().project.stats();
+}
+
 export async function addDocument(payload: { path: string }): Promise<IngestResult> {
   return requireIpc().project.addDocument(payload);
 }
@@ -375,6 +386,10 @@ export async function undoDismissIssue(issueId: string): Promise<{ ok: boolean }
 
 export async function resolveIssue(issueId: string): Promise<{ ok: boolean }> {
   return requireIpc().issues.resolve({ issueId });
+}
+
+export async function undoResolveIssue(issueId: string): Promise<{ ok: boolean }> {
+  return requireIpc().issues.undoResolve({ issueId });
 }
 
 export async function getStyleReport(): Promise<StyleReport> {

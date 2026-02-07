@@ -12,6 +12,7 @@ import {
   listEntities,
   listScenesForProject,
   listStyleMetrics,
+  logEvent,
   replaceStyleMetric
 } from "../../storage";
 import type { ChunkRecord } from "../../storage/chunkRepo";
@@ -175,6 +176,19 @@ export function runStyleMetrics(
 
   clearIssuesByType(db, projectId, "repetition");
   for (const issue of repetition.issues) {
+    if (!issue.ngram || !Number.isFinite(issue.count) || issue.count <= 0) {
+      logEvent(db, {
+        projectId,
+        level: "warn",
+        eventType: "style.repetition.skip",
+        payload: {
+          reason: "invalid repetition issue fields",
+          ngram: issue.ngram ?? null,
+          count: issue.count ?? null
+        }
+      });
+      continue;
+    }
     const created = insertIssue(db, {
       projectId,
       type: "repetition",

@@ -138,6 +138,7 @@ export function App(): JSX.Element {
                 processingState={app.processingState}
                 history={app.history}
                 lastIngest={app.lastIngest}
+                projectStats={app.projectStats}
                 continueIssueId={app.continueContext.issueId}
                 continueEntityId={app.continueContext.entityId}
                 continueSceneId={app.continueContext.sceneId}

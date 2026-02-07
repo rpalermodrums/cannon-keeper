@@ -15,7 +15,9 @@ export {
   deleteChunksByIds,
   insertChunks,
   updateChunk,
-  getChunkById
+  getChunkById,
+  countChunksForProject,
+  countDocumentsForProject
 } from "./chunkRepo";
 export { logEvent, listEvents } from "./eventLogRepo";
 export {
@@ -54,6 +56,7 @@ export {
   dismissIssue,
   undoDismissIssue,
   resolveIssue,
+  undoResolveIssue,
   deleteIssuesByIds,
   deleteIssuesByTypeAndDocument,
   deleteIssuesByTypeAndChunkIds

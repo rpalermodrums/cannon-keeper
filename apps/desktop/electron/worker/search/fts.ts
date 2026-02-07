@@ -11,13 +11,65 @@ export type SearchResult = {
   score: number;
 };
 
-function sanitizeQuery(query: string): string {
-  const tokens = query
+const STOPWORDS = new Set([
+  "what",
+  "where",
+  "when",
+  "who",
+  "how",
+  "why",
+  "is",
+  "are",
+  "was",
+  "were",
+  "the",
+  "a",
+  "an",
+  "in",
+  "on",
+  "at",
+  "to",
+  "for",
+  "of",
+  "with",
+  "and",
+  "or",
+  "but",
+  "not",
+  "it",
+  "its",
+  "this",
+  "that",
+  "do",
+  "does",
+  "did",
+  "has",
+  "have",
+  "had",
+  "will",
+  "would",
+  "could",
+  "should",
+  "can",
+  "may"
+]);
+
+function stripPunctuation(token: string): string {
+  return token
+    .replace(/['\u2019][st]\b/gi, "")
+    .replace(/[?!.,;:()[\]{}"']/g, "");
+}
+
+export function sanitizeQuery(query: string, join: "AND" | "OR" = "AND"): string {
+  const rawTokens = query
     .split(/\s+/)
-    .map((token) => token.replace(/["']/g, "").trim())
+    .map((token) => stripPunctuation(token).trim())
     .filter(Boolean);
-  if (tokens.length === 0) return "";
-  return tokens.map((token) => `"${token}"`).join(" AND ");
+  if (rawTokens.length === 0) return "";
+
+  const filtered = rawTokens.filter((t) => !STOPWORDS.has(t.toLowerCase()));
+  const tokens = filtered.length > 0 ? filtered : rawTokens;
+  return tokens.map((token) => `"${token}"`).join(` ${join} `);
 }
 
 export function searchChunks(
@@ -42,6 +94,8 @@ export function searchChunks(
     attempts.push(value);
   };
 
+  const orQuery = sanitizeQuery(trimmedQuery, "OR");
+
   if (preferSanitized) {
     pushAttempt(sanitizedQuery);
     pushAttempt(trimmedQuery);
@@ -49,6 +103,8 @@ export function searchChunks(
     pushAttempt(trimmedQuery);
     pushAttempt(sanitizedQuery);
   }
+
+  pushAttempt(orQuery);
 
   if (attempts.length === 0) {
     return [];
@@ -77,7 +133,8 @@ export function searchChunks(
 
   for (const candidate of attempts) {
     try {
-      return stmt.all(candidate, limit) as SearchResult[];
+      const rows = stmt.all(candidate, limit) as SearchResult[];
+      if (rows.length > 0) return rows;
     } catch (error) {
       failures.push({
         query: candidate,
@@ -86,7 +143,7 @@ export function searchChunks(
     }
   }
 
-  if (projectId) {
+  if (projectId && failures.length > 0) {
     logEvent(db, {
       projectId,
       level: "warn",

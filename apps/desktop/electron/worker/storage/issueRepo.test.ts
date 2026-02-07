@@ -3,9 +3,11 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import {
+  clearIssuesByType,
   createProject,
   dismissIssue,
   undoDismissIssue,
+  undoResolveIssue,
   insertIssue,
   listIssues,
   openDatabase,
@@ -73,5 +75,103 @@ describe("issue repository filters", () => {
 
     const openIssues = listIssues(setup.db, setup.projectId);
     expect(openIssues.some((issue) => issue.id === dismissed.id)).toBe(true);
+  });
+
+  it("undoes a resolved issue back to open", () => {
+    const setup = setupDb();
+    tempRoots.push(setup.rootPath);
+    const resolved = insertIssue(setup.db, {
+      projectId: setup.projectId,
+      type: "continuity",
+      severity: "medium",
+      title: "Resolved",
+      description: "Resolved"
+    });
+
+    resolveIssue(setup.db, resolved.id);
+    undoResolveIssue(setup.db, resolved.id);
+
+    const openIssues = listIssues(setup.db, setup.projectId);
+    expect(openIssues.some((issue) => issue.id === resolved.id)).toBe(true);
+  });
+
+  it("clearIssuesByType deletes only open issues", () => {
+    const setup = setupDb();
+    tempRoots.push(setup.rootPath);
+    insertIssue(setup.db, {
+      projectId: setup.projectId,
+      type: "continuity",
+      severity: "medium",
+      title: "Open1",
+      description: "Open1"
+    });
+    insertIssue(setup.db, {
+      projectId: setup.projectId,
+      type: "continuity",
+      severity: "medium",
+      title: "Open2",
+      description: "Open2"
+    });
+
+    clearIssuesByType(setup.db, setup.projectId, "continuity");
+
+    const remaining = listIssues(setup.db, setup.projectId, { status: "all" });
+    expect(remaining.length).toBe(0);
+  });
+
+  it("clearIssuesByType preserves resolved issues", () => {
+    const setup = setupDb();
+    tempRoots.push(setup.rootPath);
+    const resolved = insertIssue(setup.db, {
+      projectId: setup.projectId,
+      type: "continuity",
+      severity: "medium",
+      title: "Resolved",
+      description: "Resolved"
+    });
+    resolveIssue(setup.db, resolved.id);
+    insertIssue(setup.db, {
+      projectId: setup.projectId,
+      type: "continuity",
+      severity: "medium",
+      title: "Open",
+      description: "Open"
+    });
+
+    clearIssuesByType(setup.db, setup.projectId, "continuity");
+
+    const remaining = listIssues(setup.db, setup.projectId, { status: "all" });
+    expect(remaining).toHaveLength(1);
+    const preserved = remaining[0]!;
+    expect(preserved.id).toBe(resolved.id);
+    expect(preserved.status).toBe("resolved");
+  });
+
+  it("clearIssuesByType preserves dismissed issues", () => {
+    const setup = setupDb();
+    tempRoots.push(setup.rootPath);
+    const dismissed = insertIssue(setup.db, {
+      projectId: setup.projectId,
+      type: "continuity",
+      severity: "medium",
+      title: "Dismissed",
+      description: "Dismissed"
+    });
+    dismissIssue(setup.db, dismissed.id);
+    insertIssue(setup.db, {
+      projectId: setup.projectId,
+      type: "continuity",
+      severity: "medium",
+      title: "Open",
+      description: "Open"
+    });
+
+    clearIssuesByType(setup.db, setup.projectId, "continuity");
+
+    const remaining = listIssues(setup.db, setup.projectId, { status: "all" });
+    expect(remaining).toHaveLength(1);
+    const preserved = remaining[0]!;
+    expect(preserved.id).toBe(dismissed.id);
+    expect(preserved.status).toBe("dismissed");
   });
 });

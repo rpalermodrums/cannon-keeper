@@ -110,3 +110,19 @@ export function updateChunk(
     id
   );
 }
+
+export function countChunksForProject(db: Database.Database, projectId: string): number {
+  const row = db
+    .prepare(
+      "SELECT COUNT(*) as count FROM chunk c JOIN document d ON d.id = c.document_id WHERE d.project_id = ?"
+    )
+    .get(projectId) as { count: number };
+  return row.count;
+}
+
+export function countDocumentsForProject(db: Database.Database, projectId: string): number {
+  const row = db
+    .prepare("SELECT COUNT(*) as count FROM document WHERE project_id = ?")
+    .get(projectId) as { count: number };
+  return row.count;
+}

@@ -201,14 +201,15 @@ export function buildRepetitionMetricFromCounts(
   };
 
   const issues: RepetitionIssue[] = filtered
-    .map((entry) => entry.example)
-    .filter((example): example is RepetitionIssue => Boolean(example))
-    .slice(0, 10);
-
-  for (const issue of issues) {
-    const count = counts[issue.ngram]?.count ?? issue.count;
-    issue.count = count;
-  }
+    .filter((entry) => entry.example != null)
+    .slice(0, 10)
+    .map((entry) => ({
+      ngram: entry.ngram,
+      count: entry.count,
+      chunkId: entry.example!.chunkId,
+      quoteStart: entry.example!.quoteStart,
+      quoteEnd: entry.example!.quoteEnd
+    }));
 
   return { metric, issues };
 }

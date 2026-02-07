@@ -7,6 +7,7 @@ import {
   dismissIssue,
   getBundledFixturePath,
   getProjectDiagnostics,
+  getProjectStats,
   getEntity,
   getProcessingState,
   getProjectHistory,
@@ -24,6 +25,7 @@ import {
   runExport,
   subscribeProjectStatus,
   undoDismissIssue,
+  undoResolveIssue,
   type AskResponse,
   type EntityDetail,
   type EntitySummary,
@@ -32,6 +34,7 @@ import {
   type IngestResult,
   type IssueSummary,
   type ProjectDiagnostics,
+  type ProjectStats,
   type ProjectSummary,
   type SceneDetail,
   type SceneSummary,
@@ -206,6 +209,7 @@ export function useCanonkeeperApp() {
     }>;
   } | null>(null);
   const [lastIngest, setLastIngest] = useState<IngestResult | null>(null);
+  const [projectStats, setProjectStats] = useState<ProjectStats | null>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchQueryResponse | null>(null);
@@ -338,6 +342,18 @@ export function useCanonkeeperApp() {
     setHistory(nextHistory);
   }, [project]);
 
+  const refreshProjectStats = useCallback(async () => {
+    if (!project) {
+      return;
+    }
+    try {
+      const stats = await getProjectStats();
+      setProjectStats(stats);
+    } catch {
+      // stats are non-critical; silently ignore failures
+    }
+  }, [project]);
+
   const refreshScenes = useCallback(async () => {
     const list = await listScenes();
     setScenes(list);
@@ -381,12 +397,13 @@ export function useCanonkeeperApp() {
     }
     await Promise.all([
       refreshProcessingAndHistory(),
+      refreshProjectStats(),
       refreshScenes(),
       refreshIssues(),
       refreshStyle(),
       refreshEntities()
     ]);
-  }, [project, refreshEntities, refreshIssues, refreshProcessingAndHistory, refreshScenes, refreshStyle]);
+  }, [project, refreshEntities, refreshIssues, refreshProcessingAndHistory, refreshProjectStats, refreshScenes, refreshStyle]);
 
   const setAppError = useCallback((code: string, err: unknown, actionLabel?: string, action?: string) => {
     setError(toUserFacingError(code, err, actionLabel, action));
@@ -666,7 +683,16 @@ export function useCanonkeeperApp() {
       try {
         await resolveIssue(issueId);
         await refreshIssues();
-        pushToast({ message: "Issue resolved.", tone: "success" });
+        pushToast({
+          message: "Issue resolved.",
+          tone: "success",
+          actionLabel: "Undo",
+          onAction: async () => {
+            await undoResolveIssue(issueId);
+            await refreshIssues();
+            pushToast({ message: "Resolution undone.", tone: "success" });
+          }
+        });
       } catch (err) {
         setAppError("ISSUE_RESOLVE_FAILED", err);
       } finally {
@@ -987,6 +1013,7 @@ export function useCanonkeeperApp() {
     processingState,
     history,
     lastIngest,
+    projectStats,
     rootPath,
     setRootPath,
     docPath,

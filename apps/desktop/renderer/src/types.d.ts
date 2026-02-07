@@ -120,6 +120,12 @@ declare global {
           changeStart: number | null;
           changeEnd: number | null;
         }>;
+        stats: () => Promise<{
+          totalPassages: number;
+          totalDocuments: number;
+          totalScenes: number;
+          totalIssues: number;
+        }>;
       };
       system: {
         healthCheck: () => Promise<SystemHealthCheck>;
@@ -215,6 +221,7 @@ declare global {
         dismiss: (payload: { issueId: string; reason?: string }) => Promise<{ ok: boolean }>;
         undoDismiss: (payload: { issueId: string }) => Promise<{ ok: boolean }>;
         resolve: (payload: { issueId: string }) => Promise<{ ok: boolean }>;
+        undoResolve: (payload: { issueId: string }) => Promise<{ ok: boolean }>;
       };
       style: {
         getReport: () => Promise<{

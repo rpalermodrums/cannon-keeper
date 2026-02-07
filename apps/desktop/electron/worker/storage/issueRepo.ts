@@ -36,7 +36,7 @@ export function clearIssuesByType(
   type: IssueType
 ): void {
   const issueIds = db
-    .prepare("SELECT id FROM issue WHERE project_id = ? AND type = ?")
+    .prepare("SELECT id FROM issue WHERE project_id = ? AND type = ? AND status = 'open'")
     .all(projectId, type) as Array<{ id: string }>;
 
   const deleteEvidence = db.prepare("DELETE FROM issue_evidence WHERE issue_id = ?");
@@ -209,6 +209,12 @@ export function resolveIssue(db: Database.Database, issueId: string): void {
     Date.now(),
     issueId
   );
+}
+
+export function undoResolveIssue(db: Database.Database, issueId: string): void {
+  db.prepare(
+    "UPDATE issue SET status = ?, updated_at = ? WHERE id = ? AND status = ?"
+  ).run("open", Date.now(), issueId, "resolved");
 }
 
 export function deleteIssuesByIds(db: Database.Database, issueIds: string[]): void {

@@ -1,6 +1,6 @@
 import { useMemo, type JSX } from "react";
-import { AlertTriangle, BookMarked, BookOpen, ChevronRight, Clock, LayoutDashboard } from "lucide-react";
-import type { IngestResult, ProjectSummary, WorkerStatus } from "../api/ipc";
+import { AlertTriangle, BookMarked, BookOpen, ChevronRight, FileText, LayoutDashboard } from "lucide-react";
+import type { IngestResult, ProjectStats, ProjectSummary, WorkerStatus } from "../api/ipc";
 import { EmptyState } from "../components/EmptyState";
 import { StatusBadge } from "../components/StatusBadge";
 
@@ -34,6 +34,7 @@ type DashboardViewProps = {
     }>;
   } | null;
   lastIngest: IngestResult | null;
+  projectStats: ProjectStats | null;
   continueIssueId: string | null;
   continueEntityId: string | null;
   continueSceneId: string | null;
@@ -62,6 +63,7 @@ export function DashboardView({
   processingState,
   history: _history,
   lastIngest,
+  projectStats,
   continueIssueId,
   continueEntityId,
   continueSceneId,
@@ -144,10 +146,21 @@ export function DashboardView({
 
         <article className="rounded-md border border-border bg-white/75 p-4 shadow-sm dark:bg-surface-2/60">
           <div className="flex items-center gap-2 text-sm font-medium text-text-muted">
-            <Clock size={16} />
-            Last Update
+            <FileText size={16} />
+            Manuscript
           </div>
-          {lastIngest ? (
+          {projectStats ? (
+            <>
+              <p className="mt-3 font-display text-xl font-bold">
+                {projectStats.totalPassages} {projectStats.totalPassages === 1 ? "passage" : "passages"}
+              </p>
+              <p className="mt-0.5 text-xs text-text-muted">
+                {projectStats.totalDocuments} {projectStats.totalDocuments === 1 ? "document" : "documents"} ·{" "}
+                {projectStats.totalScenes} {projectStats.totalScenes === 1 ? "scene" : "scenes"} ·{" "}
+                {projectStats.totalIssues} open {projectStats.totalIssues === 1 ? "issue" : "issues"}
+              </p>
+            </>
+          ) : lastIngest ? (
             <>
               <p className="mt-3 font-display text-xl font-bold">Last processed</p>
               <p className="mt-0.5 text-xs text-text-muted">
