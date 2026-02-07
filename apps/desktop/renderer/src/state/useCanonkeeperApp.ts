@@ -136,10 +136,21 @@ function nextSection(current: AppSection, delta: number): AppSection {
   return APP_SECTIONS[next]!.id;
 }
 
+function sanitizeErrorMessage(err: unknown): string {
+  if (!(err instanceof Error)) return "Unknown error";
+  const raw = err.message;
+  if (/SQLITE_BUSY/i.test(raw)) return "The database is temporarily busy. Please try again in a moment.";
+  if (/SQLITE_LOCKED/i.test(raw)) return "The database is temporarily locked. Please try again in a moment.";
+  if (/SQLITE_CORRUPT/i.test(raw)) return "The database file appears to be damaged. Try running diagnostics from Settings.";
+  if (/SQLITE_READONLY/i.test(raw)) return "The database cannot be written to. Check your file permissions.";
+  const stripped = raw.replace(/\n\s*at\s+.+/g, "").trim();
+  return stripped || "Unknown error";
+}
+
 function toUserFacingError(code: string, err: unknown, actionLabel?: string, action?: string): UserFacingError {
   return {
     code,
-    message: err instanceof Error ? err.message : "Unknown error",
+    message: sanitizeErrorMessage(err),
     actionLabel,
     action
   };
@@ -297,9 +308,16 @@ export function useCanonkeeperApp() {
   const pushToast = useCallback((toast: Omit<ToastItem, "id">) => {
     const id = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
     setToasts((current) => [...current, { ...toast, id }]);
+    const timeout = toast.onAction
+      ? 10_000
+      : toast.tone === "error"
+        ? 15_000
+        : toast.tone === "success"
+          ? 5_000
+          : 8_000;
     setTimeout(() => {
       setToasts((current) => current.filter((item) => item.id !== id));
-    }, 10_000);
+    }, timeout);
   }, []);
 
   const dismissToast = useCallback((id: string) => {
@@ -1107,7 +1125,11 @@ export function useCanonkeeperApp() {
     const phaseLabel = status.phase === "idle" ? "Idle" : status.phase;
     const details = [phaseLabel];
     if (status.activeJobLabel) {
-      details.push(status.activeJobLabel);
+      const stripped = status.activeJobLabel.replace(
+        /^(.+?\s·\s).*[/\\]([^/\\]+)$/,
+        "$1$2"
+      );
+      details.push(stripped);
     }
     if (status.workerState && status.workerState !== "ready") {
       details.push(status.workerState);

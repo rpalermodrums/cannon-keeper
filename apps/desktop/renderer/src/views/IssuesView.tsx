@@ -1,5 +1,6 @@
 import type { JSX } from "react";
 import { AlertTriangle, BookOpen, CheckCircle, Quote, RefreshCw, Search, XCircle } from "lucide-react";
+import { Spinner } from "../components/Spinner";
 import type { IssueSummary } from "../api/ipc";
 import { EmptyState } from "../components/EmptyState";
 import { FilterBar, FilterGroup } from "../components/FilterBar";
@@ -124,8 +125,7 @@ export function IssuesView({
           onClick={onRefresh}
           disabled={busy}
         >
-          <RefreshCw size={16} />
-          Refresh Issues
+          {busy ? <Spinner size="sm" /> : <><RefreshCw size={16} /> Refresh Issues</>}
         </button>
       </header>
 
@@ -207,7 +207,10 @@ export function IssuesView({
                   selected ? "ring-1 ring-accent/30 shadow-sm" : "hover:shadow-sm"
                 }`}
                 style={{ animationDelay: `${Math.min(i, 10) * 30}ms` }}
+                tabIndex={0}
+                role="button"
                 onClick={() => onSelectIssue(issue.id)}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelectIssue(issue.id); } }}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">

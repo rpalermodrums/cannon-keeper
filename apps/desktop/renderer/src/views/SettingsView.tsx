@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type JSX } from "react";
-import { CheckCircle, ListTodo, RefreshCw, RotateCcw, Settings, Trash2, X } from "lucide-react";
+import { AlertCircle, CheckCircle, ListTodo, RefreshCw, RotateCcw, Settings, Trash2, X, XCircle } from "lucide-react";
 import {
   type ProjectDiagnostics,
   type QueuedJob,
@@ -7,6 +7,9 @@ import {
   listQueuedJobs,
   cancelJob
 } from "../api/ipc";
+import { ConfirmModal } from "../components/ConfirmModal";
+import { EmptyState } from "../components/EmptyState";
+import { Spinner } from "../components/Spinner";
 import { StatusBadge } from "../components/StatusBadge";
 import { ThemeToggle, type Theme } from "../components/ThemeToggle";
 
@@ -14,6 +17,7 @@ type SettingsViewProps = {
   status: WorkerStatus | null;
   healthCheck: ProjectDiagnostics | null;
   hasProject: boolean;
+  busy: boolean;
   onRunDiagnostics: () => void;
   onForgetProject: () => void;
   onResetProjectState: () => void;
@@ -54,6 +58,7 @@ export function SettingsView({
   status,
   healthCheck,
   hasProject,
+  busy,
   onRunDiagnostics,
   onForgetProject,
   onResetProjectState,
@@ -62,6 +67,7 @@ export function SettingsView({
   sidebarCollapsed,
   onSidebarCollapsedChange
 }: SettingsViewProps): JSX.Element {
+  const [confirmAction, setConfirmAction] = useState<"forget" | "reset" | null>(null);
   const [queuedJobs, setQueuedJobs] = useState<QueuedJob[]>([]);
 
   const refreshQueue = useCallback(async () => {
@@ -119,7 +125,7 @@ export function SettingsView({
       <article className="flex flex-col gap-4 rounded-md border border-border bg-white/75 p-4 shadow-sm dark:bg-surface-2/60">
         <div className="flex items-center gap-2">
           <RotateCcw size={16} className="text-text-muted" />
-          <h3 className="m-0 text-sm font-semibold">Session & Persistence</h3>
+          <h3 className="m-0 text-sm font-semibold">Your Workspace Memory</h3>
         </div>
         <p className="m-0 text-sm text-text-muted">
           Control how CanonKeeper remembers your workspace between sessions.
@@ -128,7 +134,7 @@ export function SettingsView({
           <button
             type="button"
             className="inline-flex items-center gap-1.5 rounded-sm border border-border bg-surface-2 px-3 py-2 text-sm transition-colors hover:bg-white cursor-pointer dark:bg-surface-1"
-            onClick={onForgetProject}
+            onClick={() => setConfirmAction("forget")}
           >
             <Trash2 size={14} />
             Forget Last Project
@@ -137,7 +143,7 @@ export function SettingsView({
             <button
               type="button"
               className="inline-flex items-center gap-1.5 rounded-sm border border-border bg-surface-2 px-3 py-2 text-sm transition-colors hover:bg-white cursor-pointer dark:bg-surface-1"
-              onClick={onResetProjectState}
+              onClick={() => setConfirmAction("reset")}
             >
               <RotateCcw size={14} />
               Reset This Project&apos;s Saved State
@@ -156,12 +162,12 @@ export function SettingsView({
           ) : null}
         </div>
         <button
-          className="inline-flex items-center gap-1.5 self-start rounded-sm border border-accent bg-accent px-4 py-2 text-sm font-medium text-text-inverse transition-colors hover:bg-accent-strong cursor-pointer"
+          className="inline-flex items-center gap-1.5 self-start rounded-sm border border-accent bg-accent px-4 py-2 text-sm font-medium text-text-inverse transition-colors hover:bg-accent-strong cursor-pointer disabled:opacity-50"
           type="button"
           onClick={onRunDiagnostics}
+          disabled={busy}
         >
-          <RefreshCw size={16} />
-          Run Diagnostics
+          {busy ? <Spinner size="sm" /> : <><RefreshCw size={16} /> Run Diagnostics</>}
         </button>
       </article>
 
@@ -170,13 +176,18 @@ export function SettingsView({
         <article className="flex flex-col gap-3 rounded-md border border-border bg-white/75 p-4 shadow-sm dark:bg-surface-2/60">
           <h3 className="m-0 text-sm font-semibold">Health Check</h3>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {(["ipc", "worker", "sqlite", "writable"] as const).map((key) => (
-              <div key={key} className="flex flex-col items-center gap-2 rounded-sm border border-border bg-surface-1/30 p-3 dark:bg-surface-1/20">
-                <CheckCircle size={20} className={healthCheck[key] === "ok" ? "text-ok" : "text-danger"} />
-                <span className="text-xs font-medium uppercase tracking-wide text-text-muted">{HEALTH_KEY_LABELS[key] ?? key}</span>
-                <StatusBadge label={({ ok: "Connected", down: "Unavailable", error: "Error", warn: "Pending" } as Record<string, string>)[healthCheck[key]] ?? healthCheck[key]} status={healthCheck[key]} />
-              </div>
-            ))}
+            {(["ipc", "worker", "sqlite", "writable"] as const).map((key) => {
+              const value = healthCheck[key];
+              const Icon = value === "ok" ? CheckCircle : value === "error" ? XCircle : AlertCircle;
+              const iconClass = value === "ok" ? "text-ok" : value === "error" ? "text-danger" : "text-warn";
+              return (
+                <div key={key} className="flex flex-col items-center gap-2 rounded-sm border border-border bg-surface-1/30 p-3 dark:bg-surface-1/20">
+                  <Icon size={20} className={iconClass} />
+                  <span className="text-xs font-medium uppercase tracking-wide text-text-muted">{HEALTH_KEY_LABELS[key] ?? key}</span>
+                  <StatusBadge label={({ ok: "Connected", down: "Unavailable", error: "Error", warn: "Pending", missing_native: "Missing Extension" } as Record<string, string>)[value] ?? value} status={value} />
+                </div>
+              );
+            })}
           </div>
           {(healthCheck.recommendations ?? healthCheck.details).length > 0 ? (
             <div className="flex flex-col gap-1.5">
@@ -202,7 +213,7 @@ export function SettingsView({
           <h3 className="m-0 text-sm font-semibold">Processing Queue</h3>
         </div>
         {queuedJobs.length === 0 ? (
-          <p className="text-sm text-text-muted">No pending jobs.</p>
+          <EmptyState icon={ListTodo} title="Queue Empty" message="No jobs are waiting to run." />
         ) : (
           <div className="flex flex-col gap-2">
             {queuedJobs.map((job) => (
@@ -241,6 +252,32 @@ export function SettingsView({
         <h3 className="m-0 mb-2 text-sm font-semibold">About</h3>
         <p className="text-sm text-text-muted">CanonKeeper v0.1.0 — Local-first editorial diagnostics for fiction writers.</p>
       </article>
+
+      <ConfirmModal
+        open={confirmAction === "forget"}
+        title="Forget Last Project"
+        message="This will forget which project was last open. You'll need to choose a project folder next time you open CanonKeeper."
+        confirmLabel="Forget"
+        danger
+        onCancel={() => setConfirmAction(null)}
+        onConfirm={() => {
+          setConfirmAction(null);
+          onForgetProject();
+        }}
+      />
+
+      <ConfirmModal
+        open={confirmAction === "reset"}
+        title="Reset Project State"
+        message="This will clear all saved filters, selections, and view preferences for this project. Your manuscript files and analysis data will not be affected."
+        confirmLabel="Reset"
+        danger
+        onCancel={() => setConfirmAction(null)}
+        onConfirm={() => {
+          setConfirmAction(null);
+          onResetProjectState();
+        }}
+      />
     </section>
   );
 }

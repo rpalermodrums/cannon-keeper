@@ -1,5 +1,6 @@
 import type { JSX } from "react";
 import { BookOpen, Quote, RefreshCw, Search } from "lucide-react";
+import { Spinner } from "../components/Spinner";
 import type { SceneDetail, SceneSummary } from "../api/ipc";
 import { EmptyState } from "../components/EmptyState";
 
@@ -54,8 +55,7 @@ export function ScenesView({
           onClick={onRefresh}
           disabled={busy}
         >
-          <RefreshCw size={16} />
-          Refresh Scenes
+          {busy ? <Spinner size="sm" /> : <><RefreshCw size={16} /> Refresh Scenes</>}
         </button>
       </header>
 
@@ -74,7 +74,7 @@ export function ScenesView({
         <EmptyState
           icon={BookOpen}
           title="No Scenes Yet"
-          message="No scenes found yet. Add a manuscript to see your story's scene breakdown."
+          message="Add a manuscript to see your story's scene breakdown."
         />
       ) : (
         <div className="grid min-h-[420px] grid-cols-1 gap-4 lg:grid-cols-[minmax(320px,1fr)_minmax(340px,1fr)]">
@@ -100,7 +100,11 @@ export function ScenesView({
                           ? "border-l-3 border-l-accent bg-accent-soft/40"
                           : "even:bg-surface-1/30 hover:bg-surface-1/60"
                       }`}
+                      tabIndex={0}
+                      role="row"
+                      aria-selected={selected}
                       onClick={() => onSelectScene(scene.id)}
+                      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelectScene(scene.id); } }}
                     >
                       <td>
                         <strong>#{scene.ordinal}</strong> {scene.title ?? "Untitled"}

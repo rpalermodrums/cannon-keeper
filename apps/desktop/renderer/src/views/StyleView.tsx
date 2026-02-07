@@ -2,6 +2,7 @@ import { useMemo, useState, type JSX } from "react";
 import { Activity, BookOpen, MessageSquare, Palette, Quote, RefreshCw, Repeat } from "lucide-react";
 import type { EvidenceItem, IssueSummary, StyleReport } from "../api/ipc";
 import { EmptyState } from "../components/EmptyState";
+import { Spinner } from "../components/Spinner";
 import { TogglePill } from "../components/TogglePill";
 
 type RepetitionEntry = {
@@ -76,8 +77,7 @@ export function StyleView({
           onClick={onRefresh}
           disabled={busy}
         >
-          <RefreshCw size={16} />
-          Refresh Style
+          {busy ? <Spinner size="sm" /> : <><RefreshCw size={16} /> Refresh Style</>}
         </button>
       </header>
 
@@ -96,7 +96,7 @@ export function StyleView({
             </div>
 
             {entries.length === 0 ? (
-              <p className="text-sm text-text-muted">No repetition metrics found.</p>
+              <EmptyState icon={Repeat} title="No Repeated Phrases" message="No notable repetition patterns found in your manuscript." />
             ) : (
               <div className="overflow-x-auto">
                 <table>
@@ -161,7 +161,7 @@ export function StyleView({
               <h3 className="m-0 text-sm font-semibold">Tone Shifts</h3>
             </div>
             {toneIssues.length === 0 ? (
-              <p className="text-sm text-text-muted">No tone shift issues detected.</p>
+              <EmptyState icon={Activity} title="No Tone Shifts" message="No unexpected tone changes detected across your scenes." />
             ) : (
               <div className="flex flex-col gap-2">
                 {toneIssues.map((issue) => {
@@ -206,7 +206,7 @@ export function StyleView({
               <h3 className="m-0 text-sm font-semibold">Dialogue Habits</h3>
             </div>
             {dialogueIssues.length === 0 ? (
-              <p className="text-sm text-text-muted">No dialogue habit issues detected.</p>
+              <EmptyState icon={MessageSquare} title="No Dialogue Habits" message="No recurring dialogue patterns found in your characters' speech." />
             ) : (
               <div className="flex flex-col gap-2">
                 {dialogueIssues.map((issue) => {

@@ -1,5 +1,5 @@
 import type { JSX } from "react";
-import { Loader2, Play, RefreshCw } from "lucide-react";
+import { Loader2, MoreHorizontal, Play, RefreshCw } from "lucide-react";
 import { AsyncToast } from "./components/AsyncToast";
 import { CommandPalette } from "./components/CommandPalette";
 import { ConfirmModal } from "./components/ConfirmModal";
@@ -277,6 +277,7 @@ export function App(): JSX.Element {
                 status={app.status}
                 healthCheck={app.healthCheck}
                 hasProject={hasProject}
+                busy={app.busy}
                 onRunDiagnostics={app.onRunDiagnostics}
                 onForgetProject={app.onForgetLastProject}
                 onResetProjectState={app.onResetProjectState}
@@ -319,7 +320,7 @@ export function App(): JSX.Element {
               className="inline-flex min-w-[78px] flex-col items-center gap-1 rounded-sm px-2 py-1 text-[11px] text-text-muted cursor-pointer"
               onClick={() => app.setCommandPaletteOpen(true)}
             >
-              <Play size={14} />
+              <MoreHorizontal size={14} />
               <span>More</span>
             </button>
           </div>

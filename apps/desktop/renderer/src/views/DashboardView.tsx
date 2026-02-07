@@ -3,10 +3,14 @@ import {
   AlertTriangle,
   BookMarked,
   BookOpen,
+  CheckCircle2,
   ChevronDown,
   ChevronRight,
+  Circle,
   FileText,
-  LayoutDashboard
+  LayoutDashboard,
+  Loader2,
+  XCircle
 } from "lucide-react";
 import type { EvidenceCoverage, IngestResult, ProjectStats, ProjectSummary, WorkerStatus } from "../api/ipc";
 import { ShieldCheck } from "lucide-react";
@@ -89,29 +93,16 @@ function friendlyStageLabel(stage: string): string {
 
 const STAGE_ORDER = ["ingest", "scenes", "style", "extraction", "continuity"];
 
-function stageStatusColor(status: string): string {
+function StageIcon({ status }: { status: string }): JSX.Element {
   switch (status) {
     case "completed":
-      return "bg-ok text-white";
+      return <CheckCircle2 size={12} className="text-ok" />;
     case "running":
-      return "bg-accent text-white animate-pulse-dot";
+      return <Loader2 size={12} className="animate-spin text-accent" />;
     case "failed":
-      return "bg-danger text-white";
+      return <XCircle size={12} className="text-danger" />;
     default:
-      return "bg-surface-1 text-text-muted dark:bg-surface-3";
-  }
-}
-
-function stageStatusRingColor(status: string): string {
-  switch (status) {
-    case "completed":
-      return "ring-ok/30";
-    case "running":
-      return "ring-accent/30";
-    case "failed":
-      return "ring-danger/30";
-    default:
-      return "ring-border";
+      return <Circle size={12} className="text-text-muted" />;
   }
 }
 
@@ -341,9 +332,7 @@ export function DashboardView({
                       return (
                         <div key={stage} className="flex items-center gap-1">
                           <div className="flex flex-col items-center gap-1" title={`${friendlyStageLabel(stage)}: ${stageStatus}`}>
-                            <div
-                              className={`h-2.5 w-2.5 rounded-full ring-2 ${stageStatusColor(stageStatus)} ${stageStatusRingColor(stageStatus)}`}
-                            />
+                            <StageIcon status={stageStatus} />
                             <span className="text-[10px] leading-tight text-text-muted">
                               {friendlyStageLabel(stage)}
                             </span>
@@ -373,6 +362,7 @@ export function DashboardView({
           <button
             type="button"
             className="flex w-full cursor-pointer items-center gap-2 bg-transparent p-0 text-left"
+            aria-expanded={noticesOpen}
             onClick={() => setNoticesOpen((prev) => !prev)}
           >
             {noticesOpen ? (

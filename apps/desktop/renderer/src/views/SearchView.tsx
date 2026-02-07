@@ -30,7 +30,7 @@ export function SearchView({
   return (
     <section className="flex flex-col gap-4">
       <header>
-        <h2 className="m-0 font-display text-2xl font-bold">Search Your Manuscript</h2>
+        <h2 className="m-0 font-display text-2xl font-bold">Search</h2>
         <p className="mt-1 text-sm text-text-muted">
           Find passages and ask questions about your story.
         </p>
@@ -44,6 +44,7 @@ export function SearchView({
             <Search size={16} className="absolute top-1/2 left-3 -translate-y-1/2 text-text-muted" />
             <input
               className="w-full pl-9"
+              aria-label="Search your manuscript"
               value={searchQuery}
               onChange={(e) => onSearchQueryChange(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && searchQuery.trim()) onSearch(); }}
@@ -89,6 +90,7 @@ export function SearchView({
         <div className="flex gap-2">
           <input
             className="flex-1"
+            aria-label="Ask a question about your manuscript"
             value={questionText}
             onChange={(e) => onQuestionTextChange(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && questionText.trim()) onAsk(); }}

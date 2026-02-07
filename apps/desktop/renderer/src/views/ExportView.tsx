@@ -67,6 +67,9 @@ export function ExportView({
           value={exportKind}
           onChange={onExportKindChange}
         />
+        {exportKind === "json" && (
+          <p className="text-xs text-text-muted">Structured data for use with other tools.</p>
+        )}
 
         <button
           className="inline-flex items-center gap-2 self-start rounded-sm border border-accent bg-accent px-5 py-2.5 text-sm font-medium text-text-inverse transition-colors hover:bg-accent-strong cursor-pointer disabled:opacity-50"

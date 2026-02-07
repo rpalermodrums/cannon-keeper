@@ -154,7 +154,7 @@ export function BibleView({
           {/* Entity list */}
           <article className="flex flex-col gap-2 rounded-md border border-border bg-white/75 p-3 shadow-sm dark:bg-surface-2/60">
             <h3 className="m-0 mb-1 text-sm font-semibold">Characters &amp; Places</h3>
-            <div className="flex flex-col gap-1 overflow-y-auto">
+            <div className="flex flex-col gap-1 overflow-y-auto" role="listbox" aria-label="Characters and places">
               {filtered.map((entity) => {
                 const selected = selectedEntityId === entity.id;
                 const typeColor = entityTypeColors[entity.type] ?? "bg-surface-1 text-text-muted";
@@ -162,6 +162,8 @@ export function BibleView({
                   <button
                     key={entity.id}
                     type="button"
+                    role="option"
+                    aria-selected={selected}
                     className={`flex items-center justify-between gap-2 rounded-sm border px-3 py-2 text-left transition-all cursor-pointer ${
                       selected
                         ? "border-accent bg-accent-soft/40 border-l-3 border-l-accent"

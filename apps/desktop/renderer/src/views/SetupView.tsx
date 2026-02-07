@@ -1,5 +1,5 @@
 import type { JSX } from "react";
-import { AlertTriangle, CheckCircle, FolderOpen, FolderSearch, RefreshCw, X } from "lucide-react";
+import { AlertCircle, AlertTriangle, CheckCircle, FolderOpen, FolderSearch, RefreshCw, X, XCircle } from "lucide-react";
 import type { ProjectDiagnostics } from "../api/ipc";
 import { EmptyState } from "../components/EmptyState";
 import { Spinner } from "../components/Spinner";
@@ -255,13 +255,17 @@ export function SetupView({
                 ok: "Connected",
                 down: "Unavailable",
                 error: "Error",
-                warn: "Pending"
+                warn: "Pending",
+                missing_native: "Missing Extension"
               };
+              const value = healthCheck[key];
+              const Icon = value === "ok" ? CheckCircle : value === "error" ? XCircle : AlertCircle;
+              const iconClass = value === "ok" ? "text-ok" : value === "error" ? "text-danger" : "text-warn";
               return (
                 <div key={key} className="flex flex-col items-center gap-2 rounded-sm border border-border bg-surface-2/50 p-3 dark:bg-surface-1/50">
-                  <CheckCircle size={20} className={healthCheck[key] === "ok" ? "text-ok" : "text-danger"} />
+                  <Icon size={20} className={iconClass} />
                   <span className="text-xs font-medium tracking-wide text-text-muted">{friendlyLabels[key]}</span>
-                  <StatusBadge label={statusLabels[healthCheck[key]] ?? healthCheck[key]} status={healthCheck[key]} />
+                  <StatusBadge label={statusLabels[value] ?? value} status={value} />
                 </div>
               );
             })}
