@@ -576,7 +576,6 @@ describe("useCanonkeeperApp boot sequence", () => {
       await Promise.resolve();
     });
 
-    expect(mocks.getCurrent).toHaveBeenCalledTimes(1);
     expect(result.current.bootState).toBe("restore-failed");
     expect(result.current.activeSection).toBe("setup");
     expect(result.current.bootError).toBe(

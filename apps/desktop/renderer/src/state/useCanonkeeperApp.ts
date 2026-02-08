@@ -526,19 +526,25 @@ export function useCanonkeeperApp() {
   // ---------------------------------------------------------------------------
   useEffect(() => {
     let effectDisposed = false;
+    let timedOut = false;
     bootCancelledRef.current = false;
-    const isBootCancelled = () => effectDisposed || bootCancelledRef.current;
+    const isBootCancelled = () => effectDisposed || bootCancelledRef.current || timedOut;
 
     const bootTimeout = setTimeout(() => {
       if (isBootCancelled()) {
         return;
       }
+      timedOut = true;
       setBootState("restore-failed");
       setBootError("Restoring your last session timed out. You can start fresh or try again.");
       setActiveSection("setup");
     }, 15_000);
 
     const boot = async () => {
+      if (isBootCancelled()) {
+        clearTimeout(bootTimeout);
+        return;
+      }
       // 1. Load persisted session envelope
       const envelope = loadSession();
       sessionRef.current = envelope;
