@@ -558,6 +558,32 @@ describe("useCanonkeeperApp boot sequence", () => {
     });
   });
 
+  it("still transitions out of booting in StrictMode when worker boot probe hangs", async () => {
+    vi.useFakeTimers();
+    const mocks = installCanonkeeperMock();
+    const pendingCurrent = createDeferred<ProjectSummary | null>();
+    writeSessionEnvelope(createSessionEnvelope());
+    mocks.getCurrent.mockReturnValue(pendingCurrent.promise);
+
+    const { result } = renderHook(() => useCanonkeeperApp(), {
+      wrapper: ({ children }) => createElement(StrictMode, null, children)
+    });
+
+    expect(result.current.bootState).toBe("booting");
+
+    await act(async () => {
+      vi.advanceTimersByTime(15_000);
+      await Promise.resolve();
+    });
+
+    expect(mocks.getCurrent).toHaveBeenCalledTimes(1);
+    expect(result.current.bootState).toBe("restore-failed");
+    expect(result.current.activeSection).toBe("setup");
+    expect(result.current.bootError).toBe(
+      "Restoring your last session timed out. You can start fresh or try again."
+    );
+  });
+
   it("cancels boot work after unmount and avoids hydration side effects", async () => {
     const mocks = installCanonkeeperMock();
     const deferredCurrent = createDeferred<ProjectSummary | null>();

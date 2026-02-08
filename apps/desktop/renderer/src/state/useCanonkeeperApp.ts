@@ -286,7 +286,6 @@ export function useCanonkeeperApp() {
 
   const lastWorkerState = useRef<"idle" | "busy" | "unknown">("unknown");
   const hydratingRef = useRef(false);
-  const bootAttemptedRef = useRef(false);
   const bootCancelledRef = useRef(false);
   const sessionRef = useRef<SessionEnvelope | null>(null);
 
@@ -526,12 +525,12 @@ export function useCanonkeeperApp() {
   // Boot effect — restores active project and per-project UI state on launch
   // ---------------------------------------------------------------------------
   useEffect(() => {
-    if (bootAttemptedRef.current) return;
-    bootAttemptedRef.current = true;
+    let effectDisposed = false;
     bootCancelledRef.current = false;
+    const isBootCancelled = () => effectDisposed || bootCancelledRef.current;
 
     const bootTimeout = setTimeout(() => {
-      if (bootCancelledRef.current) {
+      if (isBootCancelled()) {
         return;
       }
       setBootState("restore-failed");
@@ -558,7 +557,7 @@ export function useCanonkeeperApp() {
       // 3. Check if worker already has an active project (refresh / HMR case)
       try {
         const current = await getCurrentProject();
-        if (bootCancelledRef.current) {
+        if (isBootCancelled()) {
           clearTimeout(bootTimeout);
           return;
         }
@@ -567,7 +566,7 @@ export function useCanonkeeperApp() {
           const projectState = getProjectState(envelope, current.id);
           const withProjectState = setProjectState(envelope, current.id, projectState);
           await hydrateProjectData(current, projectState);
-          if (bootCancelledRef.current) {
+          if (isBootCancelled()) {
             clearTimeout(bootTimeout);
             return;
           }
@@ -592,7 +591,7 @@ export function useCanonkeeperApp() {
             rootPath: envelope.global.lastProjectRoot,
             createIfMissing: false
           });
-          if (bootCancelledRef.current) {
+          if (isBootCancelled()) {
             clearTimeout(bootTimeout);
             return;
           }
@@ -602,7 +601,7 @@ export function useCanonkeeperApp() {
           const projectState = getProjectState(envelope, restored.id);
           const withProjectState = setProjectState(envelope, restored.id, projectState);
           await hydrateProjectData(restored, projectState);
-          if (bootCancelledRef.current) {
+          if (isBootCancelled()) {
             clearTimeout(bootTimeout);
             return;
           }
@@ -616,7 +615,7 @@ export function useCanonkeeperApp() {
           clearTimeout(bootTimeout);
           return;
         } catch {
-          if (bootCancelledRef.current) {
+          if (isBootCancelled()) {
             clearTimeout(bootTimeout);
             return;
           }
@@ -639,16 +638,23 @@ export function useCanonkeeperApp() {
       }
 
       // 5. No active project, no persisted root — fresh start
-      if (!bootCancelledRef.current) {
+      if (!isBootCancelled()) {
         setBootState("ready");
       }
       clearTimeout(bootTimeout);
     };
 
-    void boot();
+    // Defer boot kickoff so StrictMode's mount/unmount replay can cancel
+    // the first pass before it reaches worker IPC calls.
+    void Promise.resolve().then(() => {
+      if (isBootCancelled()) {
+        return;
+      }
+      void boot();
+    });
 
     return () => {
-      bootCancelledRef.current = true;
+      effectDisposed = true;
       clearTimeout(bootTimeout);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
